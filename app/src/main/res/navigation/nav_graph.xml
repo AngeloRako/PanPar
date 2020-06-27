@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/welcomeFragment">
+
+    <activity
+        android:id="@+id/homeDonatoreActivity"
+        android:name="com.rapnap.panpar.view.HomeDonatoreActivity"
+        android:label="activity_home_donatore"
+        tools:layout="@layout/activity_home_donatore" />
+    <activity
+        android:id="@+id/homeRiceventeActivity"
+        android:name="com.rapnap.panpar.view.HomeRiceventeActivity"
+        android:label="activity_home_ricevente"
+        tools:layout="@layout/activity_home_ricevente" />
+    <fragment
+        android:id="@+id/signInFragment"
+        android:name="com.rapnap.panpar.view.SignInFragment"
+        android:label="fragment_sign_in"
+        tools:layout="@layout/fragment_sign_in" >
+        <action
+            android:id="@+id/signInToDonatore"
+            app:destination="@id/homeDonatoreActivity" />
+    </fragment>
+    <fragment
+        android:id="@+id/welcomeFragment"
+        android:name="com.rapnap.panpar.view.WelcomeFragment"
+        android:label="fragment_welcome"
+        tools:layout="@layout/fragment_welcome" >
+        <action
+            android:id="@+id/welcomeToSignIn"
+            app:destination="@id/signInFragment" />
+        <action
+            android:id="@+id/welcomeToHomeDonatore"
+            app:destination="@id/homeDonatoreActivity" />
+    </fragment>
+</navigation>
