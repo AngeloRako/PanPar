@@ -1,7 +1,4 @@
 package com.rapnap.panpar.model
 
-class PuntoRitiro: Utente {
-
-
-
-}
+data class PuntoRitiro (val id: Int,
+                        val location: String)

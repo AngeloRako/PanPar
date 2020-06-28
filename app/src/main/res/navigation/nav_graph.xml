@@ -23,6 +23,9 @@
         <action
             android:id="@+id/signInToDonatore"
             app:destination="@id/homeDonatoreActivity" />
+        <action
+            android:id="@+id/signInToRicevente"
+            app:destination="@id/homeRiceventeActivity" />
     </fragment>
     <fragment
         android:id="@+id/welcomeFragment"
@@ -33,7 +36,10 @@
             android:id="@+id/welcomeToSignIn"
             app:destination="@id/signInFragment" />
         <action
-            android:id="@+id/welcomeToHomeDonatore"
+            android:id="@+id/welcomeToDonatore"
             app:destination="@id/homeDonatoreActivity" />
+        <action
+            android:id="@+id/welcomeToRicevente"
+            app:destination="@id/homeRiceventeActivity" />
     </fragment>
 </navigation>

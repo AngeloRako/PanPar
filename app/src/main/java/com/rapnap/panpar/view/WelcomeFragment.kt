@@ -42,7 +42,13 @@ class WelcomeFragment : Fragment() {
         }
         else {
             //Passa avanti
-            Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToHomeDonatore)
+
+
+            //TODO
+            //Controlla su viewmodel e passa avanti con criterio
+
+            Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToDonatore)
+
         }
 
     }
