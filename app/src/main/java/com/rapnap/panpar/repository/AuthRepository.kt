@@ -22,7 +22,7 @@ class AuthRepository {
     private var auth: FirebaseAuth = Firebase.auth
     private var db = Firebase.firestore
 
-    fun firebaseSignInWithGoogle(credential: AuthCredential, completitionHandler: (result: MutableLiveData<Utente>) -> Unit) {
+    fun firebaseSignInWithGoogle(credential: AuthCredential, onComplete: (result: MutableLiveData<Utente>) -> Unit) {
          val authenticatedUserMutableLiveData = MutableLiveData<Utente>()
 
          auth.signInWithCredential(credential)
@@ -36,7 +36,7 @@ class AuthRepository {
 
                          Log.d(TAG, "[LOGIN] User obtained: ${it.toString()}")
 
-                         completitionHandler(authenticatedUserMutableLiveData)
+                         onComplete(authenticatedUserMutableLiveData)
                      }
 
                  } else {
@@ -87,7 +87,7 @@ class AuthRepository {
 
     }
 
-    fun login(completitionHandler: (result: MutableLiveData<Utente>) -> Unit) {
+    fun login(onComplete: (result: MutableLiveData<Utente>) -> Unit) {
 
         val authenticatedUserMutableLiveData = MutableLiveData<Utente>()
 
@@ -96,7 +96,7 @@ class AuthRepository {
 
             Log.d(TAG, "[LOGIN] User obtained: ${it.toString()}")
 
-            completitionHandler(authenticatedUserMutableLiveData)
+            onComplete(authenticatedUserMutableLiveData)
         }
     }
 
@@ -106,7 +106,7 @@ class AuthRepository {
 
     }
 
-    private fun obtainUser(isNew: Boolean, completionHandler: (result: Utente) -> Unit) {
+    private fun obtainUser(isNew: Boolean, onComplete: (result: Utente) -> Unit) {
 
         val currentUser = auth.currentUser
         val uiid: String = currentUser?.uid ?: "!!!!!"
@@ -134,18 +134,22 @@ class AuthRepository {
                         user.isNew = false
                         Log.d(TAG, "User data created: ${user.toString()}")
 
+                        onComplete(user)
 
                     } else {
                         //Se non c'è si tratta di un nuovo utente (registrazione da completare)
                         Log.d(TAG, "User data not found! ${document?.data}")
                         user.isNew = true
+                        onComplete(user)
+
                     }
                 }
                 .addOnFailureListener { exception ->
                     Log.d(TAG, "get failed with ", exception)
                 }
+        } else{
+            onComplete(user)
         }
-        completionHandler(user)
 
     }
 }

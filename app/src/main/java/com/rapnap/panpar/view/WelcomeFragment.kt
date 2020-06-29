@@ -52,32 +52,33 @@ class WelcomeFragment : Fragment() {
         }
         else {
 
-            welcomeVM.login()
+            welcomeVM.login(){
 
-            welcomeVM.getUser().observe(this, Observer<Utente>{
+                welcomeVM.getUser().observe(this, Observer<Utente>{
 
-                Log.d(ContentValues.TAG, "[WF] IT è: ${it.toString()}")
+                    Log.d(ContentValues.TAG, "[WF] IT è: ${it.toString()}")
 
-                if(it.isNew){
-                    Log.d(ContentValues.TAG, "[WF] L'utente è nuovo")
-                    Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToSignUp)
-                }
-                else{
-                    when(it.tipo){
+                    if(it.isNew){
+                        Log.d(ContentValues.TAG, "[WF] L'utente è nuovo")
+                        Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToSignUp)
+                    }
+                    else{
+                        when(it.tipo){
 
-                        Tipologia.RICEVENTE -> {
+                            Tipologia.RICEVENTE -> {
 
-                            //Carica home Ricevente
-                            Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToRicevente)
-                        }
+                                //Carica home Ricevente
+                                Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToRicevente)
+                            }
 
-                        Tipologia.DONATORE -> {
-                            //Carica home Donatore
-                            Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToDonatore)
+                            Tipologia.DONATORE -> {
+                                //Carica home Donatore
+                                Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToDonatore)
+                            }
                         }
                     }
-                }
-            })
+                })
+            }
         }
 
     }

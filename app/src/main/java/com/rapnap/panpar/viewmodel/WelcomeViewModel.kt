@@ -17,9 +17,10 @@ class WelcomeViewModel: ViewModel() {
         return user
     }
 
-    fun login(){
+    fun login(onComplete: () -> Unit){
         authRepository.login(){
             user = it
+            onComplete()
         }
 
     }
