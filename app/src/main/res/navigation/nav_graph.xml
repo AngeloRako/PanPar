@@ -26,6 +26,9 @@
         <action
             android:id="@+id/signInToRicevente"
             app:destination="@id/homeRiceventeActivity" />
+        <action
+            android:id="@+id/signInToSignUp"
+            app:destination="@id/signUpFragment" />
     </fragment>
     <fragment
         android:id="@+id/welcomeFragment"
@@ -40,6 +43,21 @@
             app:destination="@id/homeDonatoreActivity" />
         <action
             android:id="@+id/welcomeToRicevente"
+            app:destination="@id/homeRiceventeActivity" />
+        <action
+            android:id="@+id/welcomeToSignUp"
+            app:destination="@id/signUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.rapnap.panpar.view.SignUpFragment"
+        android:label="fragment_sign_up"
+        tools:layout="@layout/fragment_sign_up" >
+        <action
+            android:id="@+id/signUpToDonatore"
+            app:destination="@id/homeDonatoreActivity" />
+        <action
+            android:id="@+id/signUpToRicevente"
             app:destination="@id/homeRiceventeActivity" />
     </fragment>
 </navigation>

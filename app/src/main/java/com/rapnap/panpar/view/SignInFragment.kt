@@ -28,7 +28,6 @@ import kotlin.math.sign
 class SignInFragment : Fragment() {
 
     private lateinit var signInVM: SignInViewModel
-    //private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onCreateView(
@@ -42,9 +41,6 @@ class SignInFragment : Fragment() {
         //Obtain viewmodel
         val sm : SignInViewModel by viewModels()
         signInVM = sm
-
-        // Initialize Firebase Auth
-        //this.auth = Firebase.auth
 
         // Configure Google Sign In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -95,9 +91,7 @@ class SignInFragment : Fragment() {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
 
         //Comunica con ViewModel
-
         signInVM.signInWithGoogle(credential)
-
         signInVM.getUser().observe(this, Observer<Utente>{
                 //Aggiorna UI in base all'utente
 
@@ -106,6 +100,7 @@ class SignInFragment : Fragment() {
                 true -> {
 
                     //Carica fragment relativo alle info aggiuntive per la creazione (ruolo, posizione)
+                    Navigation.findNavController(this.requireView()).navigate(R.id.signInToSignUp)
 
                 }
 
@@ -121,23 +116,12 @@ class SignInFragment : Fragment() {
                     }
                     Navigation.findNavController(this.requireView()).navigate(id)
                 }
-
             }
-
         })
 
 
-//        auth.signInWithCredential(credential)
-//            .addOnCompleteListener(this.requireActivity()) { task ->
-//                if (task.isSuccessful) {
-//                    // Sign in success
-//                    Navigation.findNavController(this.requireView()).navigate(R.id.signInToDonatore)
-//                } else {
-//                    // If sign in fails, display a message to the user.
-//                    label.setText("signInWithCredential:failure")
 //                    Snackbar.make(this.requireView(), "Authentication Failed.", Snackbar.LENGTH_SHORT).show()
-//                }
-//            }
+
     }
 
 

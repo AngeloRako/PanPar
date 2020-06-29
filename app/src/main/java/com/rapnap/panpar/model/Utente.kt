@@ -1,10 +1,12 @@
 package com.rapnap.panpar.model
 
-data class Utente (val id: String,
-                   val location: String = "",
-                   val tipo: Tipologia = Tipologia.RICEVENTE,
-                   val punteggio: Int = 0, //Ricevente
-                   val rating: Int = 0, //Donatore
+import android.location.Location
+
+data class Utente (var id: String,
+                   var location: String = "",
+                   var tipo: Tipologia = Tipologia.DONATORE,
+                   var punteggio: Long = 0, //Ricevente
+                   var rating: Long = 0, //Donatore
                    var isNew: Boolean = true
                     )
 

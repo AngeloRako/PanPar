@@ -8,7 +8,7 @@ import com.rapnap.panpar.model.Tipologia
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.repository.AuthRepository
 
-class WelcomeViewModel: ViewModel() {
+class SignUpViewModel: ViewModel() {
 
     private val authRepository: AuthRepository = AuthRepository()
     private lateinit var user: MutableLiveData<Utente>
@@ -17,17 +17,8 @@ class WelcomeViewModel: ViewModel() {
         return user
     }
 
-    fun login(){
-        authRepository.login(){
-            user = it
-        }
-
-    }
-
-    fun isLoggedIn(): Boolean {
-
-        return authRepository.isLoggedIn()
-
+    fun registerAs(tipologia: Tipologia, position: Location? = null){
+        user = authRepository.firebaseCompleteSignUp(tipologia, position)
     }
 
 }

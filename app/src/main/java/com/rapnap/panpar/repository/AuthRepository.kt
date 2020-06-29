@@ -1,53 +1,151 @@
 package com.rapnap.panpar.repository
 
+import android.content.ContentValues.TAG
+import android.location.Location
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.rapnap.panpar.model.Tipologia
 import com.rapnap.panpar.model.Utente
+import java.util.*
+import com.google.firebase.firestore.GeoPoint
+import com.google.firebase.firestore.ktx.firestore
+
 
 class AuthRepository {
 
+    //Accedo alle istanze dei Singleton
     private var auth: FirebaseAuth = Firebase.auth
+    private var db = Firebase.firestore
 
-     fun firebaseSignInWithGoogle(credential: AuthCredential): MutableLiveData<Utente> {
+    fun firebaseSignInWithGoogle(credential: AuthCredential, completitionHandler: (result: MutableLiveData<Utente>) -> Unit) {
          val authenticatedUserMutableLiveData = MutableLiveData<Utente>()
 
          auth.signInWithCredential(credential)
              .addOnCompleteListener { task ->
                  if (task.isSuccessful) {
                      // Sign in success
-                     val isNewUser: Boolean = task.result?.additionalUserInfo?.isNewUser?: true
+                     val isNewUser = task.result?.additionalUserInfo?.isNewUser?: true
 
-                     val currentUser = auth.currentUser
+                     val user = obtainUser(isNewUser){
+                         authenticatedUserMutableLiveData.setValue(it)
 
-                     val uid: String = currentUser?.uid ?: ""
-                     val user = Utente(id = uid)
+                         Log.d(TAG, "[LOGIN] User obtained: ${it.toString()}")
 
-                     user.isNew = isNewUser
-
-                     if(!isNewUser){
-
-                        //Chiedo a firebase i dettagli aggiuntivi e li metto in user
-
+                         completitionHandler(authenticatedUserMutableLiveData)
                      }
-
-                     authenticatedUserMutableLiveData.setValue(user)
 
                  } else {
                      // If sign in fails, display a message to the user.
                  }
              }
 
-         return authenticatedUserMutableLiveData
 
      }
 
-    fun firebaseCompleteSignUp() {
+    fun firebaseCompleteSignUp(tipologia: Tipologia, position: Location? = null): MutableLiveData<Utente> {
 
-        TODO()
+        val authenticatedUserMutableLiveData = MutableLiveData<Utente>()
+
+        val uiid = auth.currentUser?.uid ?: "!!!!!!"
+        //Insert nel db
+        val userData = hashMapOf(
+            "id" to uiid,
+            "data" to Timestamp(Date()),
+            "location" to GeoPoint(77.0, 77.0),
+            "type" to tipologia.toString(),
+            "rating" to 0,
+            "punteggio" to 0
+        )
+
+        //New document with a generated ID
+        db.collection("users")
+            .document(uiid)
+            .set(userData)
+            .addOnSuccessListener { documentReference ->
+                Log.d(TAG, "DocumentSnapshot added with ID: ${uiid}")
+
+                val user = Utente(userData.get("id") as String)
+
+                val a = userData.get("location") as GeoPoint
+                user.location = a.toString()
+                user.tipo = tipologia
+                user.isNew = false
+
+                authenticatedUserMutableLiveData.setValue(user)
+
+            }
+            .addOnFailureListener { e ->
+                Log.w(TAG, "Error adding document", e)
+            }
+
+        return authenticatedUserMutableLiveData
 
     }
 
+    fun login(completitionHandler: (result: MutableLiveData<Utente>) -> Unit) {
+
+        val authenticatedUserMutableLiveData = MutableLiveData<Utente>()
+
+        val user = obtainUser(false){
+            authenticatedUserMutableLiveData.setValue(it)
+
+            Log.d(TAG, "[LOGIN] User obtained: ${it.toString()}")
+
+            completitionHandler(authenticatedUserMutableLiveData)
+        }
+    }
+
+    fun isLoggedIn(): Boolean {
+
+        return (auth.currentUser != null)
+
+    }
+
+    private fun obtainUser(isNew: Boolean, completionHandler: (result: Utente) -> Unit) {
+
+        val currentUser = auth.currentUser
+        val uiid: String = currentUser?.uid ?: "!!!!!"
+        val user = Utente(id = uiid)
+
+        if(!isNew){
+
+            val userRef = db.collection("users").document(uiid)
+
+            // Controlla se sul db c'è la riga
+            userRef.get()
+                .addOnSuccessListener { document ->
+                    if (document.data != null) {
+
+                        //Se c'è chiedo a firebase i dettagli aggiuntivi e li metto in user
+                        Log.d(TAG, "User data found: ${document.data}")
+
+                        val type = document.data?.get("type") as String
+
+                        user.tipo = Tipologia.valueOf(type)
+                        val location = document.data?.get("location") as GeoPoint
+                        user.location = location.toString()
+                        user.punteggio = document.data?.get("punteggio") as Long
+                        user.rating = document.data?.get("rating") as Long
+                        user.isNew = false
+                        Log.d(TAG, "User data created: ${user.toString()}")
+
+
+                    } else {
+                        //Se non c'è si tratta di un nuovo utente (registrazione da completare)
+                        Log.d(TAG, "User data not found! ${document?.data}")
+                        user.isNew = true
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.d(TAG, "get failed with ", exception)
+                }
+        }
+        completionHandler(user)
+
+    }
 }
