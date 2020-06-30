@@ -32,7 +32,6 @@ class SignInFragment : Fragment() {
     private lateinit var signInVM: SignInViewModel
     private lateinit var googleSignInClient: GoogleSignInClient
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
@@ -40,7 +39,6 @@ class SignInFragment : Fragment() {
                 activity?.finish()
             }
         })
-
     }
 
     override fun onCreateView(
@@ -91,11 +89,10 @@ class SignInFragment : Fragment() {
             try {
                 // Google Sign In was successful, authenticate with Firebase
                 val account = task.getResult(ApiException::class.java)!!
-                label.setText("firebaseAuthWithGoogle:" + account.id)
                 firebaseAuthWithGoogle(account.idToken!!)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
-                label.setText("Google sign in failed")
+                //
             }
         }
     }
@@ -108,16 +105,12 @@ class SignInFragment : Fragment() {
             signInVM.getUser().observe(this, Observer<Utente>{
 
                 //Aggiorna UI in base all'utente
-
                 when(it.isNew){
 
                     true -> {
-
                         //Carica fragment relativo alle info aggiuntive per la creazione (ruolo, posizione)
                         Navigation.findNavController(this.requireView()).navigate(R.id.signInToSignUp)
-
                     }
-
                     false -> {
 
                         var id = 0
@@ -126,7 +119,6 @@ class SignInFragment : Fragment() {
 
                             Tipologia.DONATORE -> id = R.id.signInToDonatore
                             Tipologia.RICEVENTE -> id = R.id.signInToRicevente
-
                         }
                         Navigation.findNavController(this.requireView()).navigate(id)
                         this.activity?.finish()
@@ -134,10 +126,6 @@ class SignInFragment : Fragment() {
                 }
             })
         }
-
-
-//                    Snackbar.make(this.requireView(), "Authentication Failed.", Snackbar.LENGTH_SHORT).show()
-
     }
 
 }
