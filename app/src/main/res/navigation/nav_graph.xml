@@ -6,11 +6,6 @@
     app:startDestination="@id/welcomeFragment">
 
     <activity
-        android:id="@+id/homeDonatoreActivity"
-        android:name="com.rapnap.panpar.view.HomeDonatoreActivity"
-        android:label="activity_home_donatore"
-        tools:layout="@layout/activity_home_donatore" />
-    <activity
         android:id="@+id/homeRiceventeActivity"
         android:name="com.rapnap.panpar.view.HomeRiceventeActivity"
         android:label="activity_home_ricevente"
@@ -22,13 +17,16 @@
         tools:layout="@layout/fragment_sign_in" >
         <action
             android:id="@+id/signInToDonatore"
-            app:destination="@id/homeDonatoreActivity" />
+            app:destination="@id/navigation2" />
         <action
             android:id="@+id/signInToRicevente"
             app:destination="@id/homeRiceventeActivity" />
         <action
             android:id="@+id/signInToSignUp"
-            app:destination="@id/signUpFragment" />
+            app:destination="@id/signUpFragment"
+            app:popUpTo="@id/welcomeFragment"
+            app:popUpToInclusive="true"
+            />
     </fragment>
     <fragment
         android:id="@+id/welcomeFragment"
@@ -37,16 +35,21 @@
         tools:layout="@layout/fragment_welcome" >
         <action
             android:id="@+id/welcomeToSignIn"
-            app:destination="@id/signInFragment" />
+            app:destination="@id/signInFragment"
+
+            />
         <action
             android:id="@+id/welcomeToDonatore"
-            app:destination="@id/homeDonatoreActivity" />
+            app:destination="@id/navigation2" />
         <action
             android:id="@+id/welcomeToRicevente"
             app:destination="@id/homeRiceventeActivity" />
         <action
             android:id="@+id/welcomeToSignUp"
-            app:destination="@id/signUpFragment" />
+            app:destination="@id/signUpFragment"
+            app:popUpTo="@id/welcomeFragment"
+            app:popUpToInclusive="true"
+            />
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
@@ -55,9 +58,17 @@
         tools:layout="@layout/fragment_sign_up" >
         <action
             android:id="@+id/signUpToDonatore"
-            app:destination="@id/homeDonatoreActivity" />
+            app:destination="@id/navigation2" />
         <action
             android:id="@+id/signUpToRicevente"
             app:destination="@id/homeRiceventeActivity" />
     </fragment>
+    <navigation android:id="@+id/navigation2"
+        app:startDestination="@id/homeDonatoreActivity">
+        <activity
+            android:id="@+id/homeDonatoreActivity"
+            android:name="com.rapnap.panpar.view.HomeDonatoreActivity"
+            android:label="activity_home_donatore"
+            tools:layout="@layout/activity_home_donatore" />
+    </navigation>
 </navigation>

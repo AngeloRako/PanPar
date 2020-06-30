@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -69,11 +70,13 @@ class WelcomeFragment : Fragment() {
 
                                 //Carica home Ricevente
                                 Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToRicevente)
+                                this.activity?.finish()
                             }
 
                             Tipologia.DONATORE -> {
                                 //Carica home Donatore
                                 Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToDonatore)
+                                this.activity?.finish()
                             }
                         }
                     }

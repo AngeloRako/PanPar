@@ -17,9 +17,10 @@ open class SignInViewModel: ViewModel() {
         return user
     }
 
-    fun signInWithGoogle(googleAuthCredential: AuthCredential) {
+    fun signInWithGoogle(googleAuthCredential: AuthCredential, onComplete: ()->Unit) {
         authRepository.firebaseSignInWithGoogle(googleAuthCredential){
             user = it
+            onComplete()
         }
     }
 

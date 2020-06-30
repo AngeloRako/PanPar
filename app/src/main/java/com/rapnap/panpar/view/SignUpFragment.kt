@@ -63,15 +63,16 @@ class SignUpFragment : Fragment() {
                 Tipologia.RICEVENTE -> {
 
                     //Carica home Ricevente
-                    Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToRicevente)
+                    Navigation.findNavController(this.requireView()).navigate(R.id.signUpToRicevente)
+                    this.activity?.finish()
 
                 }
 
                 Tipologia.DONATORE -> {
 
                     //Carica home Donatore
-                    Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToDonatore)
-
+                    Navigation.findNavController(this.requireView()).navigate(R.id.signUpToDonatore)
+                    this.activity?.finish()
                 }
             }
         })

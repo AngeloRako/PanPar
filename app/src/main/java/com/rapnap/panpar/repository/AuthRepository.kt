@@ -31,20 +31,19 @@ class AuthRepository {
                      // Sign in success
                      val isNewUser = task.result?.additionalUserInfo?.isNewUser?: true
 
-                     val user = obtainUser(isNewUser){
+                     obtainUser(isNewUser){
                          authenticatedUserMutableLiveData.setValue(it)
 
-                         Log.d(TAG, "[LOGIN] User obtained: ${it.toString()}")
+                         Log.d(TAG, "[AuthRep] User obtained: ${it.toString()}")
 
                          onComplete(authenticatedUserMutableLiveData)
                      }
 
                  } else {
                      // If sign in fails, display a message to the user.
+                     Log.d(TAG, "[AuthRep] Error during query")
                  }
              }
-
-
      }
 
     fun firebaseCompleteSignUp(tipologia: Tipologia, position: Location? = null): MutableLiveData<Utente> {

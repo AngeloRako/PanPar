@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
@@ -29,6 +31,17 @@ class SignInFragment : Fragment() {
 
     private lateinit var signInVM: SignInViewModel
     private lateinit var googleSignInClient: GoogleSignInClient
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                activity?.finish()
+            }
+        })
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -91,38 +104,40 @@ class SignInFragment : Fragment() {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
 
         //Comunica con ViewModel
-        signInVM.signInWithGoogle(credential)
-        signInVM.getUser().observe(this, Observer<Utente>{
+        signInVM.signInWithGoogle(credential){
+            signInVM.getUser().observe(this, Observer<Utente>{
+
                 //Aggiorna UI in base all'utente
 
-            when(it.isNew){
+                when(it.isNew){
 
-                true -> {
+                    true -> {
 
-                    //Carica fragment relativo alle info aggiuntive per la creazione (ruolo, posizione)
-                    Navigation.findNavController(this.requireView()).navigate(R.id.signInToSignUp)
-
-                }
-
-                false -> {
-
-                    var id = 0
-
-                    when(it.tipo){
-
-                        Tipologia.DONATORE -> id = R.id.signInToDonatore
-                        Tipologia.RICEVENTE -> id = R.id.signInToRicevente
+                        //Carica fragment relativo alle info aggiuntive per la creazione (ruolo, posizione)
+                        Navigation.findNavController(this.requireView()).navigate(R.id.signInToSignUp)
 
                     }
-                    Navigation.findNavController(this.requireView()).navigate(id)
+
+                    false -> {
+
+                        var id = 0
+
+                        when(it.tipo){
+
+                            Tipologia.DONATORE -> id = R.id.signInToDonatore
+                            Tipologia.RICEVENTE -> id = R.id.signInToRicevente
+
+                        }
+                        Navigation.findNavController(this.requireView()).navigate(id)
+                        this.activity?.finish()
+                    }
                 }
-            }
-        })
+            })
+        }
 
 
 //                    Snackbar.make(this.requireView(), "Authentication Failed.", Snackbar.LENGTH_SHORT).show()
 
     }
-
 
 }

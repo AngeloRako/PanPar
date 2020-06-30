@@ -24,7 +24,8 @@
         android:text="Ricevente"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
     <Button
         android:id="@+id/registerAsDonatoreBtn"
@@ -34,7 +35,8 @@
         android:text="Donatore"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
     <Button
         android:id="@+id/posizioneBtn"
@@ -43,6 +45,7 @@
         android:text="Posizione"
         app:layout_constraintBottom_toBottomOf="@+id/textView4"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        style="@style/Widget.MaterialComponents.Button.TextButton"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
