@@ -61,7 +61,7 @@ class AuthRepository {
             "punteggio" to 0
         )
 
-        //New document with a generated ID
+        //New document
         db.collection("users")
             .document(uiid)
             .set(userData)

@@ -1,9 +1,21 @@
 package com.rapnap.panpar.model
 
-class Paniere {
+import java.util.Date
 
-    //var richiesta: Richiesta?
+data class Paniere (
 
+    var id: String = "",
+    var puntoRitiro: PuntoRitiro = PuntoRitiro(),
+    var dataInserimento: Date = Date(),
+    var contenuto: List<Contenuto> = ArrayList<Contenuto>(),
+    var richieste: ArrayList<Richiesta>? = null,
+    var donatore: String = "",
+    var nRichieste: Int = 0,
+    var abbinamento: Abbinamento? = null,
+    var dataRicezione: Date? = null
 
+)
 
+enum class Contenuto {
+    PASTA, CONFETTURA, BIBITE, SORPRESA, ALTRO
 }

@@ -1,9 +1,8 @@
 package com.rapnap.panpar.model
 
-class Abbinamento {
+data class Abbinamento (
 
-    //Ricevente
-    //Paniere
-    //Codice Segreto
+    val ricevente: String = "rick",
+    val chiaveSegreta: String = "mortyboi"
 
-}
+)
