@@ -26,6 +26,11 @@ class WelcomeFragment : Fragment() {
 
     private lateinit var welcomeVM: WelcomeViewModel
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        this.activity?.setTheme(R.style.AppTheme_NoActionBar)
+        super.onCreate(savedInstanceState)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
