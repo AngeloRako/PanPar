@@ -1,9 +1,7 @@
 package com.rapnap.panpar.repository
 
 import android.content.ContentValues
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -11,9 +9,7 @@ import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.rapnap.panpar.model.Paniere
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
 import java.util.*
 
 class PaniereRepository {
@@ -25,9 +21,8 @@ class PaniereRepository {
     fun createNewPaniere(paniere: Paniere, onComplete: () -> Unit ) {
 
         val uiid = auth.currentUser?.uid ?: "!!!!!!"
-        val timestamp = ZonedDateTime
-            .now( ZoneId.systemDefault() )
-            .format( DateTimeFormatter.ofPattern( ".uuuuMMddHHmmss" ) )
+        val sdf = SimpleDateFormat(".uuuuMMddHHmmss", Locale.getDefault())
+        val timestamp: String = sdf.format(Date())
 
         //Insert nel db di un nuovo paniere
         val paniereData = hashMapOf(
