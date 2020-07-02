@@ -11,13 +11,18 @@
         android:name="com.rapnap.panpar.view.ProfileDonatoreFragment"
         tools:layout="@layout/fragment_profile_donatore" >
         <action
-            android:id="@+id/donatoreToSceltaPunto"
-            app:destination="@id/scegliPuntoFragment" />
+            android:id="@+id/donatoreToNuovoPaniere"
+            app:destination="@id/nuovoPaniereActivity" />
     </fragment>
     <fragment
         android:id="@+id/scegliPuntoFragment"
         android:name="com.rapnap.panpar.view.ScegliPuntoFragment"
         android:label="Scegli punto di ritiro"
         tools:layout="@layout/fragment_scegli_punto" />
+    <activity
+        android:id="@+id/nuovoPaniereActivity"
+        android:name="com.rapnap.panpar.view.NuovoPaniereActivity"
+        android:label="activity_nuovo_paniere"
+        tools:layout="@layout/activity_nuovo_paniere" />
 
 </navigation>

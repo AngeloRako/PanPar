@@ -6,7 +6,6 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
 import com.rapnap.panpar.R
 import com.rapnap.panpar.model.Contenuto
 import com.rapnap.panpar.model.Paniere
@@ -63,7 +62,7 @@ class ProfileDonatoreFragment : Fragment(R.layout.fragment_profile_donatore) { /
 
         proceedBtn.setOnClickListener{
 
-            Navigation.findNavController(this.requireView()).navigate(R.id.donatoreToSceltaPunto)
+            Navigation.findNavController(this.requireView()).navigate(R.id.donatoreToNuovoPaniere)
 
         }
 

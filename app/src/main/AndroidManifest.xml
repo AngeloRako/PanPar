@@ -34,7 +34,8 @@
         <activity
             android:name=".view.SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".view.NuovoPaniereActivity" />
+        <activity android:name=".view.NuovoPaniereActivity"
+            android:parentActivityName=".view.HomeDonatoreActivity"/>
         <activity
             android:name=".view.HomeRiceventeActivity"
             android:label="@string/title_activity_ricevente_home"
@@ -44,7 +45,6 @@
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
