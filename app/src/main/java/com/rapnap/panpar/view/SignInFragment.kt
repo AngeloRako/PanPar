@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
@@ -25,11 +26,12 @@ import com.rapnap.panpar.model.Tipologia
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.viewmodel.SignInViewModel
 import kotlinx.android.synthetic.main.fragment_sign_in.*
+import kotlinx.android.synthetic.main.fragment_sign_in.view.*
 import kotlin.math.sign
 
 class SignInFragment : Fragment() {
 
-    private lateinit var signInVM: SignInViewModel
+    private val signInVM: SignInViewModel by viewModels()
     private lateinit var googleSignInClient: GoogleSignInClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,10 +51,6 @@ class SignInFragment : Fragment() {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_sign_in, container, false)
 
-        //Obtain viewmodel
-        val sm : SignInViewModel by viewModels()
-        signInVM = sm
-
         // Configure Google Sign In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
@@ -61,16 +59,11 @@ class SignInFragment : Fragment() {
 
         googleSignInClient = GoogleSignIn.getClient(this.requireActivity(), gso)
 
-        return view
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        logInBtn.setOnClickListener{
+        view.logInBtn.setOnClickListener{
             startSignInFlow()
         }
 
+        return view
     }
 
     private fun startSignInFlow(){

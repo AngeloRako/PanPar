@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.fragment_sign_up.*
 
 class SignUpFragment : Fragment() {
 
-    private lateinit var signUpVM: SignUpViewModel
+    private val signUpVM: SignUpViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,11 +28,6 @@ class SignUpFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_sign_up, container, false)
-
-        //Obtain viewmodel
-        val sm : SignUpViewModel by viewModels()
-        signUpVM = sm
-
         return view
 
     }

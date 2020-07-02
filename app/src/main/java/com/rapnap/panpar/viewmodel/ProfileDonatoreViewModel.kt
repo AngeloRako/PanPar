@@ -5,7 +5,7 @@ import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.repository.PaniereRepository
 
 
-class HomeDonatoreViewModel: ViewModel() {
+class ProfileDonatoreViewModel: ViewModel() {
 
     private val paniereRepository: PaniereRepository = PaniereRepository()
 
@@ -16,6 +16,7 @@ class HomeDonatoreViewModel: ViewModel() {
             onComplete()
 
         }
+
 
     }
 
