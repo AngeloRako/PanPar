@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/donatore_graph"
+    app:startDestination="@id/profileDonatoreFragment">
+
+    <fragment
+        android:id="@+id/profileDonatoreFragment"
+        android:label="Profilo Donatore"
+        android:name="com.rapnap.panpar.view.ProfileDonatoreFragment"
+        tools:layout="@layout/fragment_profile_donatore" >
+        <action
+            android:id="@+id/donatoreToSceltaPunto"
+            app:destination="@id/scegliPuntoFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/scegliPuntoFragment"
+        android:name="com.rapnap.panpar.view.ScegliPuntoFragment"
+        android:label="Scegli punto di ritiro"
+        tools:layout="@layout/fragment_scegli_punto" />
+
+</navigation>

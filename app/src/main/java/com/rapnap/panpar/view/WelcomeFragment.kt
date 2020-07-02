@@ -11,6 +11,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.NavOptions
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.NavHostFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
@@ -20,16 +21,12 @@ import com.rapnap.panpar.model.Tipologia
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.viewmodel.SignUpViewModel
 import com.rapnap.panpar.viewmodel.WelcomeViewModel
+import kotlinx.android.synthetic.main.activity_home_donatore.*
 
 
 class WelcomeFragment : Fragment() {
 
-    private lateinit var welcomeVM: WelcomeViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        this.activity?.setTheme(R.style.AppTheme_NoActionBar)
-        super.onCreate(savedInstanceState)
-    }
+    private val welcomeVM: WelcomeViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,10 +34,6 @@ class WelcomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_welcome, container, false)
-
-        //Obtain viewmodel
-        val vm : WelcomeViewModel by viewModels()
-        welcomeVM = vm
 
         return view
     }
@@ -50,7 +43,7 @@ class WelcomeFragment : Fragment() {
         super.onStart()
 
 
-        //Controllo se utente da viewmodel è nuovo, allora vado a signUp per completare la registr.
+        //Controllo se utente da viewmodel è nuovo, allora vado a signUp per completare la registrazione
 
         if(!welcomeVM.isLoggedIn()){
             //Carica fragment Sign In
@@ -75,13 +68,14 @@ class WelcomeFragment : Fragment() {
 
                                 //Carica home Ricevente
                                 Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToRicevente)
-                                this.activity?.finish()
+                                //this.activity?.finish()
                             }
 
                             Tipologia.DONATORE -> {
                                 //Carica home Donatore
                                 Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToDonatore)
-                                this.activity?.finish()
+                                //this.activity?.finish()
+
                             }
                         }
                     }

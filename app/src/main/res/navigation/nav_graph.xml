@@ -17,7 +17,7 @@
         tools:layout="@layout/fragment_sign_in" >
         <action
             android:id="@+id/signInToDonatore"
-            app:destination="@id/navigation2" />
+            app:destination="@id/homeDonatoreActivity" />
         <action
             android:id="@+id/signInToRicevente"
             app:destination="@id/homeRiceventeActivity" />
@@ -40,7 +40,9 @@
             />
         <action
             android:id="@+id/welcomeToDonatore"
-            app:destination="@id/navigation2" />
+            app:destination="@id/homeDonatoreActivity"
+            app:popUpTo="@id/welcomeFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/welcomeToRicevente"
             app:destination="@id/homeRiceventeActivity" />
@@ -58,17 +60,15 @@
         tools:layout="@layout/fragment_sign_up" >
         <action
             android:id="@+id/signUpToDonatore"
-            app:destination="@id/navigation2" />
+            app:destination="@id/homeDonatoreActivity" />
         <action
             android:id="@+id/signUpToRicevente"
             app:destination="@id/homeRiceventeActivity" />
     </fragment>
-    <navigation android:id="@+id/navigation2"
-        app:startDestination="@id/homeDonatoreActivity">
-        <activity
-            android:id="@+id/homeDonatoreActivity"
-            android:name="com.rapnap.panpar.view.HomeDonatoreActivity"
-            android:label="activity_home_donatore"
-            tools:layout="@layout/activity_home_donatore" />
-    </navigation>
+    <activity
+        android:id="@+id/homeDonatoreActivity"
+        android:name="com.rapnap.panpar.view.HomeDonatoreActivity"
+        android:label="activity_home_donatore"
+        tools:layout="@layout/activity_home_donatore" />
+
 </navigation>

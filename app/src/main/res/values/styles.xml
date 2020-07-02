@@ -1,11 +1,13 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight">
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primaryColor</item>
-        <item name="colorPrimaryDark">@color/primaryDarkColor</item>
+        <item name="colorPrimaryVariant">@color/primaryDarkColor</item>
+        <item name="android:statusBarColor">@color/primaryDarkColor</item>
         <item name="colorAccent">@color/secondaryColor</item>
+        <item name="colorOnPrimary">@color/primaryTextColor</item>
         <item name="android:textColorPrimary">@color/primaryTextColor</item>
         <item name="android:textColorSecondary">@color/secondaryTextColor</item>
     </style>
@@ -21,5 +23,9 @@
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
+
+    <style name="DrawerArrowStyle" parent="@style/Widget.AppCompat.ButtonBar">
+        <item name="color">@color/primaryTextColor</item>
+    </style>
 
 </resources>
