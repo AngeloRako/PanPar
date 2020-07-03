@@ -4,17 +4,27 @@ import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.android.gms.auth.api.Auth
+import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.model.PuntoRitiro
-import com.rapnap.panpar.repository.AuthRepository
+import com.rapnap.panpar.repository.PaniereRepository
 import com.rapnap.panpar.repository.PuntiRitiroRepository
 
 class NuovoPaniereViewModel: ViewModel() {
 
     private val puntiRitiroRep = PuntiRitiroRepository() //Forse ho bisogno di un factory per il VM per evitare memory leaks?
+    private val paniereRep = PaniereRepository()
+
+    private val _nuovoPaniere = MutableLiveData<Paniere>()
+    val nuovovPaniere: LiveData<Paniere>
+        get() = _nuovoPaniere
+
     private val _puntiRitiro = MutableLiveData<List<PuntoRitiro>>()
     val puntiRitiro: LiveData<List<PuntoRitiro>>
         get() = _puntiRitiro
+
+    private val _puntoRitiroSelezionato = MutableLiveData<PuntoRitiro>()
+    val puntoRitiroSelezionato: LiveData<PuntoRitiro>
+        get() = _puntoRitiroSelezionato
 
     //Ottieni i punti di ritiro a una certa distanza massima da una location (async)
     fun getPuntiDiRitiro(location: Location, maxDistance: Double, onComplete: () -> Unit ) {
@@ -22,11 +32,29 @@ class NuovoPaniereViewModel: ViewModel() {
         puntiRitiroRep.getPuntiDiRitiro(location, maxDistance){
 
             _puntiRitiro.value = it
-            onComplete()
 
+            onComplete()
         }
 
     }
+
+
+    fun setPuntoRitiroSelezionato(punto: PuntoRitiro){
+
+        //Imposta notifica per gli interessati alla crezione paniere se questo è presente
+        _nuovoPaniere.value?.let{
+            it.puntoRitiro   = punto
+        }
+
+        //Imposta notifica per gli interessati al solo puntoRitiro
+        _puntoRitiroSelezionato.value = punto
+
+    }
+
+
+
+
+    /*  FOR DEBUG PURPUSE - NON VANNO USATE  */
 
     fun nuoviPuntoDiRitiro(onAdded: (id: Int)->Unit){
 

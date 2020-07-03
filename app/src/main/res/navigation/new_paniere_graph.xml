@@ -8,6 +8,19 @@
     <fragment
         android:id="@+id/scegliPuntoFragment"
         android:name="com.rapnap.panpar.view.ScegliPuntoFragment"
-        android:label="Scegli punto di ritiro"
-        tools:layout="@layout/fragment_scegli_punto" />
+        android:label="Scegli un punto di ritiro"
+        tools:layout="@layout/fragment_scegli_punto">
+        <action
+            android:id="@+id/punti_map_To_List"
+            app:destination="@id/puntiRitiroListFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:launchSingleTop="false"
+            app:popUpTo="@id/scegliPuntoFragment"
+            app:popUpToInclusive="false" />
+    </fragment>
+    <fragment
+        android:id="@+id/puntiRitiroListFragment"
+        android:name="com.rapnap.panpar.view.PuntiRitiroListFragment"
+        android:label="Scegli un punto di ritiro"
+        tools:layout="@layout/fragment_punti_ritiro_list"/>
 </navigation>

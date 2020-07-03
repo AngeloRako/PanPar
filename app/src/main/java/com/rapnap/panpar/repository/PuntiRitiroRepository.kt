@@ -28,16 +28,6 @@ class PuntiRitiroRepository {
         val puntiRef = db.collection("punti_ritiro")
         val geoFirestore = GeoFirestore(puntiRef)
 
-        /*
-        //Inserimento dei dati aggiuntivi per geolocalizzazione nel db del singolo punto di ritiro
-        geoFirestore.setLocation("AuSfhM7M7U1UIjBcMK6q", GeoPoint(40.643396, 14.865041)) { exception ->
-            if (exception == null){
-                Log.d(TAG, "Location saved on server successfully!")
-        }  else {
-            Log.d(TAG, "An error has occurred: $exception")
-        }
-        */
-
         geoFirestore.getAtLocation(
             GeoPoint(location.latitude, location.longitude),
             maxDistance
@@ -50,16 +40,16 @@ class PuntiRitiroRepository {
 
                 docs?.forEach {
 
-                    val location = Location("")
-
-                    val a = it?.getGeoPoint("l")
-                    location.latitude = a!!.latitude
-                    location.longitude = a!!.longitude
+                    val a = it.getGeoPoint("l")
+                    val location = Location("").apply{
+                        this.latitude = a!!.latitude
+                        this.longitude = a!!.longitude
+                    }
 
                     val res = PuntoRitiro(
-                        id = it?.getString("id")!!,
-                        indirizzo = it?.getString("address")!!,
-                        nome = it?.getString("name")!!,
+                        id = it.getString("id")!!,
+                        indirizzo = it.getString("address")!!,
+                        nome = it.getString("name")!!,
                         location = location
                     )
 
@@ -68,9 +58,7 @@ class PuntiRitiroRepository {
                     punti.add(res)
 
                 }
-
                 onComplete(punti)
-
             }
         }
 
@@ -90,16 +78,17 @@ class PuntiRitiroRepository {
             "address" to punto.indirizzo
         )
 
+
         //New document with a generated ID
         puntiRef
             .add(puntoData)
             .addOnSuccessListener { documentReference ->
-                Log.d(ContentValues.TAG, "Paniere Document added with ID: ${documentReference.id}")
+                Log.d(TAG, "Paniere Document added with ID: ${documentReference.id}")
 
                 //Inserimento dei dati aggiuntivi per geolocalizzazione nel db del singolo punto di ritiro
                 geoFirestore.setLocation(
                     documentReference.id ,
-                    GeoPoint(40.643396, 14.865041)
+                    GeoPoint(punto.location.latitude, punto.location.longitude)
                 ) { exception ->
                     if (exception == null) {
                         Log.d(TAG, "Location saved on server successfully!")
@@ -112,7 +101,7 @@ class PuntiRitiroRepository {
 
             }
             .addOnFailureListener { e ->
-                Log.w(ContentValues.TAG, "Error adding document", e)
+                Log.w(TAG, "Error adding document", e)
 
                 //onFailure()
 

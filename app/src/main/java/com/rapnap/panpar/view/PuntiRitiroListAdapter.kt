@@ -9,8 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rapnap.panpar.R
 import com.rapnap.panpar.model.PuntoRitiro
 import com.rapnap.panpar.model.distanceText
+import com.rapnap.panpar.viewmodel.NuovoPaniereViewModel
 
-class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val location: Location) :
+class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val location: Location, private val listener: OnItemClickListener) :
 
     RecyclerView.Adapter<PuntiRitiroListAdapter.ViewHolder>() {
 
@@ -25,8 +26,12 @@ class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val l
 
     }
 
+    /* Interfaccia per gestire gli OnClick sulla cella   */
+    interface OnItemClickListener {
+        fun onItemClick(punto: PuntoRitiro)
+    }
 
-        // Create new views (invoked by the layout manager)
+    // Create new views (invoked by the layout manager)
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
@@ -47,6 +52,10 @@ class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val l
             holder.addressTextView.text = punto.indirizzo
             holder.distanceTextView.text = distanceText(punto.location.distanceTo(location))
 
+            holder.itemView.setOnClickListener{
+                listener.onItemClick(punto)
+            }
+
         }
 
         // Return the size of your dataset (invoked by the layout manager)
@@ -57,3 +66,5 @@ class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val l
             notifyDataSetChanged()
         }
     }
+
+
