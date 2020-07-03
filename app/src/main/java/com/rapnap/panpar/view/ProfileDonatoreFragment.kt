@@ -67,7 +67,6 @@ class ProfileDonatoreFragment : Fragment(R.layout.fragment_profile_donatore) { /
 
         }
 
-
 }
 
 
