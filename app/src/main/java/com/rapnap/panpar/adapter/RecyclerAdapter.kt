@@ -1,20 +1,28 @@
 package com.rapnap.panpar.adapter
 
-import android.content.Intent
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import androidx.recyclerview.widget.RecyclerView
 import com.rapnap.panpar.R
 import com.rapnap.panpar.extensions.inflate
 import com.rapnap.panpar.model.Paniere
+import com.rapnap.panpar.repository.PaniereRepository
 import kotlinx.android.synthetic.main.recyclerview_item_row.view.*
 
 class RecyclerAdapter(private var panieri: ArrayList<Paniere>) : RecyclerView.Adapter<RecyclerAdapter.PanieriHolder>() {
 
+    private lateinit var inflatedView : View
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerAdapter.PanieriHolder {
         Log.d("ADAPTER", "onCreateViewHolder")
-        val inflatedView = parent.inflate(R.layout.recyclerview_item_row, false)
+        inflatedView = parent.inflate(R.layout.recyclerview_item_row, false)
+
+        //Prendo 1/8 dello schermo (il parent ha le dimensioni dello schermo)
+        //per ogni riga = paniere da mostrare
+        inflatedView.layoutParams.height = parent.measuredHeight/8;
+
         return PanieriHolder(inflatedView)
     }
 
@@ -42,6 +50,8 @@ class RecyclerAdapter(private var panieri: ArrayList<Paniere>) : RecyclerView.Ad
         // to prevent the constant querying of views.
         private var view: View = v
         private var paniere: Paniere? = null
+        private val paniereRepository : PaniereRepository = PaniereRepository()
+        private var isEnlarged : Boolean = false
 
         //3 - Initialize the View.OnClickListener
         init {
@@ -53,6 +63,28 @@ class RecyclerAdapter(private var panieri: ArrayList<Paniere>) : RecyclerView.Ad
         override fun onClick(v: View) {
             Log.d("ADAPTER", "PANIERE!")
 
+            if(!isEnlarged) {
+                //Quando tappo su un paniere mostro il suo valore ed il pulsante SEGUI
+                v.paniereValue.layoutParams.height = MATCH_PARENT
+                v.layoutParams.height = view.layoutParams.height * 2
+
+                v.followPaniere.alpha = 1.0f
+                v.followPaniere.isEnabled = true
+
+                v.requestLayout()
+                isEnlarged = true
+            } else {
+                v.paniereValue.layoutParams.height = 0
+                v.layoutParams.height = view.layoutParams.height/2
+
+                v.followPaniere.alpha = 0.0f
+                v.followPaniere.isEnabled = false
+
+                v.requestLayout()
+                isEnlarged = false
+            }
+
+            //Roba del tutorial che non so se ci servirà
             //val context = itemView.context
             //val showPaniereIntent = Intent(context, PaniereActivity::class.kt)
             //showPaniereIntent.putExtra(PANIERE_KEY, paniere)
@@ -61,9 +93,30 @@ class RecyclerAdapter(private var panieri: ArrayList<Paniere>) : RecyclerView.Ad
 
         fun bindPaniere(paniere: Paniere) {
             this.paniere = paniere
+
+            //Inserisco la posizione del paniere
             view.paniereLocation.text = paniere.puntoRitiro.nome.toString()
 
-            Log.d("ADAPTER", paniere.puntoRitiro.nome.toString())
+            //Concateno il contenuto del paniere in una sola stringa
+            //ed inserisco il contenuto del paniere
+            var contentText : String = ""
+            paniere.contenuto.forEach {
+                contentText = contentText + it.toString() + ", "
+            }
+            contentText = contentText.substring(0, contentText.length - 2)
+            Log.d("ADAPTER", "Contenuto: " + contentText)
+            view.paniereContent.text = contentText
+
+            view.paniereValue.text = paniere.calcolaValore().toString()
+            Log.d("ADAPTER", "Valore: " + paniere.calcolaValore().toString())
+
+            view.followPaniere.alpha = 0.0f
+            view.followPaniere.isEnabled = false
+
+            view.followPaniere.setOnClickListener {
+                paniereRepository.updatePaniereFollowers(id = paniere.id)
+                Log.d("ENLARGEDVIEWS", isEnlarged.toString())
+            }
 
             //view.paniereContent.text = paniere.contenuto.toString()
             //view.itemDate.text = photo.humanDate

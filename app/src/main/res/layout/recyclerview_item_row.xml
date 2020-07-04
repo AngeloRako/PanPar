@@ -10,27 +10,57 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="top|start"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="1dp"
         android:layout_weight="1"
         app:layout_constraintBottom_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"
-        tools:text="Some date" />
+        app:layout_constraintTop_toBottomOf="@id/paniereContent"
+        tools:text="Some Location" />
 
-<!--    <TextView-->
-<!--        android:id="@+id/paniereContent"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_gravity="center|start"-->
-<!--        android:layout_weight="1"-->
-<!--        android:ellipsize="end"-->
-<!--        android:maxLines="5"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintHorizontal_bias="0.5"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/paniereLocation" />-->
+    <TextView
+        android:id="@+id/paniereContent"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|start"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:text="Some Content"
+        app:layout_constraintEnd_toStartOf="@id/followPaniere"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paniereLocation" />
+
+    <TextView
+        android:id="@+id/paniereValue"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center|start"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Some Value"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/paniereContent" />
+
+    <Button
+        android:id="@+id/followPaniere"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|start"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:text="Segui"
+        app:layout_constraintBottom_toBottomOf="@+id/paniereLocation"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/paniereContent"
+        app:layout_constraintTop_toBottomOf="@+id/paniereContent" />
+
+    <!-- android:drawableLeft="@drawable/button_icon" per mettere un'icona vicino-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

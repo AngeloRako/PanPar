@@ -8,8 +8,10 @@ import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.firestore.ktx.getField
 import com.google.firebase.ktx.Firebase
 import com.rapnap.panpar.model.Contenuto
 import com.rapnap.panpar.model.Paniere
@@ -75,6 +77,8 @@ class PaniereRepository {
         val listaPanieri = obtainPanieri(points) {
             panieriMutableLiveData.setValue(it)
 
+            Log.d("REPOSITORY", panieriMutableLiveData.value.toString())
+
             Log.d(TAG, "Ho assegnato il valore all'oggetto osservato." +
                     " La dimensione della lista dei panieri è: " + it.size.toString())
 
@@ -123,6 +127,8 @@ class PaniereRepository {
 
                         val tempContFixed : List <Contenuto> = tempContMutable
 
+                        Log.d("REPOSITORY", tempContFixed.get(0).toString())
+
                         //Creo un paniere con i dati presi dal DB
                         val paniereTemp = Paniere(
                             document.data?.get("id") as String,
@@ -138,7 +144,7 @@ class PaniereRepository {
                             null
                         )
 
-                        Log.d(TAG, "Paniere creato")
+                        Log.d("REPOSITORY", "Paniere creato: " + paniereTemp.contenuto.toString())
 
                         //Se il paniere creato ha un valore inferiore ai punti rimanenti all'utente
                         //lo aggiungo alla lista dei panieri
@@ -148,12 +154,35 @@ class PaniereRepository {
                         }
                     }
                 }
+                //Rimuovo il primo elemento della lista che è un paniere vuoto
+                //serviva solo ad inizializzare l'ArrayList sennò urlava
+                panieri.removeAt(0)
                 onComplete(panieri)
             }
             .addOnFailureListener() { exception ->
                 Log.e(TAG, "Non sono riuscito a fare la query sui Panieri perché sono un perdente")
             }
         //onComplete(panieri)
+    }
+
+    fun updatePaniereFollowers(id: String) {
+        Log.d("REPOSITORY", "id del paniere: " + id)
+
+        var paniereID : String = ""
+        val panieriRef = db.collection("panieri")
+        val query = panieriRef.whereEqualTo("id", id)
+            .get()
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
+                    paniereID = document.id
+                }
+                panieriRef.document(paniereID).update("n_richieste", FieldValue.increment(1))
+            }
+            .addOnFailureListener() {
+                Log.d("REPOSITORY", "Sono un fallito")
+            }
+
+
     }
 
     fun getPaniere(idPaniere: String){
