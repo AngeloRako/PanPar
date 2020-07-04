@@ -14,9 +14,9 @@ class NuovoPaniereViewModel: ViewModel() {
     private val puntiRitiroRep = PuntiRitiroRepository() //Forse ho bisogno di un factory per il VM per evitare memory leaks?
     private val paniereRep = PaniereRepository()
 
-    private val _nuovoPaniere = MutableLiveData<Paniere>()
-    val nuovovPaniere: LiveData<Paniere>
-        get() = _nuovoPaniere
+    private val _nuovoPaniereInCreazione = MutableLiveData<Paniere>()
+    val nuovoPaniereInCreazione: LiveData<Paniere>
+        get() = _nuovoPaniereInCreazione
 
     private val _puntiRitiro = MutableLiveData<List<PuntoRitiro>>()
     val puntiRitiro: LiveData<List<PuntoRitiro>>
@@ -49,7 +49,7 @@ class NuovoPaniereViewModel: ViewModel() {
     fun setPuntoRitiroScelto(punto: PuntoRitiro){
 
         //Imposta notifica per gli interessati alla crezione paniere se questo è presente
-        _nuovoPaniere.value?.let{
+        _nuovoPaniereInCreazione.value?.let{
             it.puntoRitiro   = punto
         }
 
@@ -60,26 +60,33 @@ class NuovoPaniereViewModel: ViewModel() {
 
     fun setPuntoRitiroVisualizzato(punto: PuntoRitiro){
 
-        //Imposta notifica per gli interessati al solo puntoRitiro
+        //Imposta notifica per gli interessati al solo puntoRitiro visualizzato
         _puntoRitiroVisualizzato.value = punto
 
     }
 
-    fun puntoVisualizzatoExists(): Boolean {
+    //Crea un nuovo paniere
+    fun creaNuovoPaniere(onComplete: () -> Unit ) {
 
-        _puntoRitiroVisualizzato.value.let{
-            return false
+        paniereRep.createNewPaniere(_nuovoPaniereInCreazione.value!!){
+            onComplete()
         }
-        return true
+
+    }
+
+    fun setNuovoPaniereInCreazione(paniere: Paniere){
+
+        _nuovoPaniereInCreazione.value = paniere
 
     }
 
 
 
-
     /*  FOR DEBUG PURPUSE - NON VANNO USATE  */
+    fun nuoviPuntiDiRitiro(onAdded: (id: Int)->Unit){
 
-    fun nuoviPuntoDiRitiro(onAdded: (id: Int)->Unit){
+
+        /*Per inserire nuovi punti ritiro decommentare i punti sotto e modificare i dati :)*/
 
         val punti = ArrayList<PuntoRitiro>(5)
         /*
@@ -115,7 +122,6 @@ class NuovoPaniereViewModel: ViewModel() {
             }
 
         }
-
 
     }
 

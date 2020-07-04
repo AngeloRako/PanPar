@@ -64,7 +64,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout">
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/contenuto_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
@@ -73,44 +73,15 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.chip.ChipGroup
+            android:id="@+id/contenuto_group"
             android:layout_width="match_parent"
             android:layout_height="150dp"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView3">
+            app:layout_constraintTop_toBottomOf="@+id/contenuto_label">
 
-            <com.google.android.material.chip.Chip
-                android:id="@+id/pasta_chip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pasta" />
-            <com.google.android.material.chip.Chip
-                android:id="@+id/bibite_chip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Bibite" />
-            <com.google.android.material.chip.Chip
-                android:id="@+id/confettura_chip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Confettura" />
-            <com.google.android.material.chip.Chip
-                android:id="@+id/sorpresa_chip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Sorpresa" />
-            <com.google.android.material.chip.Chip
-                android:id="@+id/altro_chip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Altro" />
         </com.google.android.material.chip.ChipGroup>
 
 

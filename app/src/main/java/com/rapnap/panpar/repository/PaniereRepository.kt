@@ -29,9 +29,10 @@ class PaniereRepository {
             "id" to "$uiid$timestamp",
             "data_inserimento" to Timestamp(Date()),
             "location" to GeoPoint(paniere.puntoRitiro.location.latitude, paniere.puntoRitiro.location.longitude),
+            "data_consegna_prevista" to Timestamp(paniere.dataConsegnaPrevista!!),
             "donatore" to uiid,
             "nome_punto_ritiro" to paniere.puntoRitiro.nome,
-            "contenuto" to paniere.contenuto,
+            "contenuto" to paniere.contenuto.toList(),
             "indirizzo" to paniere.puntoRitiro.indirizzo
 
          )

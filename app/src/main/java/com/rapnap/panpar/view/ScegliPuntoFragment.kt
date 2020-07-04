@@ -179,6 +179,8 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
         //Inizialmente nascosto
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
+
+
         return view
     }
 
@@ -249,6 +251,11 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
             Configuration.UI_MODE_NIGHT_UNDEFINED -> false
             else -> false
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
 }

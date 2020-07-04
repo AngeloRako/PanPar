@@ -15,6 +15,18 @@ object Utility {
         return formatter.format(calendar.time)
     }
 
+    fun getDate(date: Date, dateFormat: String = "dd/MM/yyyy"): String {
+
+        return getDate(date.time, dateFormat)
+
+    }
+
+    fun getClearedUtc(): Calendar {
+        val utc = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        utc.clear()
+        return utc
+    }
+
 
 
 }

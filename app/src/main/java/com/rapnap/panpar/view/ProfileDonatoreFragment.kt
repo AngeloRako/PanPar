@@ -1,9 +1,9 @@
 package com.rapnap.panpar.view
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.Navigation
 import com.rapnap.panpar.R
@@ -52,7 +52,7 @@ class ProfileDonatoreFragment : Fragment(R.layout.fragment_profile_donatore) { /
 
         donateBtn.setOnClickListener{
 
-            val newPaniere = Paniere(puntoRitiro = PuntoRitiro(), contenuto = arrayListOf(Contenuto.ALTRO))
+            val newPaniere = Paniere(puntoRitiro = PuntoRitiro(), contenuto = hashSetOf(Contenuto.ALTRO))
 
             pdvm.donate(newPaniere){
                 textView.setText("FATTO, VEDI IL DB")
