@@ -1,6 +1,5 @@
 package com.rapnap.panpar.view
 
-import android.location.Location
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -94,7 +93,7 @@ class PuntiRitiroListFragment : Fragment(), PuntiRitiroListAdapter.OnItemClickLi
     //Cosa succede quando clicco su una cella?
 
     override fun onItemClick(punto: PuntoRitiro) {
-        nuovoPaniereVM.setPuntoRitiroSelezionato(punto)
+        nuovoPaniereVM.setPuntoRitiroVisualizzato(punto)
         Navigation.findNavController(requireView()).popBackStack()
     }
 

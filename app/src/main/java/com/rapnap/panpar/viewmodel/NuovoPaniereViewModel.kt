@@ -22,9 +22,16 @@ class NuovoPaniereViewModel: ViewModel() {
     val puntiRitiro: LiveData<List<PuntoRitiro>>
         get() = _puntiRitiro
 
-    private val _puntoRitiroSelezionato = MutableLiveData<PuntoRitiro>()
-    val puntoRitiroSelezionato: LiveData<PuntoRitiro>
-        get() = _puntoRitiroSelezionato
+    // Il paniere scelto dall'utente per la donazione
+    private val _puntoRitiroScelto = MutableLiveData<PuntoRitiro>()
+    val puntoRitiroScelto: LiveData<PuntoRitiro>
+        get() = _puntoRitiroScelto
+
+    // Il paniere attualmente visualizzato dall'utente (potrebbe non essere quello scelto)
+    private val _puntoRitiroVisualizzato = MutableLiveData<PuntoRitiro>()
+    val puntoRitiroVisualizzato: LiveData<PuntoRitiro>
+        get() = _puntoRitiroVisualizzato
+
 
     //Ottieni i punti di ritiro a una certa distanza massima da una location (async)
     fun getPuntiDiRitiro(location: Location, maxDistance: Double, onComplete: () -> Unit ) {
@@ -39,7 +46,7 @@ class NuovoPaniereViewModel: ViewModel() {
     }
 
 
-    fun setPuntoRitiroSelezionato(punto: PuntoRitiro){
+    fun setPuntoRitiroScelto(punto: PuntoRitiro){
 
         //Imposta notifica per gli interessati alla crezione paniere se questo è presente
         _nuovoPaniere.value?.let{
@@ -47,7 +54,23 @@ class NuovoPaniereViewModel: ViewModel() {
         }
 
         //Imposta notifica per gli interessati al solo puntoRitiro
-        _puntoRitiroSelezionato.value = punto
+        _puntoRitiroScelto.value = punto
+
+    }
+
+    fun setPuntoRitiroVisualizzato(punto: PuntoRitiro){
+
+        //Imposta notifica per gli interessati al solo puntoRitiro
+        _puntoRitiroVisualizzato.value = punto
+
+    }
+
+    fun puntoVisualizzatoExists(): Boolean {
+
+        _puntoRitiroVisualizzato.value.let{
+            return false
+        }
+        return true
 
     }
 

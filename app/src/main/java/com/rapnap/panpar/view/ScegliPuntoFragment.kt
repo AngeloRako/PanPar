@@ -1,25 +1,20 @@
 package com.rapnap.panpar.view
 
-import android.Manifest
-import android.app.Activity
 import android.content.ContentValues.TAG
-import android.content.pm.PackageManager
-import android.location.Location
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import androidx.navigation.navGraphViewModels
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -32,14 +27,16 @@ import com.rapnap.panpar.viewmodel.NuovoPaniereViewModel
 import kotlinx.android.synthetic.main.fragment_scegli_punto.*
 import kotlinx.android.synthetic.main.fragment_scegli_punto.view.*
 
-class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener, GoogleMap.OnCameraMoveListener, GoogleMap.CancelableCallback {
+class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
+    GoogleMap.OnCameraMoveListener, GoogleMap.CancelableCallback {
 
     private lateinit var gMap: GoogleMap
     private var mapReady = false
+    private var isWaitingToShow = false
     private lateinit var punti: List<PuntoRitiro>
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
     private lateinit var puntoRitiroVisualizzato: PuntoRitiro
 
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
 
     private val nuovoPaniereVM: NuovoPaniereViewModel
             by navGraphViewModels(R.id.new_paniere_graph)
@@ -48,20 +45,46 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener, GoogleM
 
     private val callback = OnMapReadyCallback { googleMap ->
 
-        googleMap?.let{
+        googleMap?.let {
             Log.d(TAG, "[PANPAR - ScegliPuntoFragment] La mappa è pronta! ")
+
             gMap = googleMap
+
+            val styleApplied: Boolean
+
+            try{
+                when(isUsingNightModeResources()){
+                    true -> {
+                        styleApplied = gMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_style_json))
+                    }
+                    false ->{
+
+                        styleApplied = gMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.style_json))
+                    }
+                }
+
+                if(!styleApplied){
+
+                    Log.e(TAG, "[ScegliPuntoFragment] Impossibile applicare stile mappa!")
+                }
+
+            }   catch (e: Resources.NotFoundException) {
+                Log.e(TAG, "[ScegliPuntoFragment] Can't find style. Error: ", e)
+            }
+
             gMap.setMinZoomPreference(8F)
             gMap.setMaxZoomPreference(18F)
-            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10F))
 
             gMap.setOnMarkerClickListener(this)
             gMap.setOnCameraMoveListener(this)
             mapReady = true
             updateMap()
 
-            if(::puntoRitiroVisualizzato.isInitialized) {
+            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10F))
+
+            if (::puntoRitiroVisualizzato.isInitialized && isWaitingToShow) {
                 show(puntoRitiroVisualizzato)
+                isWaitingToShow = false
             }
         }
 
@@ -72,7 +95,7 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener, GoogleM
             punti.forEach { punto ->
                 Log.d(TAG, "[PANPAR - ScegliPuntoFragment] Leggo: ${punto.nome}")
                 val pos = LatLng(punto.location.latitude, punto.location.longitude)
-                gMap.addMarker(MarkerOptions().position(pos).title(punto.nome)).apply{
+                gMap.addMarker(MarkerOptions().position(pos).title(punto.nome)).apply {
                     this.tag = punto
                 }
 
@@ -82,25 +105,38 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener, GoogleM
 
     override fun onMarkerClick(marker: Marker?): Boolean {
 
-        show(marker?.tag as PuntoRitiro)
+        nuovoPaniereVM.setPuntoRitiroVisualizzato(marker?.tag as PuntoRitiro)
         return true
     }
 
-    private fun show(puntoRitiro: PuntoRitiro, speed: Int = 100){
+    private fun show(puntoRitiro: PuntoRitiro, speed: Int = 100) {
 
-        puntoRitiroVisualizzato = puntoRitiro
-        name_text_view.text = puntoRitiroVisualizzato.nome
-        address_text_view.text = puntoRitiroVisualizzato.indirizzo
+        name_text_view.text = puntoRitiro.nome
+        address_text_view.text = puntoRitiro.indirizzo
 
         val loc = currentLocation.toLocation()
 
-        distance_text_view.text = distanceText(puntoRitiroVisualizzato.location.distanceTo(loc)) + " da qui"
+        distance_text_view.text =
+            distanceText(puntoRitiro.location.distanceTo(loc)) + " da qui"
 
-        gMap.animateCamera(CameraUpdateFactory.newLatLng(puntoRitiroVisualizzato.location.toLatLng()), speed, this)
+        if (mapReady) {
 
-        //Apri  lo sheet
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+            gMap.animateCamera(
+                CameraUpdateFactory.newLatLng(puntoRitiro.location.toLatLng()),
+                speed,
+                this
+            )
 
+            //Apri  lo sheet
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+            isWaitingToShow = false
+
+        } else {
+
+            Log.d(TAG, "[ScegliPuntoRitiro] Errore: Mappa non pronta alla visualizzazione...")
+            isWaitingToShow = true
+        }
     }
 
     override fun onCreateView(
@@ -113,7 +149,7 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener, GoogleM
         //Location utente (dovrebbe venire dal ViewModel)
         val loc = currentLocation.toLocation()
 
-        nuovoPaniereVM.getPuntiDiRitiro(loc, 2000000.0){}
+        nuovoPaniereVM.getPuntiDiRitiro(loc, 2000000.0) {}
 
         nuovoPaniereVM.puntiRitiro.observe(viewLifecycleOwner, Observer<List<PuntoRitiro>> {
 
@@ -122,20 +158,21 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener, GoogleM
 
         })
 
+        nuovoPaniereVM.puntoRitiroVisualizzato.observe(viewLifecycleOwner, Observer<PuntoRitiro> {
 
-        nuovoPaniereVM.puntoRitiroSelezionato.observe(viewLifecycleOwner, Observer <PuntoRitiro>{
-
+            isWaitingToShow = true
+            puntoRitiroVisualizzato = it
             show(it)
 
         })
 
         //Configuro il pannello inferiore
         bottomSheetBehavior = BottomSheetBehavior.from(view.punto_bottom_sheet)
-        view.set_punto_di_ritiro.setOnClickListener { v->
+        view.set_paniere_details.setOnClickListener { v ->
 
             /* Cosa faccio quando l'utente preme su "Consegna Qui"*/
-            nuovoPaniereVM.setPuntoRitiroSelezionato(puntoRitiroVisualizzato)
-            //Navigate...
+            nuovoPaniereVM.setPuntoRitiroScelto(puntoRitiroVisualizzato)
+            Navigation.findNavController(requireView()).popBackStack()
 
         }
 
@@ -173,6 +210,7 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener, GoogleM
         R.id.toggle_List -> {
             // User chose to view as List
             Navigation.findNavController(this.requireView()).navigate(R.id.punti_map_To_List)
+            mapReady = false
             true
         }
 
@@ -200,6 +238,17 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener, GoogleM
     /* Non mi serve ma è necessario per l'ìntefaccia*/
     override fun onCancel() {
         //
+    }
+
+
+    fun isUsingNightModeResources(): Boolean {
+        return when (resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            Configuration.UI_MODE_NIGHT_NO -> false
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> false
+            else -> false
+        }
     }
 
 }

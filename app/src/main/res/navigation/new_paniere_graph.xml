@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/new_paniere_graph"
-    app:startDestination="@id/scegliPuntoFragment">
+    app:startDestination="@id/nuovoPaniereDetailFragment">
 
     <fragment
         android:id="@+id/scegliPuntoFragment"
@@ -23,4 +23,13 @@
         android:name="com.rapnap.panpar.view.PuntiRitiroListFragment"
         android:label="Scegli un punto di ritiro"
         tools:layout="@layout/fragment_punti_ritiro_list"/>
+    <fragment
+        android:id="@+id/nuovoPaniereDetailFragment"
+        android:name="com.rapnap.panpar.view.NuovoPaniereDetailFragment"
+        android:label="Nuovo paniere"
+        tools:layout="@layout/fragment_nuovo_paniere_detail">
+        <action
+            android:id="@+id/nuovoPaniereToScegliPuntoRitiro"
+            app:destination="@id/scegliPuntoFragment" />
+    </fragment>
 </navigation>

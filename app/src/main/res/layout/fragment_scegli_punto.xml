@@ -92,7 +92,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/name_text_view" />
 
             <Button
-                android:id="@+id/set_punto_di_ritiro"
+                android:id="@+id/set_paniere_details"
                 style="@style/Widget.MaterialComponents.Button.Icon"
                 android:layout_width="380dp"
                 android:layout_height="55dp"
