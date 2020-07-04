@@ -1,19 +1,17 @@
 package com.rapnap.panpar.view
 
+import android.content.res.Configuration
 import android.os.Bundle
+import android.util.TypedValue
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.findFragment
 import androidx.navigation.ActivityNavigator
 import androidx.navigation.NavController
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
-import com.rapnap.panpar.BuildConfig
 import com.rapnap.panpar.R
-import kotlinx.android.synthetic.main.activity_home_donatore.*
 
 //Deprecated?
 class NuovoPaniereActivity : AppCompatActivity() {
@@ -24,6 +22,8 @@ class NuovoPaniereActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nuovo_paniere)
+
+        negotiateDeviceDarkMode()
 
         //Imposto la toolbar dell'activity
         val navHostFragment =
@@ -50,6 +50,24 @@ class NuovoPaniereActivity : AppCompatActivity() {
     override fun finish() {
         super.finish()
         ActivityNavigator.applyPopAnimationsToPendingTransition(this)
+    }
+
+
+    private fun negotiateDeviceDarkMode() {
+        val isNightMode = this.resources.configuration.uiMode
+            .and(Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        val typedValue = TypedValue()
+
+        this.window.addFlags(
+            WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+        )
+
+        if (isNightMode) {
+            this.theme
+                .resolveAttribute(android.R.attr.colorBackground, typedValue, true)
+            window.statusBarColor = typedValue.data
+            window.navigationBarColor = typedValue.data
+        }
     }
 
 
