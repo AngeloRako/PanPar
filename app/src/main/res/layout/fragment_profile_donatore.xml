@@ -8,64 +8,68 @@
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".view.ProfileDonatoreFragment">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/labelHomeDonatore1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CIAO DONATORE BELLO"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="130dp"
+            android:text="Benvenuto Donatore, \ndi seguito il resoconto delle tue azioni:"
+            android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/donateBtn"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="150dp"
-            android:layout_height="55dp"
-            android:layout_marginStart="136dp"
-            android:layout_marginEnd="146dp"
-            android:layout_marginBottom="36dp"
-            android:text="Dona"
-            android:textColor="@color/primaryTextColor"
+            android:id="@+id/switchRoleBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="Passa a Ricevente"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="180dp"
+            android:scaleX="0.5"
+            android:scaleY="0.5"
+            app:layout_constraintBottom_toTopOf="@+id/switchRoleBtn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profiloDonatore"
+            app:layout_constraintVertical_bias="0.081" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/floating_action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|right"
+            android:layout_margin="16dp"
+            android:layout_marginBottom="32dp"
+            android:contentDescription="Nuovo Paniere"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView"
-            app:layout_constraintVertical_bias="0.214" />
+            app:layout_constraintHorizontal_bias="0.972"
+            app:layout_constraintStart_toEndOf="@+id/switchRoleBtn"
+            app:srcCompat="@drawable/ic_baseline_add_24" />
 
-        <Button
-            android:id="@+id/proceedBtn"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="150dp"
-            android:layout_height="55dp"
-            android:layout_marginStart="136dp"
-            android:layout_marginTop="40dp"
-            android:layout_marginEnd="146dp"
-            android:text="Scegli Punto di Ritiro"
-            android:textColor="@color/primaryTextColor"
+        <WebView
+            android:id="@+id/profiloDonatore"
+            android:layout_width="132dp"
+            android:layout_height="126dp"
+            android:layout_marginTop="36dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/donateBtn" />
+            app:layout_constraintTop_toBottomOf="@+id/labelHomeDonatore1" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/floating_action_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_margin="16dp"
-        android:contentDescription="Nuovo Paniere"
-        app:srcCompat="@drawable/ic_baseline_add_24"
-        tools:layout_editor_absoluteX="306dp"
-        tools:layout_editor_absoluteY="769dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

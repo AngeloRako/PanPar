@@ -1,41 +1,49 @@
 package com.rapnap.panpar.view
 
+import android.content.ContentValues
+import android.graphics.Paint
+import android.graphics.Typeface
+import android.net.Uri
 import android.os.Bundle
+import android.text.Html
+import android.text.SpannableString
+import android.text.Spanned
+import android.text.style.StyleSpan
+import android.util.Log
+import androidx.fragment.app.Fragment
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.Fragment
+import androidx.core.text.set
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
-import com.rapnap.panpar.R
-import com.rapnap.panpar.model.Contenuto
-import com.rapnap.panpar.model.Paniere
-import com.rapnap.panpar.model.PuntoRitiro
-import com.rapnap.panpar.viewmodel.ProfileDonatoreViewModel
-import kotlinx.android.synthetic.main.fragment_profile_donatore.*
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+
 
 
 class ProfileDonatoreFragment : Fragment(R.layout.fragment_profile_donatore) { //<- Se metto questo evito il onCreateView
 
+    //Istanzio alcune variabili utili per: prelevare i dati dall'account Google loggato
     private val pdvm: ProfileDonatoreViewModel by viewModels()
     private var backPressedTime = 0L
+    private lateinit var acct: GoogleSignInAccount
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //Override del metodo onBackPressed affinché esca dall'applicazione quando tappo due volte indietro.
         activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-
                 if (backPressedTime + 2000 > System.currentTimeMillis()) {
                     activity?.finish()
-
                 } else {
                     Toast.makeText(activity?.applicationContext, "Premi indietro di nuovo per uscire", Toast.LENGTH_SHORT).show()
                 }
-
                 backPressedTime = System.currentTimeMillis()
-
             }
         })
-
     }
 /*
     override fun onCreateView(
@@ -47,27 +55,50 @@ class ProfileDonatoreFragment : Fragment(R.layout.fragment_profile_donatore) { /
         return view
     }
 */
+
     override fun onStart() {
         super.onStart()
 
-        donateBtn.setOnClickListener{
+        //Invoco il metodo mostraRating per settare la ratingBar
+        impostaRating()
 
-            val newPaniere = Paniere(puntoRitiro = PuntoRitiro(), contenuto = hashSetOf(Contenuto.ALTRO))
+        //Ottengo l'oggetto relativo all'ultimo utente loggato
+        acct = GoogleSignIn.getLastSignedInAccount(this.activity)!!
 
-            pdvm.donate(newPaniere){
-                textView.setText("FATTO, VEDI IL DB")
-            }
+        //Visualizzo una Label personalizzata per l'utente loggato comprensiva di Nome e Cognome
+        //Si presuppone che il Donatore non debba per forza rimanere nell'anonimato
+        labelHomeDonatore1.text = Html.fromHtml("Salve Donatore " + "<b>" + getName(acct) + "</b>" + "," + "<br>" + "di seguito il resoconto delle tue azioni:")
 
+        //Visualizzo con una WebView l'immagine del profilo dell'utente loggato in Google.
+        //L'immagine è prelevata in termini di URI, che viene castano a String affinché sia
+        //compatibile con il parametro di ingresso di loadUrl
+        profiloDonatore.loadUrl(getPhoto(acct).toString())
+        //Navigation.findNavController(this.requireView()).navigate(R.id.donatoreToNuovoPaniere)
+
+        //Callback relativa al pulsante switchRoleBtn: permette il passaggio all'activity Ricevente
+        //Inoltre invoca il metodo changeRole affinché l'utente possa veder cambiata la sua tipologia
+        switchRoleBtn.setOnClickListener{
+            Navigation.findNavController(this.requireView()).navigate(R.id.HDtoHR)
+            pdvm.changeRole()
+            this.activity?.finish()
         }
-
-        proceedBtn.setOnClickListener{
-
-            Navigation.findNavController(this.requireView()).navigate(R.id.donatoreToNuovoPaniere)
-
-        }
-
-
 }
 
+    //Imposta il rating del donatore nella ratingBar se questo è cambiato. Viene utilizzato il pattern Observer affinché
+    //possa appunto "osservare" i cambiamenti che vengono effettuati su un certo oggetto.
+    fun impostaRating() {
+        pdvm.obtainRatingDonatore().observe(this, Observer<Utente>{
+            ratingBar.rating = it.rating.toFloat()
+        })
+    }
 
+    //Metodo relativo all'ottenimento del nome utente
+    fun getName(account: GoogleSignInAccount): String? {
+        return pdvm.obtainNameFromGoogle(account)
+    }
+
+    //Metodo relativo all'ottenimento dell'immagine in termini del suo URI
+    fun getPhoto(account: GoogleSignInAccount): Uri? {
+        return pdvm.obtainImageFromGoogle(account)
+    }
 }

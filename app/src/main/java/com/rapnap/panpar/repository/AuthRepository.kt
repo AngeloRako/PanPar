@@ -57,7 +57,7 @@ class AuthRepository {
             "data" to Timestamp(Date()),
             "location" to GeoPoint(77.0, 77.0),
             "type" to tipologia.toString(),
-            "rating" to 0,
+            "rating" to 0.5,
             "punteggio" to 0
         )
 
@@ -134,7 +134,6 @@ class AuthRepository {
                         Log.d(TAG, "User data created: ${user.toString()}")
 
                         onComplete(user)
-
                     } else {
                         //Se non c'è si tratta di un nuovo utente (registrazione da completare)
                         Log.d(TAG, "User data not found! ${document?.data}")
