@@ -2,54 +2,40 @@ package com.rapnap.panpar.view
 
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.viewModels
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rapnap.panpar.R
 import com.rapnap.panpar.adapter.RecyclerAdapter
-import com.rapnap.panpar.model.Contenuto
 import com.rapnap.panpar.model.Paniere
-import com.rapnap.panpar.model.PuntoRitiro
 import com.rapnap.panpar.viewmodel.ListaPanieriViewModel
-import kotlinx.android.synthetic.main.activity_lista_panieri.*
-import kotlinx.android.synthetic.main.fragment_lista_panieri.*
-import kotlinx.android.synthetic.main.fragment_profile_donatore.*
+import kotlinx.android.synthetic.main.fragment_lista_panieri.view.*
 
 class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri) {
 
-    private var backPressedTime = 0L
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: RecyclerAdapter
     private var panieriList : ArrayList<Paniere> = ArrayList()
     private val listaPanieriVM : ListaPanieriViewModel by viewModels()
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_lista_panieri, container, false)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        linearLayoutManager = LinearLayoutManager(this.context)
-        recycler_view.layoutManager = linearLayoutManager
+        linearLayoutManager = LinearLayoutManager(this.activity)
+        view.rec_view.layoutManager = linearLayoutManager
 
         adapter = RecyclerAdapter(panieriList)
-        recycler_view.adapter = adapter
+        view.rec_view.adapter = adapter
 
-        activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-
-                if (backPressedTime + 2000 > System.currentTimeMillis()) {
-                    activity?.finish()
-
-                } else {
-                    Toast.makeText(activity?.applicationContext, "Premi indietro di nuovo per uscire", Toast.LENGTH_SHORT).show()
-                }
-
-                backPressedTime = System.currentTimeMillis()
-            }
-        })
+        return view
     }
 
     override fun onStart() {

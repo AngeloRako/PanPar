@@ -26,7 +26,7 @@ class PaniereRepository {
     private var db = Firebase.firestore
     //private var storage = Firebase.storage
 
-    private val acceptableDistanceInMeters : Int = 2000
+    private val acceptableDistanceInMeters : Int = 100000000
 
     fun createNewPaniere(paniere: Paniere, onComplete: () -> Unit ) {
 
@@ -72,7 +72,7 @@ class PaniereRepository {
         TODO()
     }
 
-    fun getListaPanieri(location: String){
+    fun getListaPanieri(location: GeoPoint, points: Long, onComplete: (result: MutableLiveData<ArrayList<Paniere>>) -> Unit){
         //Aggiungere il controllo per vicinanza con il GeoPoint passato
 
         val panieriMutableLiveData = MutableLiveData<ArrayList<Paniere>>()
@@ -135,26 +135,20 @@ class PaniereRepository {
                             tempContMutable.add(Contenuto.valueOf(it))
                         }
 
-                        val tempContFixed : List <Contenuto> = tempContMutable
-
-                        Log.d("REPOSITORY", tempContFixed.get(0).toString())
+                        val tempContFixed : MutableSet<Contenuto> = tempContMutable
 
                         //Creo un paniere con i dati presi dal DB
 
                         //Aggiungere la data di consegna prevista
 
                         val paniereTemp = Paniere(
-                            document.data?.get("id") as String,
-                            PuntoRitiro(nome = document.data?.get("nome_punto_ritiro") as String,
+                            id = document.data?.get("id") as String,
+                            puntoRitiro = PuntoRitiro(nome = document.data?.get("nome_punto_ritiro") as String,
                                 indirizzo = document.data?.get("indirizzo") as String,
                                 location = tempLocation),
-                            tempDate,
-                            tempContFixed,
-                            null,
-                            document.data?.get("donatore") as String,
-                            0,
-                            null,
-                            null
+                            dataInserimento = tempDate,
+                            contenuto = tempContFixed,
+                            donatore = document.data?.get("donatore") as String
                         )
 
                         Log.d("REPOSITORY", "Paniere creato: " + paniereTemp.contenuto.toString())
@@ -168,7 +162,8 @@ class PaniereRepository {
                             //il valore e la posizione, così magari velocizzo perché li getto solo
                             //se la condizione sul valore e sulla posizione sono specificate
                             //Qui lo faccio solo per l'immagine per il momento
-                            paniereTemp.immagine = document.data?.get("immagine") as String
+
+                            paniereTemp.immagine = document.data?.get("immagine") as String?
 
                             panieri.add(paniereTemp)
                             Log.d(ContentValues.TAG, "Paniere aggiunto ad i panieri visualizzabili. Immagine: " + paniereTemp.immagine.toString())
@@ -220,11 +215,11 @@ class PaniereRepository {
                         isAlreadyFollowing = riceventiOnCurrentPaniere.contains(auth.currentUser?.uid)
 
                         val tempString = document.data?.get("contenuto") as ArrayList<String>
-                        val tempContMutable: MutableList<Contenuto> = mutableListOf()
+                        val tempContMutable: MutableSet<Contenuto> = hashSetOf()
                         tempString.forEach {
                             tempContMutable.add(Contenuto.valueOf(it))
                         }
-                        val tempContFixed: List<Contenuto> = tempContMutable
+                        val tempContFixed: MutableSet<Contenuto> = tempContMutable
 
                         val tempPaniere = Paniere(contenuto = tempContFixed)
                         totalValue += tempPaniere.calcolaValore() + it
@@ -262,11 +257,11 @@ class PaniereRepository {
             .addOnSuccessListener {documents ->
                 for(document in documents) {
                     val tempString = document.data?.get("contenuto") as ArrayList<String>
-                    val tempContMutable: MutableList<Contenuto> = mutableListOf()
+                    val tempContMutable: MutableSet<Contenuto> = hashSetOf()
                     tempString.forEach {
                         tempContMutable.add(Contenuto.valueOf(it))
                     }
-                    val tempContFixed: List<Contenuto> = tempContMutable
+                    val tempContFixed: MutableSet<Contenuto> = tempContMutable
 
                     val tempPaniere = Paniere(contenuto = tempContFixed)
                     totalValue += tempPaniere.calcolaValore()

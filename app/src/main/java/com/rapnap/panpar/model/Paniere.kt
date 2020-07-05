@@ -1,7 +1,6 @@
 package com.rapnap.panpar.model
 
-import java.util.Date
-import kotlin.random.Random.Default.nextInt
+import java.util.*
 import kotlin.collections.HashSet
 
 data class Paniere (
@@ -15,8 +14,8 @@ data class Paniere (
     var donatore: String = "",
     var nRichieste: Int = 0,
     var abbinamento: Abbinamento? = null,
-    var dataRicezione: Date? = null
-    var immagine : String = ""
+    var dataRicezione: Date? = null,
+    var immagine : String? = null
 
 ) {
 
@@ -27,8 +26,8 @@ data class Paniere (
                 Contenuto.PASTA -> valore += 50
                 Contenuto.CONFETTURA -> valore += 60
                 Contenuto.BIBITE -> valore += 40
-                Contenuto.SORPRESA -> valore += (Random.nextInt(70) + 30)
-                Contenuto.ALTRO -> valore += (Random.nextInt(70) + 30)
+                Contenuto.SORPRESA -> valore += (kotlin.random.Random.nextInt(70) + 30)
+                Contenuto.ALTRO -> valore += (kotlin.random.Random.nextInt(70) + 30)
             }
         }
 

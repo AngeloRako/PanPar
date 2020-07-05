@@ -1,12 +1,10 @@
 package com.rapnap.panpar.adapter
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
@@ -102,13 +100,17 @@ class RecyclerAdapter(private var panieri: ArrayList<Paniere>) : RecyclerView.Ad
         fun bindPaniere(paniere: Paniere) {
             this.paniere = paniere
 
-            val gsReference = storage.getReferenceFromUrl(paniere.immagine)
-            val ONE_MEGABYTE: Long = 1024 * 1024
-            gsReference.getBytes(ONE_MEGABYTE).addOnSuccessListener {
-                val bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
-                view.paniereImg.setImageBitmap(bmp)
-            }.addOnFailureListener {
-                // Handle any errors
+            if (paniere.immagine != null) {
+                val gsReference = storage.getReferenceFromUrl(paniere.immagine!!)
+                val ONE_MEGABYTE: Long = 1024 * 1024
+                gsReference.getBytes(ONE_MEGABYTE).addOnSuccessListener {
+                    val bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
+                    view.paniereImg.setImageBitmap(bmp)
+                }.addOnFailureListener {
+                    // Handle any errors
+                }
+            } else {
+                val bmp = BitmapFactory.decodeFile("drawable/empty_png.png")
             }
 
             //Inserisco la posizione del paniere

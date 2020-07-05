@@ -4,12 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.HomeDonatoreActivity">
+    tools:context=".view.ListaPanieriActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/topAppBar"
@@ -21,7 +20,6 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/lista_panieri_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"
@@ -32,6 +30,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:navGraph="@navigation/donatore_graph" />
+        app:navGraph="@navigation/ricevente_graph"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
