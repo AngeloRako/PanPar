@@ -1,5 +1,6 @@
 package com.rapnap.panpar.model
 
+import android.graphics.Bitmap
 import java.util.Date
 import kotlin.random.Random.Default.nextInt
 
@@ -13,7 +14,8 @@ data class Paniere (
     var donatore: String = "",
     var nRichieste: Int = 0,
     var abbinamento: Abbinamento? = null,
-    var dataRicezione: Date? = null
+    var dataRicezione: Date? = null,
+    var immagine : String = ""
 
 ) {
 
