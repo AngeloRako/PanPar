@@ -1,7 +1,5 @@
 package com.rapnap.panpar.model
 
-import android.location.Location
-
 data class Utente (var id: String,
                    var location: String = "",
                    var tipo: Tipologia = Tipologia.DONATORE,

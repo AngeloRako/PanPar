@@ -20,10 +20,7 @@ import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.rapnap.panpar.R
-import com.rapnap.panpar.model.Utente
-import com.rapnap.panpar.viewmodel.ProfileDonatoreViewModel
-import kotlinx.android.synthetic.main.fragment_profile_donatore.*
+
 
 
 class ProfileDonatoreFragment : Fragment(R.layout.fragment_profile_donatore) { //<- Se metto questo evito il onCreateView
@@ -76,6 +73,7 @@ class ProfileDonatoreFragment : Fragment(R.layout.fragment_profile_donatore) { /
         //L'immagine è prelevata in termini di URI, che viene castano a String affinché sia
         //compatibile con il parametro di ingresso di loadUrl
         profiloDonatore.loadUrl(getPhoto(acct).toString())
+        //Navigation.findNavController(this.requireView()).navigate(R.id.donatoreToNuovoPaniere)
 
         //Callback relativa al pulsante switchRoleBtn: permette il passaggio all'activity Ricevente
         //Inoltre invoca il metodo changeRole affinché l'utente possa veder cambiata la sua tipologia

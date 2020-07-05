@@ -11,6 +11,8 @@
         android:name="com.rapnap.panpar.view.ProfileDonatoreFragment"
         tools:layout="@layout/fragment_profile_donatore" >
         <action
+                
+<!-- <<<<<<< Oscar --!>
             android:id="@+id/donatoreToSceltaPunto"
             app:destination="@id/scegliPuntoFragment" />
         <action
@@ -27,5 +29,19 @@
         android:name="com.rapnap.panpar.view.HomeRiceventeActivity"
         android:label="activity_home_ricevente"
         tools:layout="@layout/activity_home_ricevente" />
+<!-- ======= --!>
+  
+    <action
+            android:id="@+id/donatoreToNuovoPaniere"
+            app:destination="@id/nuovoPaniereActivity"
+            app:enterAnim="@anim/fragment_open_enter" />
+    </fragment>
+    <activity
+        android:id="@+id/nuovoPaniereActivity"
+        android:name="com.rapnap.panpar.view.NuovoPaniereActivity"
+        android:label="activity_nuovo_paniere"
+        tools:layout="@layout/activity_nuovo_paniere" />
+<!-- >>>>>>> angelo --!>
+
 
 </navigation>
