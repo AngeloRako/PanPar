@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ricevente_graph"
+    app:startDestination="@id/profileRiceventeFragment">
+    <fragment
+        android:id="@+id/profileRiceventeFragment"
+        android:name="com.rapnap.panpar.view.ProfileRiceventeFragment"
+        android:label="Profilo Ricevente"
+        tools:layout="@layout/fragment_profile_ricevente">
+        <action
+            android:id="@+id/HRtoHD"
+            app:destination="@id/homeDonatoreActivity2"
+            app:popUpTo="@id/profileRiceventeFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <activity
+        android:id="@+id/homeDonatoreActivity2"
+        android:name="com.rapnap.panpar.view.HomeDonatoreActivity"
+        android:label="activity_home_donatore"
+        tools:layout="@layout/activity_home_donatore" />
+</navigation>

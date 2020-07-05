@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginEnd="8dp"
+    android:layout_marginStart="8dp"
+    android:layout_marginTop="8dp"
+    android:clickable="true"
+    android:focusable="true">
+    
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/distance_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="3 km"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            />
+
+        <TextView
+            android:id="@+id/name_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/distance_text_view"
+            android:text="Title"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
+            />
+
+        <TextView
+            android:id="@+id/address_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/name_text_view"
+            android:text="Address"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle2"
+            />
+    </RelativeLayout>
+
+
+</com.google.android.material.card.MaterialCardView>
