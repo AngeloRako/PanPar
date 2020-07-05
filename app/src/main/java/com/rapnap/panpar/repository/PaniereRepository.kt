@@ -208,40 +208,52 @@ class PaniereRepository {
 
         var isAlreadyFollowing : Boolean = false
         var paniereID : String = ""
+        var totalValue : Long = 0
         val panieriRef = db.collection("panieri")
 
         checkIfFollowingTooMany(id, punti) {
-            if (!it) {
-                panieriRef.whereEqualTo("id", id)
-                    .get()
-                    .addOnSuccessListener { documents ->
-                        for (document in documents) {
-                            val riceventiOnCurrentPaniere = document.data?.get("riceventi") as ArrayList<String>
-                            isAlreadyFollowing = riceventiOnCurrentPaniere.contains(id)
-                            paniereID = document.id
-                        }
-                        if(!isAlreadyFollowing) {
-                            //NOTA: usare transaction
-                            panieriRef.document(paniereID)
-                                .update("n_richieste", FieldValue.increment(1))
-                            panieriRef.document(paniereID)
-                                .update("riceventi", FieldValue.arrayUnion(auth.currentUser?.uid))
+            panieriRef.whereEqualTo("id", id)
+                .get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        val riceventiOnCurrentPaniere = document.data?.get("riceventi") as ArrayList<String>
+                        isAlreadyFollowing = riceventiOnCurrentPaniere.contains(auth.currentUser?.uid)
 
-                        } else {
-                            Log.d("REPOSITORY", "Già stai seguendo questo paniere")
+                        val tempString = document.data?.get("contenuto") as ArrayList<String>
+                        val tempContMutable: MutableList<Contenuto> = mutableListOf()
+                        tempString.forEach {
+                            tempContMutable.add(Contenuto.valueOf(it))
                         }
+                        val tempContFixed: List<Contenuto> = tempContMutable
+
+                        val tempPaniere = Paniere(contenuto = tempContFixed)
+                        totalValue += tempPaniere.calcolaValore() + it
+
+                        Log.d("CHECK", "Valore: " + totalValue.toString() + ". Punti: " + punti.toString())
+
+                        paniereID = document.id
                     }
-                    .addOnFailureListener() {
-                        Log.d("REPOSITORY", "Sono un fallito")
+                    if(!isAlreadyFollowing && totalValue < punti) {
+                        //NOTA: usare transaction
+                        panieriRef.document(paniereID)
+                            .update("n_richieste", FieldValue.increment(1))
+                        panieriRef.document(paniereID)
+                            .update("riceventi", FieldValue.arrayUnion(auth.currentUser?.uid))
+
+                    } else {
+                        Log.d("REPOSITORY", "Già stai seguendo questo paniere o non hai " +
+                                "abbastanza punti, marpione.")
                     }
-            } else {
-                Log.d("REPOSITORY", "Stai già seguendo troppi panieri, marpione")
-            }
+                }
+                .addOnFailureListener() {
+                    Log.d("REPOSITORY", "Sono un fallito")
+                }
+
         }
 
     }
 
-    fun checkIfFollowingTooMany(id: String, punti: Int, onComplete: (tooMany: Boolean) -> Unit) {
+    fun checkIfFollowingTooMany(id: String, punti: Int, onComplete: (totalValue: Long) -> Unit) {
         var totalValue : Long = 0
         val panieriRef = db.collection("panieri")
 
@@ -259,10 +271,11 @@ class PaniereRepository {
                     val tempPaniere = Paniere(contenuto = tempContFixed)
                     totalValue += tempPaniere.calcolaValore()
                 }
-                onComplete(totalValue > punti)
+                onComplete(totalValue)
             }
             .addOnFailureListener() {
                 Log.d("REPOSITORY", "Sono un fallito ed ho richiesto troppi panieri")
+                //onComplete(true)
             }
     }
 

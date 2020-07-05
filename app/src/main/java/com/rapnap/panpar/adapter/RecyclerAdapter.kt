@@ -131,7 +131,7 @@ class RecyclerAdapter(private var panieri: ArrayList<Paniere>) : RecyclerView.Ad
             view.followPaniere.isEnabled = false
 
             view.followPaniere.setOnClickListener {
-                paniereRepository.updatePaniereFollowers(id = paniere.id, punti = 1000)
+                paniereRepository.updatePaniereFollowers(id = paniere.id, punti = 20)
                 Log.d("ENLARGEDVIEWS", isEnlarged.toString())
             }
 
