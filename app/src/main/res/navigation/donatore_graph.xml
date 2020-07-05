@@ -13,11 +13,19 @@
         <action
             android:id="@+id/donatoreToSceltaPunto"
             app:destination="@id/scegliPuntoFragment" />
+        <action
+            android:id="@+id/HDtoHR"
+            app:destination="@id/homeRiceventeActivity2" />
     </fragment>
     <fragment
         android:id="@+id/scegliPuntoFragment"
         android:name="com.rapnap.panpar.view.ScegliPuntoFragment"
         android:label="Scegli punto di ritiro"
         tools:layout="@layout/fragment_scegli_punto" />
+    <activity
+        android:id="@+id/homeRiceventeActivity2"
+        android:name="com.rapnap.panpar.view.HomeRiceventeActivity"
+        android:label="activity_home_ricevente"
+        tools:layout="@layout/activity_home_ricevente" />
 
 </navigation>
