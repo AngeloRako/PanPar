@@ -1,29 +1,27 @@
 package com.rapnap.panpar.view
 
-import android.content.ContentValues
-import android.graphics.Paint
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
-import android.text.SpannableString
-import android.text.Spanned
-import android.text.style.StyleSpan
-import android.util.Log
-import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.core.text.set
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.rapnap.panpar.R
+import com.rapnap.panpar.model.Utente
+import com.rapnap.panpar.viewmodel.ProfileDonatoreViewModel
+import kotlinx.android.synthetic.main.fragment_profile_donatore.*
+import kotlinx.android.synthetic.main.fragment_profile_donatore.view.*
 
 
-
-class ProfileDonatoreFragment : Fragment(R.layout.fragment_profile_donatore) { //<- Se metto questo evito il onCreateView
+class ProfileDonatoreFragment : Fragment() {
 
     //Istanzio alcune variabili utili per: prelevare i dati dall'account Google loggato
     private val pdvm: ProfileDonatoreViewModel by viewModels()
@@ -45,16 +43,22 @@ class ProfileDonatoreFragment : Fragment(R.layout.fragment_profile_donatore) { /
             }
         })
     }
-/*
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_profile_donatore, container, false)
+
+        //Imposto onClickListener sul bottone di creazione paniere
+        view.donateBtn.setOnClickListener {
+            Navigation.findNavController(requireView()).navigate(R.id.donatoreToNuovoPaniere)
+        }
+
         return view
     }
-*/
+
 
     override fun onStart() {
         super.onStart()
@@ -78,11 +82,11 @@ class ProfileDonatoreFragment : Fragment(R.layout.fragment_profile_donatore) { /
         //Callback relativa al pulsante switchRoleBtn: permette il passaggio all'activity Ricevente
         //Inoltre invoca il metodo changeRole affinché l'utente possa veder cambiata la sua tipologia
         switchRoleBtn.setOnClickListener{
-            Navigation.findNavController(this.requireView()).navigate(R.id.HDtoHR)
+            Navigation.findNavController(requireView()).navigate(R.id.HDtoHR)
             pdvm.changeRole()
             this.activity?.finish()
         }
-}
+    }
 
     //Imposta il rating del donatore nella ratingBar se questo è cambiato. Viene utilizzato il pattern Observer affinché
     //possa appunto "osservare" i cambiamenti che vengono effettuati su un certo oggetto.

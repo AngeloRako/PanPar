@@ -11,7 +11,9 @@
         tools:layout="@layout/fragment_profile_ricevente">
         <action
             android:id="@+id/HRtoHD"
-            app:destination="@id/homeDonatoreActivity2" />
+            app:destination="@id/homeDonatoreActivity2"
+            app:popUpTo="@id/profileRiceventeFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <activity
         android:id="@+id/homeDonatoreActivity2"

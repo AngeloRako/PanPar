@@ -4,7 +4,6 @@ import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.location.Location
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -18,7 +17,6 @@ import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.model.PuntoRitiro
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class PaniereRepository {
 
@@ -117,14 +115,18 @@ class PaniereRepository {
                                 tempDate = tempTimestamp.toDate()
                             }
 
-                            val tempString = document.data?.get("contenuto") as ArrayList<String>
-                            val tempContMutable : MutableList<Contenuto> = mutableListOf()
-
-                            tempString.forEach {
-                                tempContMutable.add(Contenuto.valueOf(it))
+                            var tempConsegna = Date()
+                            document.getTimestamp("data_consegna_prevista")?.let {
+                                tempConsegna = it.toDate()
                             }
 
-                            val tempContFixed : List <Contenuto> = tempContMutable
+                            val tempString = document.data?.get("contenuto") as ArrayList<String>
+                            val tempContenuto : MutableSet<Contenuto> = hashSetOf()
+
+                            tempString.forEach {
+                                tempContenuto.add(Contenuto.valueOf(it))
+                            }
+
 
                             //Creo un paniere con i dati presi dal DB
                             val paniereTemp = Paniere(
@@ -133,12 +135,9 @@ class PaniereRepository {
                                     indirizzo = document.data?.get("indirizzo") as String,
                                     location = tempLocation),
                                 tempDate,
-                                tempContFixed,
-                                null,
-                                document.data?.get("donatore") as String,
-                                0,
-                                null,
-                                null
+                                tempConsegna,
+                                tempContenuto,
+                                donatore = document.data?.get("donatore") as String
                             )
 
                             Log.d(TAG, "Paniere creato")
@@ -176,28 +175,28 @@ class PaniereRepository {
                                 tempDate = tempTimestamp.toDate()
                             }
 
-                            val tempString = document.data?.get("contenuto") as ArrayList<String>
-                            val tempContMutable : MutableList<Contenuto> = mutableListOf()
-
-                            tempString.forEach {
-                                tempContMutable.add(Contenuto.valueOf(it))
+                            var tempConsegna = Date()
+                            document.getTimestamp("data_consegna_prevista")?.let {
+                                tempConsegna = it.toDate()
                             }
 
-                            val tempContFixed : List <Contenuto> = tempContMutable
+                            val tempString = document.data?.get("contenuto") as ArrayList<String>
+                            val tempContenuto : MutableSet<Contenuto> = hashSetOf()
+
+                            tempString.forEach {
+                                tempContenuto.add(Contenuto.valueOf(it))
+                            }
 
                             //Creo un paniere con i dati presi dal DB
                             val paniereTemp = Paniere(
-                                document.data?.get("id") as String,
-                                PuntoRitiro(nome = document.data?.get("nome_punto_ritiro") as String,
+                                id = document.data?.get("id") as String,
+                                puntoRitiro = PuntoRitiro(nome = document.data?.get("nome_punto_ritiro") as String,
                                     indirizzo = document.data?.get("indirizzo") as String,
                                     location = tempLocation),
-                                tempDate,
-                                tempContFixed,
-                                null,
-                                document.data?.get("donatore") as String,
-                                0,
-                                null,
-                                null
+                                dataInserimento = tempDate,
+                                dataConsegnaPrevista = tempConsegna,
+                                contenuto = tempContenuto,
+                                donatore = document.data?.get("donatore") as String
                             )
 
                             Log.d(TAG, "Paniere creato")
