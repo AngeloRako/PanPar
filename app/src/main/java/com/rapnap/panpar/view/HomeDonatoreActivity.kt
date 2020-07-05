@@ -11,6 +11,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupWithNavController
 import com.rapnap.panpar.R
+import com.rapnap.panpar.R.id.donatore_fragment
 
 class HomeDonatoreActivity : AppCompatActivity() {
 
@@ -23,13 +24,11 @@ class HomeDonatoreActivity : AppCompatActivity() {
 
         //Imposto la toolbar dell'activity
         val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.donatore_fragment) as NavHostFragment
+            supportFragmentManager.findFragmentById(donatore_fragment) as NavHostFragment
         val navController: NavController = navHostFragment.navController
         val toolbar = findViewById<Toolbar>(R.id.topAppBar)
         val appBarConfiguration = AppBarConfiguration(navController.graph)
         toolbar.setupWithNavController(navController, appBarConfiguration)
-
-
     }
 
     private fun negotiateDeviceDarkMode() {
