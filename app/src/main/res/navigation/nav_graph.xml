@@ -2,8 +2,7 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/navigation"
-    app:startDestination="@id/listaPanieriActivity">
+    android:id="@+id/navigation">
 
     <activity
         android:id="@+id/homeRiceventeActivity"
@@ -70,10 +69,5 @@
         android:name="com.rapnap.panpar.view.HomeDonatoreActivity"
         android:label="activity_home_donatore"
         tools:layout="@layout/activity_home_donatore" />
-    <activity
-        android:id="@+id/listaPanieriActivity"
-        android:name="com.rapnap.panpar.view.ListaPanieriActivity"
-        android:label="activity_lista_panieri"
-        tools:layout="@layout/activity_lista_panieri" />
 
 </navigation>
