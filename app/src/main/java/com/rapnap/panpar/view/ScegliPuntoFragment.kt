@@ -1,34 +1,142 @@
 package com.rapnap.panpar.view
 
-import androidx.fragment.app.Fragment
-
+import android.content.ContentValues.TAG
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-
+import android.util.Log
+import android.view.*
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.navigation.Navigation
+import androidx.navigation.navGraphViewModels
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.rapnap.panpar.R
+import com.rapnap.panpar.model.PuntoRitiro
+import com.rapnap.panpar.model.distanceText
+import com.rapnap.panpar.model.toLatLng
+import com.rapnap.panpar.model.toLocation
+import com.rapnap.panpar.viewmodel.NuovoPaniereViewModel
+import kotlinx.android.synthetic.main.fragment_scegli_punto.*
+import kotlinx.android.synthetic.main.fragment_scegli_punto.view.*
 
-class ScegliPuntoFragment : Fragment() {
+class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
+    GoogleMap.OnCameraMoveListener, GoogleMap.CancelableCallback {
+
+    private lateinit var gMap: GoogleMap
+    private var mapReady = false
+    private var isWaitingToShow = false
+    private lateinit var punti: List<PuntoRitiro>
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
+    private lateinit var puntoRitiroVisualizzato: PuntoRitiro
+
+
+    private val nuovoPaniereVM: NuovoPaniereViewModel
+            by navGraphViewModels(R.id.new_paniere_graph)
+
+    private var currentLocation = LatLng(40.643396, 14.865041)
 
     private val callback = OnMapReadyCallback { googleMap ->
-        /**
-         * Manipulates the map once available.
-         * This callback is triggered when the map is ready to be used.
-         * This is where we can add markers or lines, add listeners or move the camera.
-         * In this case, we just add a marker near Sydney, Australia.
-         * If Google Play services is not installed on the device, the user will be prompted to
-         * install it inside the SupportMapFragment. This method will only be triggered once the
-         * user has installed Google Play services and returned to the app.
-         */
-        val bocc = LatLng(40.643396, 14.865041)
-        googleMap.addMarker(MarkerOptions().position(bocc).title("Chiesa del Bambin Gesù"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(bocc))
+
+        googleMap?.let {
+            Log.d(TAG, "[PANPAR - ScegliPuntoFragment] La mappa è pronta! ")
+
+            gMap = googleMap
+
+            val styleApplied: Boolean
+
+            try{
+                when(isUsingNightModeResources()){
+                    true -> {
+                        styleApplied = gMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_style_json))
+                    }
+                    false ->{
+
+                        styleApplied = gMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.style_json))
+                    }
+                }
+
+                if(!styleApplied){
+
+                    Log.e(TAG, "[ScegliPuntoFragment] Impossibile applicare stile mappa!")
+                }
+
+            }   catch (e: Resources.NotFoundException) {
+                Log.e(TAG, "[ScegliPuntoFragment] Can't find style. Error: ", e)
+            }
+
+            gMap.setMinZoomPreference(8F)
+            gMap.setMaxZoomPreference(18F)
+
+            gMap.setOnMarkerClickListener(this)
+            gMap.setOnCameraMoveListener(this)
+            mapReady = true
+            updateMap()
+
+            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10F))
+
+            if (::puntoRitiroVisualizzato.isInitialized && isWaitingToShow) {
+                show(puntoRitiroVisualizzato)
+                isWaitingToShow = false
+            }
+        }
+
+    }
+
+    private fun updateMap() {
+        if (::punti.isInitialized && mapReady) {
+            punti.forEach { punto ->
+                Log.d(TAG, "[PANPAR - ScegliPuntoFragment] Leggo: ${punto.nome}")
+                val pos = LatLng(punto.location.latitude, punto.location.longitude)
+                gMap.addMarker(MarkerOptions().position(pos).title(punto.nome)).apply {
+                    this.tag = punto
+                }
+
+            }
+        }
+    }
+
+    override fun onMarkerClick(marker: Marker?): Boolean {
+
+        nuovoPaniereVM.setPuntoRitiroVisualizzato(marker?.tag as PuntoRitiro)
+        return true
+    }
+
+    private fun show(puntoRitiro: PuntoRitiro, speed: Int = 100) {
+
+        name_text_view.text = puntoRitiro.nome
+        address_text_view.text = puntoRitiro.indirizzo
+
+        val loc = currentLocation.toLocation()
+
+        distance_text_view.text =
+            distanceText(puntoRitiro.location.distanceTo(loc)) + " da qui"
+
+        if (mapReady) {
+
+            gMap.animateCamera(
+                CameraUpdateFactory.newLatLng(puntoRitiro.location.toLatLng()),
+                speed,
+                this
+            )
+
+            //Apri  lo sheet
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+            isWaitingToShow = false
+
+        } else {
+
+            Log.d(TAG, "[ScegliPuntoRitiro] Errore: Mappa non pronta alla visualizzazione...")
+            isWaitingToShow = true
+        }
     }
 
     override fun onCreateView(
@@ -36,12 +144,118 @@ class ScegliPuntoFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_scegli_punto, container, false)
+        val view = inflater.inflate(R.layout.fragment_scegli_punto, container, false)
+
+        //Location utente (dovrebbe venire dal ViewModel)
+        val loc = currentLocation.toLocation()
+
+        nuovoPaniereVM.getPuntiDiRitiro(loc, 2000000.0) {}
+
+        nuovoPaniereVM.puntiRitiro.observe(viewLifecycleOwner, Observer<List<PuntoRitiro>> {
+
+            this.punti = it
+            updateMap()
+
+        })
+
+        nuovoPaniereVM.puntoRitiroVisualizzato.observe(viewLifecycleOwner, Observer<PuntoRitiro> {
+
+            isWaitingToShow = true
+            puntoRitiroVisualizzato = it
+            show(it)
+
+        })
+
+        //Configuro il pannello inferiore
+        bottomSheetBehavior = BottomSheetBehavior.from(view.punto_bottom_sheet)
+        view.set_paniere_details.setOnClickListener { v ->
+
+            /* Cosa faccio quando l'utente preme su "Consegna Qui"*/
+            nuovoPaniereVM.setPuntoRitiroScelto(puntoRitiroVisualizzato)
+            Navigation.findNavController(requireView()).popBackStack()
+
+        }
+
+        //Inizialmente nascosto
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+
+
+        return view
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        mapFragment?.getMapAsync(callback)
+
+    /*  Elementi di Menu nella ActionBar    */
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        setHasOptionsMenu(true)
     }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        map_view.onCreate(savedInstanceState)
+        map_view.onResume()
+
+        map_view.getMapAsync(callback)
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.punti_ritiro_map_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+
+        R.id.toggle_List -> {
+            // User chose to view as List
+            Navigation.findNavController(this.requireView()).navigate(R.id.punti_map_To_List)
+            mapReady = false
+            true
+        }
+
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
+    }
+
+    /*  Cosa fare quando la mappa viene spostata?    */
+    override fun onCameraMove() {
+
+        //Chiudi  lo sheet
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
+    }
+
+    /* Called on finished animating camera */
+    override fun onFinish() {
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+    }
+
+    /* Non mi serve ma è necessario per l'ìntefaccia*/
+    override fun onCancel() {
+        //
+    }
+
+
+    fun isUsingNightModeResources(): Boolean {
+        return when (resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK) {
+            Configuration.UI_MODE_NIGHT_YES -> true
+            Configuration.UI_MODE_NIGHT_NO -> false
+            Configuration.UI_MODE_NIGHT_UNDEFINED -> false
+            else -> false
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+    }
+
 }
