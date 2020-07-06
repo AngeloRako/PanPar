@@ -48,5 +48,4 @@ class HomeDonatoreActivity : AppCompatActivity() {
         }
     }
 
-
 }

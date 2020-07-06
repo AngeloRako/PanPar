@@ -137,6 +137,11 @@ class PaniereRepository {
 
                         val tempContFixed : MutableSet<Contenuto> = tempContMutable
 
+                        var tempConsegna = Date()
+                        document.getTimestamp("data_consegna_prevista")?.let {
+                            tempConsegna = it.toDate()
+                        }
+
                         //Creo un paniere con i dati presi dal DB
 
                         //Aggiungere la data di consegna prevista
@@ -147,6 +152,7 @@ class PaniereRepository {
                                 indirizzo = document.data?.get("indirizzo") as String,
                                 location = tempLocation),
                             dataInserimento = tempDate,
+                            dataConsegnaPrevista = tempConsegna,
                             contenuto = tempContFixed,
                             donatore = document.data?.get("donatore") as String
                         )

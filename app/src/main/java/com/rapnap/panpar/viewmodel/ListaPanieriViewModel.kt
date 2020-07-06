@@ -24,6 +24,7 @@ class ListaPanieriViewModel: ViewModel() {
     }
 
     fun getPanieriByScore(onComplete: () -> Unit) {
+        //Passare i valori giusti
         paniereRepository.getListaPanieri(GeoPoint(40.878437, 14.343430), 1000) {
             listaPanieri = it
             onComplete()

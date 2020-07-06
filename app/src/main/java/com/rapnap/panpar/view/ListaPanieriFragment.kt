@@ -32,6 +32,7 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri) {
         linearLayoutManager = LinearLayoutManager(this.activity)
         view.rec_view.layoutManager = linearLayoutManager
 
+        //Popolare tutta in una botta con il costruttore mettendo tutto nella onComplete qui dentro
         adapter = RecyclerAdapter(panieriList)
         view.rec_view.adapter = adapter
 
@@ -53,12 +54,13 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri) {
                 Log.d("ACTIVITY", "Ho assegnato ad i panieri i valori che stavano nel DB." +
                         " La dimensione della lista dei panieri è: " + panieriList.size.toString())
 
+                //Prova soluzione di Angelo
                 panieriList.forEach() {
-                    //runOnUiThread {             //Per qualche motivo non funzione nel fragment
-                    adapter.addNewItem(it)
-                    adapter.notifyItemInserted((panieriList.size-1))    //Posizione in cui ho inserito, sempre alla fine
-                    Log.d("ACTIVITY", "Ho " + adapter.itemCount.toString() + " panieri.")
-                    //}
+                    activity?.runOnUiThread {   //Possiamo pensare a dove altro metterlo
+                        adapter.addNewItem(it)
+                        adapter.notifyItemInserted((panieriList.size-1))    //Posizione in cui ho inserito, sempre alla fine
+                        Log.d("ACTIVITY", "Ho " + adapter.itemCount.toString() + " panieri.")
+                    }
                 }
             })
         }

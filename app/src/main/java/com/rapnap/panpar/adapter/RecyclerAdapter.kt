@@ -13,6 +13,7 @@ import com.rapnap.panpar.extensions.inflate
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.repository.PaniereRepository
 import kotlinx.android.synthetic.main.recyclerview_item_row.view.*
+import java.io.File
 
 
 class RecyclerAdapter(private var panieri: ArrayList<Paniere>) : RecyclerView.Adapter<RecyclerAdapter.PanieriHolder>() {
@@ -23,7 +24,7 @@ class RecyclerAdapter(private var panieri: ArrayList<Paniere>) : RecyclerView.Ad
         Log.d("ADAPTER", "onCreateViewHolder")
         inflatedView = parent.inflate(R.layout.recyclerview_item_row, false)
 
-        //Prendo 1/8 dello schermo (il parent ha le dimensioni dello schermo)
+        //Prendo 1/6 dello schermo (il parent ha le dimensioni dello schermo)
         //per ogni riga = paniere da mostrare
         inflatedView.layoutParams.height = parent.measuredHeight/6;
 
@@ -41,31 +42,28 @@ class RecyclerAdapter(private var panieri: ArrayList<Paniere>) : RecyclerView.Ad
     }
 
     fun addNewItem(newPaniere: Paniere){
+        //Provare a passare la lista intera
         panieri.add(newPaniere)
     }
 
-    //1 - Make the class extend RecyclerView.ViewHolder, allowing the adapter
-    //to use it as as a ViewHolder.
+    //Classe che estende la RecyclerView.ViewHolder, fa usare la ViewHolder all'adapter
     class PanieriHolder(v: View) : RecyclerView.ViewHolder(v), View.OnClickListener {
 
-        //2 - Add a reference to the view you’ve inflated to allow the ViewHolder
-        //to access the ImageView and TextView as an extension property.
-        //Kotlin Android Extensions plugin adds hidden caching functions and fields
-        // to prevent the constant querying of views.
+        //Rifermiento alla view inflated per accedere agli elementi
         private var view: View = v
         private var paniere: Paniere? = null
         private val paniereRepository : PaniereRepository = PaniereRepository()
         private var isEnlarged : Boolean = false
 
+        //Va fatto fare alla repository
         private var storage = Firebase.storage
 
-        //3 - Initialize the View.OnClickListener
+        //Inizializza il View.OnClickListener
         init {
             v.setOnClickListener(this)
         }
 
-        //4 - Implement the required method for View.OnClickListener since ViewHolders
-        //are responsible for their own event handling.
+        //Implementa i metodi in View.OnClickListener
         override fun onClick(v: View) {
             Log.d("ADAPTER", "PANIERE!")
 
@@ -89,12 +87,6 @@ class RecyclerAdapter(private var panieri: ArrayList<Paniere>) : RecyclerView.Ad
                 v.requestLayout()
                 isEnlarged = false
             }
-
-            //Roba del tutorial che non so se ci servirà
-            //val context = itemView.context
-            //val showPaniereIntent = Intent(context, PaniereActivity::class.kt)
-            //showPaniereIntent.putExtra(PANIERE_KEY, paniere)
-            //context.startActivity(showPaniereIntent)
         }
 
         fun bindPaniere(paniere: Paniere) {
@@ -102,15 +94,20 @@ class RecyclerAdapter(private var panieri: ArrayList<Paniere>) : RecyclerView.Ad
 
             if (paniere.immagine != null) {
                 val gsReference = storage.getReferenceFromUrl(paniere.immagine!!)
-                val ONE_MEGABYTE: Long = 1024 * 1024
+                val ONE_MEGABYTE: Long = 1024 * 1024    //Limite di conversione, aumentare
                 gsReference.getBytes(ONE_MEGABYTE).addOnSuccessListener {
                     val bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
                     view.paniereImg.setImageBitmap(bmp)
                 }.addOnFailureListener {
-                    // Handle any errors
+                    Log.d("ADAPTER", "Sono un fallito e non so convertire i byteArray")
                 }
             } else {
-                val bmp = BitmapFactory.decodeFile("drawable/empty_png.png")
+                val imgFile = File("drawable/empty_png.png")
+
+                if (imgFile.exists()) {
+                    val myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath())
+                    view.paniereImg.setImageBitmap(myBitmap)
+                }
             }
 
             //Inserisco la posizione del paniere
@@ -133,19 +130,16 @@ class RecyclerAdapter(private var panieri: ArrayList<Paniere>) : RecyclerView.Ad
             view.followPaniere.isEnabled = false
 
             view.followPaniere.setOnClickListener {
-                paniereRepository.updatePaniereFollowers(id = paniere.id, punti = 20)
-                Log.d("ENLARGEDVIEWS", isEnlarged.toString())
+                //Bisogna prima ottenere i punti dell'utente
+                paniereRepository.updatePaniereFollowers(id = paniere.id, punti = 1000)
             }
 
-            //view.paniereContent.text = paniere.contenuto.toString()
-            //view.itemDate.text = photo.humanDate
-            //view.itemDescription.text = photo.explanation
         }
 
-        companion object {
-            //5 - Add a key for easy reference to the item launching the RecyclerView.
-            private val PANIERE_KEY = "PANIERE"
-        }
+//        Per associare una KEY al Paniere
+//        companion object {
+//            private val PANIERE_KEY = "PANIERE"
+//        }
     }
 
 }

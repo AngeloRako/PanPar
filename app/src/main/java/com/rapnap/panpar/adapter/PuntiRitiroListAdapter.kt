@@ -1,4 +1,4 @@
-package com.rapnap.panpar.view
+package com.rapnap.panpar.adapter
 
 import android.location.Location
 import android.view.LayoutInflater
@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.rapnap.panpar.R
 import com.rapnap.panpar.model.PuntoRitiro
 import com.rapnap.panpar.model.distanceText
-import com.rapnap.panpar.viewmodel.NuovoPaniereViewModel
 
 class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val location: Location, private val listener: OnItemClickListener) :
 
@@ -35,12 +34,14 @@ class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val l
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-        ): PuntiRitiroListAdapter.ViewHolder {
+        ): ViewHolder {
             // create a new view
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.punto_ritiro_item, parent, false)
 
-            return ViewHolder(view)
+            return ViewHolder(
+                view
+            )
         }
 
         // Replace the contents of a view (invoked by the layout manager)
