@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rapnap.panpar.R
+import com.rapnap.panpar.extensions.distanceText
 import com.rapnap.panpar.model.PuntoRitiro
-import com.rapnap.panpar.model.distanceText
 
 class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val location: Location, private val listener: OnItemEventListener<PuntoRitiro>) :
 
