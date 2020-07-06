@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.PuntiRitiroListFragment"
-    >
+    tools:context=".view.ListaPanieriFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/punti_ritiro_recycler_view"
-        tools:listitem="@layout/punto_ritiro_item"
+        android:id="@+id/rec_view"
+        tools:listitem="@layout/recyclerview_item_row"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical"

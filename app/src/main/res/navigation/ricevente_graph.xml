@@ -14,10 +14,17 @@
             app:destination="@id/homeDonatoreActivity2"
             app:popUpTo="@id/profileRiceventeFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/homeRiceventeToListaPanieri"
+            app:destination="@id/listaPanieriFragment2" />
     </fragment>
     <activity
         android:id="@+id/homeDonatoreActivity2"
         android:name="com.rapnap.panpar.view.HomeDonatoreActivity"
         android:label="activity_home_donatore"
         tools:layout="@layout/activity_home_donatore" />
+    <fragment
+        android:id="@+id/listaPanieriFragment2"
+        android:name="com.rapnap.panpar.view.ListaPanieriFragment"
+        android:label="ListaPanieriFragment" />
 </navigation>

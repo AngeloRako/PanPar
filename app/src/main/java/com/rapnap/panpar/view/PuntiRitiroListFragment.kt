@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.model.LatLng
 import com.rapnap.panpar.R
+import com.rapnap.panpar.adapter.PuntiRitiroListAdapter
 import com.rapnap.panpar.model.PuntoRitiro
 import com.rapnap.panpar.model.toLocation
 import com.rapnap.panpar.viewmodel.NuovoPaniereViewModel
@@ -55,7 +56,11 @@ class PuntiRitiroListFragment : Fragment(), PuntiRitiroListAdapter.OnItemClickLi
 
             nuovoPaniereVM.puntiRitiro.observe(viewLifecycleOwner, Observer<List<PuntoRitiro>> {
 
-                viewAdapter = PuntiRitiroListAdapter(it, loc, this)
+                viewAdapter = PuntiRitiroListAdapter(
+                    it,
+                    loc,
+                    this
+                )
                 recyclerView.adapter = viewAdapter
 
             })
