@@ -68,4 +68,8 @@ dependencies {
     //Lottie
     implementation "com.airbnb.android:lottie:3.4.1"
 
+    //Glidle
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
+
 }

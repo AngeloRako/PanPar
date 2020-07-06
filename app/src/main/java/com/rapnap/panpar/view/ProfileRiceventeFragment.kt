@@ -84,6 +84,7 @@ class ProfileRiceventeFragment : Fragment(R.layout.fragment_profile_ricevente) {
         prvm.obtainPuntiRicevente().observe(this, Observer<Utente>{
             var punteggio = it.punteggio
             puntiLabel.setText("Hai a disposizione: " + punteggio + " Punti")
+
         })
     }
 }

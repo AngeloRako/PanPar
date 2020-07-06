@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
+import com.bumptech.glide.Glide
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.rapnap.panpar.R
@@ -74,10 +75,11 @@ class ProfileDonatoreFragment : Fragment() {
         labelHomeDonatore1.text = Html.fromHtml("Salve Donatore " + "<b>" + getName(acct) + "</b>" + "," + "<br>" + "di seguito il resoconto delle tue azioni:")
 
         //Visualizzo con una WebView l'immagine del profilo dell'utente loggato in Google.
-        //L'immagine è prelevata in termini di URI, che viene castano a String affinché sia
-        //compatibile con il parametro di ingresso di loadUrl
-        profiloDonatore.loadUrl(getPhoto(acct).toString())
+        //L'immagine è prelevata in termini di URI, che viene castano a String
+        Glide.with(this).load(getPhoto(acct).toString()).into(profilePic)
+
         //Navigation.findNavController(this.requireView()).navigate(R.id.donatoreToNuovoPaniere)
+
 
         //Callback relativa al pulsante switchRoleBtn: permette il passaggio all'activity Ricevente
         //Inoltre invoca il metodo changeRole affinché l'utente possa veder cambiata la sua tipologia

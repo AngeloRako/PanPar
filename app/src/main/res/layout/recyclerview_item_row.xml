@@ -1,106 +1,90 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/card"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
 
-    <ImageView
-        android:id="@+id/paniereImg"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/empty_png"
-        android:contentDescription="Immagine del paniere"
-        android:layout_gravity="center|start"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_weight="1"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/paniereContent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        />
-
-    <TextView
-        android:id="@+id/paniereLocation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top|start"
-        android:layout_marginTop="1dp"
-        android:layout_marginStart="10dp"
-        android:layout_weight="1"
-        app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/followPaniere"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@id/paniereImg"
-        app:layout_constraintTop_toBottomOf="@id/paniereContent"
-        tools:text="Some Location"
-        />
-
-    <TextView
-        android:id="@+id/paniereContent"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|start"
-        android:layout_weight="1"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="2dp"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:text="Some Content"
-        app:layout_constraintEnd_toStartOf="@id/followPaniere"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@id/paniereImg"
-        app:layout_constraintTop_toBottomOf="@+id/paniereLocation"
-        app:layout_constraintBottom_toBottomOf="@+id/paniereImg"
-        />
-
-    <TextView
-        android:id="@+id/paniereValue"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_gravity="bottom|start"
-        android:layout_weight="1"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="4dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="Some Value"
-        app:layout_constraintEnd_toStartOf="@id/followPaniere"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@id/paniereImg"
-        app:layout_constraintTop_toBottomOf="@+id/paniereContent"
-        />
-
-    <Button
-        android:id="@+id/followPaniere"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center|start"
-        android:layout_marginEnd="10dp"
-        android:layout_weight="1"
-        android:ellipsize="end"
-        android:text="Segui"
-        app:layout_constraintBottom_toBottomOf="@+id/paniereLocation"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@id/paniereContent"
-        app:layout_constraintTop_toBottomOf="@+id/paniereContent"
-        />
-
-    <View
-        android:id="@+id/greyLine"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:background="#D3D3D3"
-        android:layout_marginTop="32dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/paniereValue"
-        app:layout_constraintTop_toBottomOf="@id/paniereValue"
-        />
-    <!-- android:drawableLeft="@drawable/button_icon" per mettere un'icona vicino-->
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Media -->
+        <ImageView
+            android:id="@+id/paniereImg"
+            android:layout_width="match_parent"
+            android:layout_height="194dp"
+            app:srcCompat="@drawable/empty_png"
+            android:scaleType="centerCrop"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Title, secondary and supporting text -->
+            <TextView
+                android:id="@+id/paniereLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Titolo"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                />
+            <TextView
+                android:id="@+id/paniereDistanza"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="20 km da te"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="?android:attr/textColorSecondary"
+                />
+            <TextView
+                android:id="@+id/paniereValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Valore"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="?android:attr/textColorSecondary"
+                />
+            <TextView
+                android:id="@+id/paniereIndirizzo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Indirizzo"
+                android:ellipsize="end"
+                android:textAppearance="?attr/textAppearanceBody2"
+                android:textColor="?android:attr/textColorSecondary"
+                />
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/contenuto_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/contenuto_label"/>
+
+        </LinearLayout>
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:orientation="horizontal">
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/followPaniere"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="Richiedi"
+                style="?attr/borderlessButtonStyle"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

@@ -5,13 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.GeoPoint
 import com.rapnap.panpar.model.Paniere
-import com.rapnap.panpar.repository.AuthRepository
+import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.repository.PaniereRepository
+import com.rapnap.panpar.repository.UtenteRepository
 
 
 class ListaPanieriViewModel: ViewModel() {
 
-    private val authRepository: AuthRepository = AuthRepository()
+    private val utenteRepository: UtenteRepository = UtenteRepository()
     private val paniereRepository : PaniereRepository = PaniereRepository()
     private lateinit var listaPanieri : MutableLiveData<ArrayList<Paniere>>
 
@@ -19,8 +20,10 @@ class ListaPanieriViewModel: ViewModel() {
         return listaPanieri
     }
 
-    fun getUtente(onComplete: () -> Unit) {
-        TODO("Aspetto Ozegar")
+    private fun getUtente(onComplete: (Utente) -> Unit) {
+        utenteRepository.getUser {
+            onComplete(it)
+        }
     }
 
     fun getPanieriByScore(onComplete: () -> Unit) {
@@ -30,5 +33,20 @@ class ListaPanieriViewModel: ViewModel() {
             onComplete()
         }
     }
+
+    fun updatePaniereFollowers(id: String){
+
+        //TODO: prende i punti da authRepository?
+
+        getUtente{ user->
+
+            paniereRepository.updatePaniereFollowers(id, user.punteggio.toInt())
+
+        }
+
+    }
+
+
+
 
 }

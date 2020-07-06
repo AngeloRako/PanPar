@@ -36,5 +36,5 @@ data class Paniere (
 
 }
 enum class Contenuto {
-    PASTA, CONFETTURA, BIBITE, SORPRESA, ALTRO
+    PASTA, CONFETTURA, BIBITE, SORPRESA, VESTIARIO, CONSERVATI, ALTRO
 }

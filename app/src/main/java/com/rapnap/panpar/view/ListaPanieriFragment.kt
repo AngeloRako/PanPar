@@ -9,18 +9,24 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.maps.model.LatLng
 import com.rapnap.panpar.R
+import com.rapnap.panpar.adapter.OnItemEventListener
 import com.rapnap.panpar.adapter.RecyclerAdapter
 import com.rapnap.panpar.model.Paniere
+import com.rapnap.panpar.model.toLocation
 import com.rapnap.panpar.viewmodel.ListaPanieriViewModel
 import kotlinx.android.synthetic.main.fragment_lista_panieri.view.*
 
-class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri) {
+class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEventListener<Paniere> {
 
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: RecyclerAdapter
     private var panieriList : ArrayList<Paniere> = ArrayList()
     private val listaPanieriVM : ListaPanieriViewModel by viewModels()
+
+    //TODO: Determinare posizione dinamicamente (VM?)
+    private var currentLocation = LatLng(40.643396, 14.865041)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,8 +38,9 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri) {
         linearLayoutManager = LinearLayoutManager(this.activity)
         view.rec_view.layoutManager = linearLayoutManager
 
+
         //Popolare tutta in una botta con il costruttore mettendo tutto nella onComplete qui dentro
-        adapter = RecyclerAdapter(panieriList)
+        adapter = RecyclerAdapter(panieriList, currentLocation.toLocation(), this)
         view.rec_view.adapter = adapter
 
         return view
@@ -66,7 +73,12 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri) {
         }
     }
 
-    //Questo aggiorna la view quando scrolli, ma se carichiamo tutti i panieri una volta e per tutte
+    override fun onEventHappened(item: Paniere) {
+        listaPanieriVM.updatePaniereFollowers(item.id)
+    }
+
+
+        //Questo aggiorna la view quando scrolli, ma se carichiamo tutti i panieri una volta e per tutte
     //non serve (magari potrebbe essere un miglioramento futuro, tipo caricarne prima 10 poi gli
     //altri man mano che scrolli)
 

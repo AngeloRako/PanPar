@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.model.LatLng
 import com.rapnap.panpar.R
+import com.rapnap.panpar.adapter.OnItemEventListener
 import com.rapnap.panpar.adapter.PuntiRitiroListAdapter
 import com.rapnap.panpar.model.PuntoRitiro
 import com.rapnap.panpar.model.toLocation
@@ -17,7 +18,7 @@ import com.rapnap.panpar.viewmodel.NuovoPaniereViewModel
 import kotlinx.android.synthetic.main.fragment_punti_ritiro_list.view.*
 
 
-class PuntiRitiroListFragment : Fragment(), PuntiRitiroListAdapter.OnItemClickListener {
+class PuntiRitiroListFragment : Fragment(), OnItemEventListener<PuntoRitiro> {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var viewAdapter: PuntiRitiroListAdapter
@@ -97,7 +98,7 @@ class PuntiRitiroListFragment : Fragment(), PuntiRitiroListAdapter.OnItemClickLi
 
     //Cosa succede quando clicco su una cella?
 
-    override fun onItemClick(punto: PuntoRitiro) {
+    override fun onEventHappened(punto: PuntoRitiro) {
         nuovoPaniereVM.setPuntoRitiroVisualizzato(punto)
         Navigation.findNavController(requireView()).popBackStack()
     }
