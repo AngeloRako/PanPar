@@ -265,8 +265,6 @@ class NuovoPaniereDetailFragment : Fragment() {
 
     private fun createChip(title: String): Chip {
 
-        //val chip = layoutInflater.inflate(R.layout.category_chip, contenuto_group, true) as Chip
-
         val chip = Chip(requireContext())
 
         chip.text = title

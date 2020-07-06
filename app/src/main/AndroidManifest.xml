@@ -28,7 +28,6 @@
             android:value="@string/google_maps_key" />
 
         <activity android:name=".view.HomeDonatoreActivity" />
-        <activity android:name=".view.ListaPanieriActivity" />
         <activity
             android:name=".view.SettingsActivity"
             android:label="@string/title_activity_settings" />

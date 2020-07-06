@@ -10,7 +10,7 @@ import com.rapnap.panpar.R
 import com.rapnap.panpar.model.PuntoRitiro
 import com.rapnap.panpar.model.distanceText
 
-class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val location: Location, private val listener: OnItemClickListener) :
+class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val location: Location, private val listener: OnItemEventListener<PuntoRitiro>) :
 
     RecyclerView.Adapter<PuntiRitiroListAdapter.ViewHolder>() {
 
@@ -23,11 +23,6 @@ class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val l
         val addressTextView: TextView = view.findViewById(R.id.address_text_view)
         val distanceTextView: TextView = view.findViewById(R.id.distance_text_view)
 
-    }
-
-    /* Interfaccia per gestire gli OnClick sulla cella   */
-    interface OnItemClickListener {
-        fun onItemClick(punto: PuntoRitiro)
     }
 
     // Create new views (invoked by the layout manager)
@@ -54,7 +49,7 @@ class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val l
             holder.distanceTextView.text = distanceText(punto.location.distanceTo(location))
 
             holder.itemView.setOnClickListener{
-                listener.onItemClick(punto)
+                listener.onEventHappened(punto)
             }
 
         }

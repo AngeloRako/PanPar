@@ -16,7 +16,7 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/homeRiceventeToListaPanieri"
-            app:destination="@id/listaPanieriFragment2" />
+            app:destination="@id/listaPanieriFragment" />
     </fragment>
     <activity
         android:id="@+id/homeDonatoreActivity2"
@@ -24,7 +24,7 @@
         android:label="activity_home_donatore"
         tools:layout="@layout/activity_home_donatore" />
     <fragment
-        android:id="@+id/listaPanieriFragment2"
+        android:id="@+id/listaPanieriFragment"
         android:name="com.rapnap.panpar.view.ListaPanieriFragment"
-        android:label="ListaPanieriFragment" />
+        android:label="Nuovi panieri" />
 </navigation>

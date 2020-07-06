@@ -44,7 +44,6 @@ class PaniereRepository {
             "nome_punto_ritiro" to paniere.puntoRitiro.nome,
             "contenuto" to paniere.contenuto.toList(),
             "indirizzo" to paniere.puntoRitiro.indirizzo
-
          )
 
         //New document with a generated ID
@@ -217,7 +216,17 @@ class PaniereRepository {
                 .get()
                 .addOnSuccessListener { documents ->
                     for (document in documents) {
-                        val riceventiOnCurrentPaniere = document.data?.get("riceventi") as ArrayList<String>
+
+                        var riceventiOnCurrentPaniere: ArrayList<String> = arrayListOf("")
+
+                        val codaRic = document.data?.get("coda_riceventi")
+
+                        if(codaRic != null){
+
+                             riceventiOnCurrentPaniere = codaRic as ArrayList<String>
+
+                        }
+
                         isAlreadyFollowing = riceventiOnCurrentPaniere.contains(auth.currentUser?.uid)
 
                         val tempString = document.data?.get("contenuto") as ArrayList<String>
@@ -239,7 +248,7 @@ class PaniereRepository {
                         panieriRef.document(paniereID)
                             .update("n_richieste", FieldValue.increment(1))
                         panieriRef.document(paniereID)
-                            .update("riceventi", FieldValue.arrayUnion(auth.currentUser?.uid))
+                            .update("coda_riceventi", FieldValue.arrayUnion(auth.currentUser?.uid))
 
                     } else {
                         Log.d("REPOSITORY", "Già stai seguendo questo paniere o non hai " +
@@ -258,7 +267,7 @@ class PaniereRepository {
         var totalValue : Long = 0
         val panieriRef = db.collection("panieri")
 
-        panieriRef.whereArrayContains("riceventi", id)
+        panieriRef.whereArrayContains("coda_riceventi", id)
             .get()
             .addOnSuccessListener {documents ->
                 for(document in documents) {
@@ -363,7 +372,7 @@ class PaniereRepository {
             "ricevente" -> {
 
                 panieriRef
-                    .whereArrayContains("riceventi", uiid)
+                    .whereArrayContains("coda_riceventi", uiid)
                     .get()
                     .addOnSuccessListener {
                         for (document: QueryDocumentSnapshot in it) {
