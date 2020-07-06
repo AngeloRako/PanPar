@@ -12,8 +12,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.rapnap.panpar.R
 import com.rapnap.panpar.adapter.OnItemEventListener
 import com.rapnap.panpar.adapter.PuntiRitiroListAdapter
+import com.rapnap.panpar.extensions.toLocation
 import com.rapnap.panpar.model.PuntoRitiro
-import com.rapnap.panpar.model.toLocation
 import com.rapnap.panpar.viewmodel.NuovoPaniereViewModel
 import kotlinx.android.synthetic.main.fragment_punti_ritiro_list.view.*
 
@@ -98,7 +98,7 @@ class PuntiRitiroListFragment : Fragment(), OnItemEventListener<PuntoRitiro> {
 
     //Cosa succede quando clicco su una cella?
 
-    override fun onEventHappened(punto: PuntoRitiro) {
+    override fun onEventHappened(punto: PuntoRitiro, view: View?) {
         nuovoPaniereVM.setPuntoRitiroVisualizzato(punto)
         Navigation.findNavController(requireView()).popBackStack()
     }

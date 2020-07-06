@@ -10,9 +10,9 @@ import com.google.android.material.chip.Chip
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.rapnap.panpar.R
+import com.rapnap.panpar.extensions.distanceText
 import com.rapnap.panpar.extensions.inflate
 import com.rapnap.panpar.model.Paniere
-import com.rapnap.panpar.model.distanceText
 import kotlinx.android.synthetic.main.recyclerview_item_row.view.*
 import java.io.File
 
@@ -22,13 +22,12 @@ class RecyclerAdapter(private var panieri: ArrayList<Paniere>, private var locat
     private lateinit var inflatedView: View
     private val storage = Firebase.storage
 
+    //Classe che estende la RecyclerView.ViewHolder, fa usare la ViewHolder all'adapter
+    class PanieriHolder(val view: View) : RecyclerView.ViewHolder(view) //{}
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PanieriHolder {
         Log.d("ADAPTER", "onCreateViewHolder")
         inflatedView = parent.inflate(R.layout.recyclerview_item_row, false)
-
-        //Prendo 1/4 dello schermo (il parent ha le dimensioni dello schermo)
-        //per ogni riga = paniere da mostrare
-        //inflatedView.layoutParams.height = parent.measuredHeight/6;
 
         return PanieriHolder(inflatedView)
     }
@@ -61,14 +60,14 @@ class RecyclerAdapter(private var panieri: ArrayList<Paniere>, private var locat
             }
         }
 
-        //Inserisco la posizione del paniere
+        //Inserisco la posizione del paniere e dati sulla distanza
         holder.view.paniereLocation.text = paniere.puntoRitiro.nome
         holder.view.paniereIndirizzo.text = paniere.puntoRitiro.indirizzo
         holder.view.paniereDistanza.text = distanceText(paniere.puntoRitiro.location.distanceTo(location))
 
-
-        //Concateno il contenuto del paniere in una sola stringa
-        //ed inserisco il contenuto del paniere
+        //Svuoto il ViewGroup contenente i Chip contenuto (eventualmente riciclati) e
+        // mostro quelli del paniere
+        holder.view.contenuto_group.removeAllViews()
         paniere.contenuto.forEach {
             val chip = Chip(holder.view.context).apply{
                 this.isCheckable = false
@@ -76,26 +75,27 @@ class RecyclerAdapter(private var panieri: ArrayList<Paniere>, private var locat
                 this.text = it.toString().toLowerCase().capitalize()
                 holder.view.contenuto_group.addView(this)
             }
-            Log.d("ADAPTER", "Contenuto: $chip.toString()")
+            Log.d("ADAPTER", "Contenuto: ${chip}")
         }
 
-        holder.view.paniereValue.text = "Valore: " + paniere.calcolaValore().toString()
+        holder.view.paniereValue.text = "Valore: ${paniere.calcolaValore()}"
         Log.d("ADAPTER", "Valore: " + paniere.calcolaValore().toString())
 
 
         holder.view.followPaniere.setOnClickListener{
-            onFollowListener.onEventHappened(paniere)
+            //Segnalo al fragment che ho tappato "Follow" e che qualcosa dovrà succedere
+            //Fornisco anche la view della cella, così posso aggiornare appropriatamente a seconda
+            //di cosa succede
+            onFollowListener.onEventHappened(paniere, it)
         }
     }
+
 
     fun addNewItem(newPaniere: Paniere) {
         //Provare a passare la lista intera
         panieri.add(newPaniere)
     }
 
-    //Classe che estende la RecyclerView.ViewHolder, fa usare la ViewHolder all'adapter
-    class PanieriHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
 
-    }
 }

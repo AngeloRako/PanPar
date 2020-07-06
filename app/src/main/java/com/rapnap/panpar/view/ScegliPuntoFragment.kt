@@ -19,10 +19,10 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.rapnap.panpar.R
+import com.rapnap.panpar.extensions.distanceText
+import com.rapnap.panpar.extensions.toLatLng
+import com.rapnap.panpar.extensions.toLocation
 import com.rapnap.panpar.model.PuntoRitiro
-import com.rapnap.panpar.model.distanceText
-import com.rapnap.panpar.model.toLatLng
-import com.rapnap.panpar.model.toLocation
 import com.rapnap.panpar.viewmodel.NuovoPaniereViewModel
 import kotlinx.android.synthetic.main.fragment_scegli_punto.*
 import kotlinx.android.synthetic.main.fragment_scegli_punto.view.*

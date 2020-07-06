@@ -13,8 +13,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.rapnap.panpar.R
 import com.rapnap.panpar.adapter.OnItemEventListener
 import com.rapnap.panpar.adapter.RecyclerAdapter
+import com.rapnap.panpar.extensions.toLocation
 import com.rapnap.panpar.model.Paniere
-import com.rapnap.panpar.model.toLocation
 import com.rapnap.panpar.viewmodel.ListaPanieriViewModel
 import kotlinx.android.synthetic.main.fragment_lista_panieri.view.*
 
@@ -73,7 +73,7 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEve
         }
     }
 
-    override fun onEventHappened(item: Paniere) {
+    override fun onEventHappened(item: Paniere, view: View?) {
         listaPanieriVM.updatePaniereFollowers(item.id)
     }
 
