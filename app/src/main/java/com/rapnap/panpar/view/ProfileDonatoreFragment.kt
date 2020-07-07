@@ -3,9 +3,7 @@ package com.rapnap.panpar.view
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
@@ -38,11 +36,19 @@ class ProfileDonatoreFragment : Fragment() {
                 if (backPressedTime + 2000 > System.currentTimeMillis()) {
                     activity?.finish()
                 } else {
-                    Toast.makeText(activity?.applicationContext, "Premi indietro di nuovo per uscire", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        activity?.applicationContext,
+                        "Premi indietro di nuovo per uscire",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
                 backPressedTime = System.currentTimeMillis()
             }
         })
+
+        //Attivo menu opzioni
+        setHasOptionsMenu(true)
+
     }
 
     override fun onCreateView(
@@ -60,7 +66,6 @@ class ProfileDonatoreFragment : Fragment() {
         return view
     }
 
-
     override fun onStart() {
         super.onStart()
 
@@ -72,28 +77,19 @@ class ProfileDonatoreFragment : Fragment() {
 
         //Visualizzo una Label personalizzata per l'utente loggato comprensiva di Nome e Cognome
         //Si presuppone che il Donatore non debba per forza rimanere nell'anonimato
-        labelHomeDonatore1.text = Html.fromHtml("Salve Donatore " + "<b>" + getName(acct) + "</b>" + "," + "<br>" + "di seguito il resoconto delle tue azioni:")
+        labelHomeDonatore1.text =
+            Html.fromHtml("Salve Donatore " + "<b>" + getName(acct) + "</b>" + "," + "<br>" + "di seguito il resoconto delle tue azioni:")
 
         //Visualizzo con una WebView l'immagine del profilo dell'utente loggato in Google.
         //L'immagine è prelevata in termini di URI, che viene castano a String
         Glide.with(this).load(getPhoto(acct).toString()).into(profilePic)
 
-        //Navigation.findNavController(this.requireView()).navigate(R.id.donatoreToNuovoPaniere)
-
-
-        //Callback relativa al pulsante switchRoleBtn: permette il passaggio all'activity Ricevente
-        //Inoltre invoca il metodo changeRole affinché l'utente possa veder cambiata la sua tipologia
-        switchRoleBtn.setOnClickListener{
-            Navigation.findNavController(requireView()).navigate(R.id.HDtoHR)
-            pdvm.changeRole()
-            this.activity?.finish()
-        }
     }
 
     //Imposta il rating del donatore nella ratingBar se questo è cambiato. Viene utilizzato il pattern Observer affinché
     //possa appunto "osservare" i cambiamenti che vengono effettuati su un certo oggetto.
     fun impostaRating() {
-        pdvm.obtainRatingDonatore().observe(this, Observer<Utente>{
+        pdvm.obtainRatingDonatore().observe(this, Observer<Utente> {
             ratingBar.rating = it.rating.toFloat()
         })
     }
@@ -107,4 +103,32 @@ class ProfileDonatoreFragment : Fragment() {
     fun getPhoto(account: GoogleSignInAccount): Uri? {
         return pdvm.obtainImageFromGoogle(account)
     }
+
+    //Menu opzioni
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.profilo_donatore_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+
+        R.id.go_to_ricevente -> {
+
+            //Permette il passaggio all'activity Ricevente
+            //Inoltre invoca il metodo changeRole affinché l'utente possa veder cambiata la sua tipologia
+            Navigation.findNavController(requireView()).navigate(R.id.HDtoHR)
+            pdvm.changeRole()
+            this.activity?.finish()
+            true
+        }
+
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
+    }
 }
+
+
+

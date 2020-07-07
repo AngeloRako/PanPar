@@ -6,20 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".view.NuovoPaniereActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/topAppBar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:layout_collapseMode="pin"
-            app:title="Ciao"
-            style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"/>
-
-    </com.google.android.material.appbar.AppBarLayout>
-
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/new_paniere_host_fragment"
         android:name="androidx.navigation.fragment.NavHostFragment"

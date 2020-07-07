@@ -5,30 +5,32 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.ui.NavigationUI
 import com.rapnap.panpar.R
-import com.rapnap.panpar.R.id.donatore_fragment
 
 class HomeDonatoreActivity : AppCompatActivity() {
 
+    private lateinit var navController: NavController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.AppTheme_NoActionBar)
+        setTheme(R.style.AppTheme)
         setContentView(R.layout.activity_home_donatore)
 
         negotiateDeviceDarkMode()
 
         //Imposto la toolbar dell'activity
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(donatore_fragment) as NavHostFragment
-        val navController: NavController = navHostFragment.navController
-        val toolbar = findViewById<Toolbar>(R.id.topAppBar)
-        val appBarConfiguration = AppBarConfiguration(navController.graph)
-        toolbar.setupWithNavController(navController, appBarConfiguration)
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.donatore_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+        NavigationUI.setupActionBarWithNavController(this, navController)
+
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        navController.navigateUp()
+        return super.onSupportNavigateUp()
     }
 
     private fun negotiateDeviceDarkMode() {
