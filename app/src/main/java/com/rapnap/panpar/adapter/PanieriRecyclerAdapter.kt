@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.recyclerview_item_row.view.*
 import java.io.File
 
 
-class RecyclerAdapter(private var panieri: ArrayList<Paniere>, private var location: Location, private val onFollowListener: OnItemEventListener<Paniere>) : RecyclerView.Adapter<RecyclerAdapter.PanieriHolder>() {
+class PanieriRecyclerAdapter(private var panieri: ArrayList<Paniere>, private var location: Location, private val onFollowListener: OnItemEventListener<Paniere>) : RecyclerView.Adapter<PanieriRecyclerAdapter.PanieriHolder>() {
 
     private lateinit var inflatedView: View
     private val storage = Firebase.storage
