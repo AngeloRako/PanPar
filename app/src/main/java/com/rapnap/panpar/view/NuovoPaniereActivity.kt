@@ -5,46 +5,34 @@ import android.os.Bundle
 import android.util.TypedValue
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.navigation.ActivityNavigator
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupWithNavController
+import androidx.navigation.ui.NavigationUI
 import com.rapnap.panpar.R
 
 //Deprecated?
 class NuovoPaniereActivity : AppCompatActivity() {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
-
+    private lateinit var navController: NavController
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_nuovo_paniere)
 
+        setTheme(R.style.AppTheme)
+        setContentView(R.layout.activity_nuovo_paniere)
         negotiateDeviceDarkMode()
 
         //Imposto la toolbar dell'activity
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.new_paniere_host_fragment) as NavHostFragment
-        val navController: NavController = navHostFragment.navController
-        val toolbar = findViewById<Toolbar>(R.id.topAppBar)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        toolbar.setupWithNavController(navController, appBarConfiguration)
-        setSupportActionBar(toolbar)
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true) //show back button
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.new_paniere_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
+        NavigationUI.setupActionBarWithNavController(this, navController)
 
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.new_paniere_host_fragment) as NavHostFragment
-        val navController: NavController = navHostFragment.navController
-
-        return navController.navigateUp()
-                || super.onSupportNavigateUp()
+        navController.navigateUp()
+        return super.onSupportNavigateUp()
     }
 
     override fun finish() {

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.model.LatLng
 import com.rapnap.panpar.R
 import com.rapnap.panpar.adapter.OnItemEventListener
-import com.rapnap.panpar.adapter.RecyclerAdapter
+import com.rapnap.panpar.adapter.PanieriRecyclerAdapter
 import com.rapnap.panpar.extensions.toLocation
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.viewmodel.ListaPanieriViewModel
@@ -21,30 +21,12 @@ import kotlinx.android.synthetic.main.fragment_lista_panieri.view.*
 class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEventListener<Paniere> {
 
     private lateinit var linearLayoutManager: LinearLayoutManager
-    private lateinit var adapter: RecyclerAdapter
+    private lateinit var adapter: PanieriRecyclerAdapter
     private var panieriList : ArrayList<Paniere> = ArrayList()
     private val listaPanieriVM : ListaPanieriViewModel by viewModels()
 
     //TODO: Determinare posizione dinamicamente (VM?)
     private var currentLocation = LatLng(40.643396, 14.865041)
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_lista_panieri, container, false)
-
-        linearLayoutManager = LinearLayoutManager(this.activity)
-        view.rec_view.layoutManager = linearLayoutManager
-
-
-        //Popolare tutta in una botta con il costruttore mettendo tutto nella onComplete qui dentro
-        adapter = RecyclerAdapter(panieriList, currentLocation.toLocation(), this)
-        view.rec_view.adapter = adapter
-
-        return view
-    }
 
     override fun onStart() {
         super.onStart()
@@ -61,7 +43,6 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEve
                 Log.d("ACTIVITY", "Ho assegnato ad i panieri i valori che stavano nel DB." +
                         " La dimensione della lista dei panieri è: " + panieriList.size.toString())
 
-                //Prova soluzione di Angelo
                 panieriList.forEach() {
                     activity?.runOnUiThread {   //Possiamo pensare a dove altro metterlo
                         adapter.addNewItem(it)
@@ -72,6 +53,25 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEve
             })
         }
     }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.fragment_lista_panieri, container, false)
+
+        linearLayoutManager = LinearLayoutManager(this.activity)
+        view.rec_view.layoutManager = linearLayoutManager
+
+
+        //Popolare tutta in una botta con il costruttore mettendo tutto nella onComplete qui dentro
+        adapter = PanieriRecyclerAdapter(panieriList, currentLocation.toLocation(), this)
+        view.rec_view.adapter = adapter
+
+        return view
+    }
+
 
     override fun onEventHappened(item: Paniere, view: View?) {
         listaPanieriVM.updatePaniereFollowers(item.id)

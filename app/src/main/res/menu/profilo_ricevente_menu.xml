@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:icon="@drawable/ic_switch_role"
+        android:id="@+id/go_to_donatore"
+        android:title="Passa a donatore"
+        app:showAsAction="ifRoom"/>
+</menu>
