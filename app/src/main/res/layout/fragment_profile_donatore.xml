@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/colorPrimary"
     tools:context=".view.ProfileDonatoreFragment">
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/donateBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:layout_marginBottom="32dp"
+        android:contentDescription="Nuovo Paniere"
+        app:srcCompat="@drawable/ic_baseline_add_24"
+        app:backgroundTint = "@color/secondaryColor"/>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/lista_panieri_donatore_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        app:behavior_hideable="false"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/lista_panieri_donatore"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </com.google.android.material.card.MaterialCardView>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -13,68 +39,49 @@
         android:layout_height="match_parent"
         tools:context=".view.ProfileDonatoreFragment">
 
-        <ImageView
-            android:id="@+id/profilePic"
-            android:layout_width="0dp"
+        <androidx.cardview.widget.CardView
+            android:id="@+id/profilePicView"
+            android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_marginStart="144dp"
             android:layout_marginTop="41dp"
             android:layout_marginEnd="139dp"
+            app:cardCornerRadius="50dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.446"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/labelHomeDonatore1"
-            app:srcCompat="@mipmap/ic_panpar" />
+            app:layout_constraintTop_toBottomOf="@+id/labelHomeDonatore1">
+
+            <ImageView
+                android:id="@+id/profilePic"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:srcCompat="@mipmap/ic_panpar" />
+        </androidx.cardview.widget.CardView>
 
         <TextView
             android:id="@+id/labelHomeDonatore1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="130dp"
+            android:layout_marginTop="100dp"
             android:text="Benvenuto Donatore, \ndi seguito il resoconto delle tue azioni:"
             android:textAlignment="center"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/switchRoleBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="16dp"
-            android:text="Passa a Ricevente"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
         <RatingBar
             android:id="@+id/ratingBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="35dp"
-            android:layout_marginBottom="412dp"
             android:isIndicator="true"
             android:scaleX="0.5"
             android:scaleY="0.5"
-            app:layout_constraintBottom_toTopOf="@+id/switchRoleBtn"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.508"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profilePic" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/donateBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
-            android:layout_margin="16dp"
-            android:layout_marginBottom="32dp"
-            android:contentDescription="Nuovo Paniere"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.972"
-            app:layout_constraintStart_toEndOf="@+id/switchRoleBtn"
-            app:srcCompat="@drawable/ic_baseline_add_24" />
+            app:layout_constraintTop_toBottomOf="@+id/profilePicView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

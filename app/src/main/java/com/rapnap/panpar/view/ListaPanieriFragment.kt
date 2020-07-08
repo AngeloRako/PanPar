@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.model.LatLng
 import com.rapnap.panpar.R
 import com.rapnap.panpar.adapter.OnItemEventListener
-import com.rapnap.panpar.adapter.RecyclerAdapter
+import com.rapnap.panpar.adapter.PanieriRecyclerAdapter
 import com.rapnap.panpar.extensions.toLocation
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.viewmodel.ListaPanieriViewModel
@@ -21,12 +21,39 @@ import kotlinx.android.synthetic.main.fragment_lista_panieri.view.*
 class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEventListener<Paniere> {
 
     private lateinit var linearLayoutManager: LinearLayoutManager
-    private lateinit var adapter: RecyclerAdapter
-    private var panieriList : ArrayList<Paniere> = ArrayList()
+    private lateinit var adapter: PanieriRecyclerAdapter
     private val listaPanieriVM : ListaPanieriViewModel by viewModels()
 
     //TODO: Determinare posizione dinamicamente (VM?)
     private var currentLocation = LatLng(40.643396, 14.865041)
+
+    override fun onStart() {
+        super.onStart()
+        //Parte chiamando la funzione che comunica con la repository per prendere i panieri
+        //in base al punteggio dell'utente
+        listaPanieriVM.getPanieriByScore() {
+
+            Log.d("ACTIVITY", "Ho chiamato getPanieriByScore")
+
+            //Osserva i panieri ottenuti
+            listaPanieriVM.getListaPanieri().observe(this, Observer<ArrayList<Paniere>> {
+                //Log.d("ACTIVITY", "Ho assegnato ad i panieri i valori che stavano nel DB." +
+                //        " La dimensione della lista dei panieri è: " + panieriList.size.toString())
+
+                adapter.setData(it)
+
+                /*
+                panieriList.forEach() {
+                    activity?.runOnUiThread {   //Possiamo pensare a dove altro metterlo
+                        adapter.addNewItem(it)
+                        adapter.notifyItemInserted((panieriList.size-1))    //Posizione in cui ho inserito, sempre alla fine
+                        Log.d("ACTIVITY", "Ho " + adapter.itemCount.toString() + " panieri.")
+                    }
+                }
+                 */
+            })
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -40,38 +67,12 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEve
 
 
         //Popolare tutta in una botta con il costruttore mettendo tutto nella onComplete qui dentro
-        adapter = RecyclerAdapter(panieriList, currentLocation.toLocation(), this)
+        adapter = PanieriRecyclerAdapter(ArrayList<Paniere>(), currentLocation.toLocation(), this)
         view.rec_view.adapter = adapter
 
         return view
     }
 
-    override fun onStart() {
-        super.onStart()
-        //Parte chiamando la funzione che comunica con la repository per prendere i panieri
-        //in base al punteggio dell'utente
-        listaPanieriVM.getPanieriByScore() {
-
-            Log.d("ACTIVITY", "Ho chiamato getPanieriByScore")
-
-            //Osserva i panieri ottenuti
-            listaPanieriVM.getListaPanieri().observe(this, Observer<ArrayList<Paniere>> {
-                //Assegna a panieriList i panieri ottenuti, che verrà poi passato all'adapter
-                panieriList = it
-                Log.d("ACTIVITY", "Ho assegnato ad i panieri i valori che stavano nel DB." +
-                        " La dimensione della lista dei panieri è: " + panieriList.size.toString())
-
-                //Prova soluzione di Angelo
-                panieriList.forEach() {
-                    activity?.runOnUiThread {   //Possiamo pensare a dove altro metterlo
-                        adapter.addNewItem(it)
-                        adapter.notifyItemInserted((panieriList.size-1))    //Posizione in cui ho inserito, sempre alla fine
-                        Log.d("ACTIVITY", "Ho " + adapter.itemCount.toString() + " panieri.")
-                    }
-                }
-            })
-        }
-    }
 
     override fun onEventHappened(item: Paniere, view: View?) {
         listaPanieriVM.updatePaniereFollowers(item.id)

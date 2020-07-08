@@ -1,5 +1,6 @@
 package com.rapnap.panpar.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.rapnap.panpar.model.Paniere
@@ -12,13 +13,15 @@ class ProfileRiceventeViewModel: ViewModel() {
     private val utenteRepository: UtenteRepository = UtenteRepository()
     private val userObserved = MutableLiveData<Utente>()
     private val paniereRepository: PaniereRepository = PaniereRepository()
-    private val panieriObserved = MutableLiveData<ArrayList<Paniere>>()
+    private val _panieriRicevente = MutableLiveData<ArrayList<Paniere>>()
+    val panieriRicevente: LiveData<ArrayList<Paniere>>
+        get(): LiveData<ArrayList<Paniere>> = _panieriRicevente
 
-    fun funzionetestVM(): MutableLiveData<ArrayList<Paniere>>{
+
+    fun obtainPanieri(){
         paniereRepository.getListaPanieriPerTipologia("ricevente"){
-            panieriObserved.setValue(it)
+            _panieriRicevente.setValue(it)
         }
-        return panieriObserved
     }
 
     //Metodo che chiama la rispettiva funzione del repository per il cambio di tipologia
