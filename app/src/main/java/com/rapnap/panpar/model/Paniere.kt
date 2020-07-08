@@ -15,7 +15,8 @@ data class Paniere (
     var nRichieste: Int = 0,
     var abbinamento: Abbinamento? = null,
     var dataRicezione: Date? = null,
-    var immagine : String? = null
+    var immagine : String? = null,
+    var stato: Stato = Stato.IN_ATTESA_DI_MATCH
 
 ) {
 
@@ -37,4 +38,8 @@ data class Paniere (
 }
 enum class Contenuto {
     PASTA, CONFETTURA, BIBITE, SORPRESA, VESTIARIO, CONSERVATI, ALTRO
+}
+
+enum class Stato {
+    IN_ATTESA_DI_MATCH, ASSEGNATO, IN_GIACENZA, RITIRATO
 }

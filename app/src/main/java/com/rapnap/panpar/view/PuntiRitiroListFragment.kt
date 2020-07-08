@@ -32,42 +32,42 @@ class PuntiRitiroListFragment : Fragment(), OnItemEventListener<PuntoRitiro> {
     private var maxDistance = 500000000000.0
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
-        ): View? {
-            // Inflate the layout for this fragment
-            val view = inflater.inflate(R.layout.fragment_punti_ritiro_list, container, false)
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        val view = inflater.inflate(R.layout.fragment_punti_ritiro_list, container, false)
 
-            viewManager = LinearLayoutManager(this.activity)
-            recyclerView = view.punti_ritiro_recycler_view.apply {
-                // use this setting to improve performance if you know that changes
-                // in content do not change the layout size of the RecyclerView
-                setHasFixedSize(true)
+        viewManager = LinearLayoutManager(this.activity)
+        recyclerView = view.punti_ritiro_recycler_view.apply {
+            // use this setting to improve performance if you know that changes
+            // in content do not change the layout size of the RecyclerView
+            setHasFixedSize(true)
 
-                // use a linear layout manager
-                layoutManager = viewManager
+            // use a linear layout manager
+            layoutManager = viewManager
 
-            }
-
-            //Location utente (La posso chiedere IRT oppure al VewModel..)
-            var loc = currentLocation.toLocation()
-
-
-            nuovoPaniereVM.getPuntiDiRitiro(loc, maxDistance){}
-
-            nuovoPaniereVM.puntiRitiro.observe(viewLifecycleOwner, Observer<List<PuntoRitiro>> {
-
-                viewAdapter = PuntiRitiroListAdapter(
-                    it,
-                    loc,
-                    this
-                )
-                recyclerView.adapter = viewAdapter
-
-            })
-
-            return view
         }
+
+        //Location utente (La posso chiedere IRT oppure al ViewModel..)
+        var location = currentLocation.toLocation()
+
+        nuovoPaniereVM.getPuntiDiRitiro(location, maxDistance) {}
+        viewAdapter = PuntiRitiroListAdapter(
+            ArrayList<PuntoRitiro>(),
+            location,
+            this
+        )
+        recyclerView.adapter = viewAdapter
+
+        nuovoPaniereVM.puntiRitiro.observe(viewLifecycleOwner, Observer<List<PuntoRitiro>> {
+
+            viewAdapter.setPunti(it)
+
+        })
+
+        return view
+    }
 
 
     /*  Elementi di Menu nella ActionBar    */
@@ -83,7 +83,7 @@ class PuntiRitiroListFragment : Fragment(), OnItemEventListener<PuntoRitiro> {
 
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
 
-        R.id.toggle_map ->{
+        R.id.toggle_map -> {
 
             Navigation.findNavController(requireView()).popBackStack()
 

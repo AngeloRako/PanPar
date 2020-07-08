@@ -11,44 +11,71 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".view.ProfileDonatoreFragment">
+        tools:context=".view.ProfileDonatoreFragment"
+        android:background = "@color/primaryColor"
+        >
 
         <TextView
-            android:id="@+id/homeRiceventeLabel1"
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Salve Ricevente,\ndi seguito è riportato il resoconto sul tuo profilo:"
-            android:textAlignment="center"
-            app:layout_constraintBottom_toTopOf="@+id/puntiLabel"
+            android:layout_marginTop="25dp"
+            android:text="Hai a disposizione:"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.763" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
         <TextView
             android:id="@+id/puntiLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="400dp"
-            android:text="Hai a disposizione:"
-            app:layout_constraintBottom_toTopOf="@+id/switchRoleBtn"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.133"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/listaPanieriBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Lista Panieri"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="16dp"
+            android:text="20 punti"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/homeRiceventeLabel1" />
+            app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/ic_shopping_basket"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/listaPanieriBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:contentDescription="Cerca paniere"
+        app:srcCompat="@drawable/ic_baseline_search_24"
+        app:backgroundTint = "@color/secondaryColor"/>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/lista_panieri_ricevente_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#FFFFFF"
+        app:behavior_hideable="false"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/lista_panieri_ricevente"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </com.google.android.material.card.MaterialCardView>
+
+
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

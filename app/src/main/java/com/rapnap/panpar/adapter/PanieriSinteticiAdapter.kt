@@ -9,13 +9,20 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.rapnap.panpar.R
 import com.rapnap.panpar.extensions.inflate
+import com.rapnap.panpar.extensions.prettyString
+import com.rapnap.panpar.extensions.prettyText
 import com.rapnap.panpar.model.Paniere
+import com.rapnap.panpar.model.Stato
+import com.rapnap.panpar.model.Tipologia
 import kotlinx.android.synthetic.main.paniere_item_row.view.*
 import kotlinx.android.synthetic.main.recyclerview_item_row.view.contenuto_group
 import kotlinx.android.synthetic.main.recyclerview_item_row.view.paniereLocation
 import kotlinx.android.synthetic.main.recyclerview_item_row.view.paniereValue
 
-class PanieriSinteticiAdapter (private var panieri: ArrayList<Paniere>): RecyclerView.Adapter<PanieriSinteticiAdapter.PanieriHolder>() {
+class PanieriSinteticiAdapter(
+    private var panieri: ArrayList<Paniere>,
+    private val tipologia: Tipologia
+) : RecyclerView.Adapter<PanieriSinteticiAdapter.PanieriHolder>() {
 
     private lateinit var inflatedView: View
     private val storage = Firebase.storage
@@ -23,7 +30,10 @@ class PanieriSinteticiAdapter (private var panieri: ArrayList<Paniere>): Recycle
     //Classe che estende la RecyclerView.ViewHolder, fa usare la ViewHolder all'adapter
     class PanieriHolder(val view: View) : RecyclerView.ViewHolder(view) //{}
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PanieriSinteticiAdapter.PanieriHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): PanieriSinteticiAdapter.PanieriHolder {
         Log.d("ADAPTER", "onCreateViewHolder")
         inflatedView = parent.inflate(R.layout.paniere_item_row, false)
 
@@ -46,7 +56,7 @@ class PanieriSinteticiAdapter (private var panieri: ArrayList<Paniere>): Recycle
         // mostro quelli del paniere
         holder.view.contenuto_group.removeAllViews()
         paniere.contenuto.forEach {
-            val chip = Chip(holder.view.context).apply{
+            val chip = Chip(holder.view.context).apply {
                 this.isCheckable = false
                 this.isFocusableInTouchMode = false
                 this.text = it.toString().toLowerCase().capitalize()
@@ -56,15 +66,53 @@ class PanieriSinteticiAdapter (private var panieri: ArrayList<Paniere>): Recycle
         }
 
         holder.view.paniereValue.text = "Valore: ${paniere.calcolaValore()}"
+        holder.view.stato.text = paniere.stato.prettyText()
+
+        when (tipologia) {
+
+            Tipologia.DONATORE -> {
+                when (paniere.stato) {
+                    Stato.RITIRATO -> {
+                        holder.view.data.text =
+                            "Ritirato il ${paniere.dataRicezione?.prettyString()}"
+                    }
+                    Stato.ASSEGNATO -> {
+                        holder.view.data.text =
+                            "Da consegnare (entro) il ${paniere.dataConsegnaPrevista?.prettyString()}"
+                    }
+                    else -> {
+                        holder.view.data.text =
+                            "Creato il ${paniere.dataInserimento?.prettyString()}"
+                    }
+                }
+            }
+            Tipologia.RICEVENTE -> {
+                when (paniere.stato) {
+                    Stato.RITIRATO -> {
+                        holder.view.data.text =
+                            "Ritirato il ${paniere.dataRicezione?.prettyString()}"
+                    }
+                    Stato.IN_GIACENZA -> {
+                        holder.view.data.text =
+                            "Da ritirare entro 2 giorni dal ${paniere.dataConsegnaPrevista?.prettyString()}"
+                    }
+                    else -> {
+                        holder.view.data.text =
+                            "Creato il ${paniere.dataInserimento?.prettyString()}"
+                    }
+                }
+            }
+
+
+        }
         Log.d("ADAPTER", "Valore: " + paniere.calcolaValore().toString())
 
     }
 
-
-
-    fun addNewItem(newPaniere: Paniere) {
-        //Provare a passare la lista intera
-        panieri.add(newPaniere)
+    fun setData(panieri: ArrayList<Paniere>) {
+        this.panieri.clear()
+        this.panieri.addAll(panieri)
+        notifyDataSetChanged()
     }
 
 
