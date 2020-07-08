@@ -177,22 +177,17 @@ class PaniereRepository {
 
                         Log.d("REPOSITORY", "Paniere creato: " + paniereTemp.contenuto.toString())
 
-
+                        //Se esiste la coda riceventi, controlla se già contiene il ricevente
                         var isAlreadyFollowing = false
-
-                        if((document.data?.get("n_richieste") as Long) > 0){
-
+                        if(document.data?.get("coda_riceventi") != null) {
                             isAlreadyFollowing = (document.data?.get("coda_riceventi") as ArrayList<String>).contains(auth.currentUser?.uid)
-
                         }
-
 
                         //Se il paniere creato ha un valore inferiore ai punti rimanenti all'utente
                         //e se la distanza punto di ritiro - posizione dell'utente è inferiore
                         //ai due km (costante acceptableDistanceInMeters = 2000 metri, è un esempio)
-                        if (paniereTemp.calcolaValore() < points && tempLocation.distanceTo(
-                                userLocationAsLocation
-                            ) < acceptableDistanceInMeters
+                        if (paniereTemp.calcolaValore() < points
+                            && tempLocation.distanceTo(userLocationAsLocation) < acceptableDistanceInMeters
                             && !isAlreadyFollowing
                         ) {
                             //OTTIMIZZAZIONE: posso fare la get qui di tutti i campi che non siano
