@@ -1,8 +1,6 @@
 package com.rapnap.panpar.view
 
-import android.content.ContentValues.TAG
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -10,17 +8,30 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.shape.CornerFamily
 import com.rapnap.panpar.R
+import com.rapnap.panpar.adapter.PanieriSinteticiAdapter
 import com.rapnap.panpar.model.Paniere
+import com.rapnap.panpar.model.Tipologia
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.viewmodel.ProfileRiceventeViewModel
 import kotlinx.android.synthetic.main.fragment_profile_ricevente.*
+import kotlinx.android.synthetic.main.fragment_profile_ricevente.view.*
 
 
 class ProfileRiceventeFragment : Fragment(R.layout.fragment_profile_ricevente) {
 
     private val prvm: ProfileRiceventeViewModel by viewModels()
     private var backPressedTime = 0L
+    private lateinit var adapter: PanieriSinteticiAdapter
+    private lateinit var linearLayoutManager: LinearLayoutManager
+    private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
+    private val radius = 100F
+    private lateinit var cardView: MaterialCardView
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +61,25 @@ class ProfileRiceventeFragment : Fragment(R.layout.fragment_profile_ricevente) {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile_ricevente, container, false)
+        val view=  inflater.inflate(R.layout.fragment_profile_ricevente, container, false)
+
+        cardView = view.lista_panieri_ricevente_view
+        cardView.setShapeAppearanceModel(
+            cardView.getShapeAppearanceModel()
+                .toBuilder()
+                .setTopLeftCorner(CornerFamily.ROUNDED, radius)
+                .setTopRightCorner(CornerFamily.ROUNDED, radius)
+                .setBottomRightCorner(CornerFamily.ROUNDED, 0F)
+                .setBottomLeftCorner(CornerFamily.ROUNDED, 0F)
+                .build()
+        )
+
+        bottomSheetBehavior = BottomSheetBehavior.from(view.lista_panieri_ricevente_view)
+        bottomSheetBehavior.peekHeight = resources.configuration.screenHeightDp
+        bottomSheetBehavior.addBottomSheetCallback(BottomSheetListener())
+
+
+        return view
     }
 
     override fun onStart() {
@@ -64,15 +93,18 @@ class ProfileRiceventeFragment : Fragment(R.layout.fragment_profile_ricevente) {
         //Metodo utilizzato per mostrare il punteggio residuo dell'utente ricevente.
         mostraPunteggio()
 
-        funzioneTest()
-    }
+        //Configuro Adapter
+        linearLayoutManager = LinearLayoutManager(this.activity)
+        lista_panieri_ricevente.layoutManager = linearLayoutManager
+        adapter = PanieriSinteticiAdapter(ArrayList<Paniere>(), Tipologia.RICEVENTE)
+        lista_panieri_ricevente.adapter = adapter
 
-    fun funzioneTest() {
-        prvm.funzionetestVM().observe(this, Observer<ArrayList<Paniere>> {
-            it.forEach {
-                Log.d(TAG, "L'ID DEL PANIERE E': ${it.id}")
-            }
+        //Osservo i dati del view model
+        prvm.obtainPanieri()
+        prvm.panieriRicevente.observe(this, Observer<ArrayList<Paniere>> {
+            (lista_panieri_ricevente.adapter as PanieriSinteticiAdapter).setData(it)
         })
+
     }
 
     //Imposta il punteggio del donatore nella Label se questo è cambiato. Viene utilizzato il pattern Observer affinché
@@ -80,7 +112,7 @@ class ProfileRiceventeFragment : Fragment(R.layout.fragment_profile_ricevente) {
     fun mostraPunteggio() {
         prvm.obtainPuntiRicevente().observe(this, Observer<Utente> {
             var punteggio = it.punteggio
-            puntiLabel.setText("Hai a disposizione: " + punteggio + " Punti")
+            puntiLabel.setText("${punteggio} Punti")
         })
     }
 
@@ -108,4 +140,34 @@ class ProfileRiceventeFragment : Fragment(R.layout.fragment_profile_ricevente) {
             super.onOptionsItemSelected(item)
         }
     }
+
+    inner class BottomSheetListener: BottomSheetBehavior.BottomSheetCallback() {
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            //Log.d(TAG, "ONSLIDE DICE: ${slideOffset}")
+
+            val newValue = radius*(1-slideOffset)
+
+            cardView.setShapeAppearanceModel(
+                cardView.getShapeAppearanceModel()
+                    .toBuilder()
+                    .setTopLeftCorner(CornerFamily.ROUNDED, newValue)
+                    .setTopRightCorner(CornerFamily.ROUNDED, newValue)
+                    .setBottomRightCorner(CornerFamily.ROUNDED, 0F)
+                    .setBottomLeftCorner(CornerFamily.ROUNDED, 0F)
+                    .build()
+            )
+
+
+
+        }
+
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+
+        }
+
+    }
+
+
+
 }

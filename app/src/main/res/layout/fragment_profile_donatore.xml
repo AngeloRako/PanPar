@@ -15,7 +15,8 @@
         android:layout_margin="16dp"
         android:layout_marginBottom="32dp"
         android:contentDescription="Nuovo Paniere"
-        app:srcCompat="@drawable/ic_baseline_add_24" />
+        app:srcCompat="@drawable/ic_baseline_add_24"
+        app:backgroundTint = "@color/secondaryColor"/>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/lista_panieri_donatore_view"

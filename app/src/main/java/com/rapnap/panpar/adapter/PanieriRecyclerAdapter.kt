@@ -96,13 +96,5 @@ class PanieriRecyclerAdapter(private var panieri: ArrayList<Paniere>, private va
         notifyDataSetChanged()
     }
 
-    /*
-    fun addNewItem(newPaniere: Paniere) {
-        //Provare a passare la lista intera
-        panieri.add(newPaniere)
-    }
-     */
-
-
 
 }

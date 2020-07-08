@@ -7,9 +7,8 @@
 
     <fragment
         android:id="@+id/profileDonatoreFragment"
-        android:label="Profilo Donatore"
         android:name="com.rapnap.panpar.view.ProfileDonatoreFragment"
-        tools:layout="@layout/fragment_profile_donatore" >
+        tools:layout="@layout/fragment_profile_donatore">
         <action
             android:id="@+id/HDtoHR"
             app:destination="@id/homeRiceventeActivity2"

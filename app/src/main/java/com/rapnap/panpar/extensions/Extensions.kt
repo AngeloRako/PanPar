@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import com.google.android.gms.maps.model.LatLng
+import com.rapnap.panpar.model.Stato
+import java.text.DateFormat
 import java.util.*
 
 fun ViewGroup.inflate(@LayoutRes layoutRes: Int, attachToRoot: Boolean = false): View {
@@ -43,4 +45,14 @@ fun distanceText(distance: Float): String {
     return distanceString
 }
 
+fun Stato.prettyText(): String = when (this){
 
+    Stato.IN_ATTESA_DI_MATCH ->"In attesa dell'esito"
+    Stato.ASSEGNATO -> "Assegnato"
+    Stato.IN_GIACENZA -> "In giacenza"
+    Stato.RITIRATO -> "Ritirato"
+}
+
+fun Date.prettyString(): String {
+    return DateFormat.getDateInstance().format(this)
+}

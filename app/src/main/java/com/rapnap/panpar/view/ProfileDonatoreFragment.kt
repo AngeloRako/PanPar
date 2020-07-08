@@ -20,6 +20,7 @@ import com.google.android.material.shape.CornerFamily
 import com.rapnap.panpar.R
 import com.rapnap.panpar.adapter.PanieriSinteticiAdapter
 import com.rapnap.panpar.model.Paniere
+import com.rapnap.panpar.model.Tipologia
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.viewmodel.ProfileDonatoreViewModel
 import kotlinx.android.synthetic.main.fragment_profile_donatore.*
@@ -121,7 +122,7 @@ class ProfileDonatoreFragment : Fragment() {
         //Configura recycler view
         linearLayoutManager = LinearLayoutManager(this.activity)
         lista_panieri_donatore.layoutManager = linearLayoutManager
-        adapter = PanieriSinteticiAdapter(ArrayList<Paniere>())
+        adapter = PanieriSinteticiAdapter(ArrayList<Paniere>(), Tipologia.DONATORE)
         lista_panieri_donatore.adapter = adapter
 
         pdvm.obtainPanieri()

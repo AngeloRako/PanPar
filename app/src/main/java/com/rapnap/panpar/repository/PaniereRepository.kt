@@ -7,15 +7,13 @@ import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.GeoPoint
-import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.rapnap.panpar.model.Contenuto
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.model.PuntoRitiro
+import com.rapnap.panpar.model.Stato
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,9 +24,9 @@ class PaniereRepository {
     private var db = Firebase.firestore
     //private var storage = Firebase.storage
 
-    private val acceptableDistanceInMeters : Int = 100000000
+    private val acceptableDistanceInMeters: Int = 100000000
 
-    fun createNewPaniere(paniere: Paniere, onComplete: () -> Unit ) {
+    fun createNewPaniere(paniere: Paniere, onComplete: () -> Unit) {
 
         val uiid = auth.currentUser?.uid ?: "!!!!!!"
         val sdf = SimpleDateFormat(".uuuuMMddHHmmss", Locale.getDefault())
@@ -38,13 +36,18 @@ class PaniereRepository {
         val paniereData = hashMapOf(
             "id" to "$uiid$timestamp",
             "data_inserimento" to Timestamp(Date()),
-            "location" to GeoPoint(paniere.puntoRitiro.location.latitude, paniere.puntoRitiro.location.longitude),
+            "location" to GeoPoint(
+                paniere.puntoRitiro.location.latitude,
+                paniere.puntoRitiro.location.longitude
+            ),
             "data_consegna_prevista" to Timestamp(paniere.dataConsegnaPrevista!!),
             "donatore" to uiid,
             "nome_punto_ritiro" to paniere.puntoRitiro.nome,
             "contenuto" to paniere.contenuto.toList(),
-            "indirizzo" to paniere.puntoRitiro.indirizzo
-         )
+            "indirizzo" to paniere.puntoRitiro.indirizzo,
+            "stato" to paniere.stato.toString(),
+            "n_richieste" to 0
+        )
 
         //New document with a generated ID
         db.collection("panieri")
@@ -63,15 +66,19 @@ class PaniereRepository {
             }
     }
 
-    fun deletePaniere(){
+    fun deletePaniere() {
         TODO()
     }
 
-    fun updatePaniere(){
+    fun updatePaniere() {
         TODO()
     }
 
-    fun getListaPanieri(location: GeoPoint, points: Long, onComplete: (result: MutableLiveData<ArrayList<Paniere>>) -> Unit){
+    fun getListaPanieri(
+        location: GeoPoint,
+        points: Long,
+        onComplete: (result: MutableLiveData<ArrayList<Paniere>>) -> Unit
+    ) {
         //Aggiungere il controllo per vicinanza con il GeoPoint passato
 
         val panieriMutableLiveData = MutableLiveData<ArrayList<Paniere>>()
@@ -83,18 +90,23 @@ class PaniereRepository {
 
             Log.d(
                 ContentValues.TAG, "Ho assegnato il valore all'oggetto osservato." +
-                    " La dimensione della lista dei panieri è: " + it.size.toString())
+                        " La dimensione della lista dei panieri è: " + it.size.toString()
+            )
 
             onComplete(panieriMutableLiveData)
         }
     }
 
-    fun obtainPanieri(points: Long, userLocationAsGeopoint: GeoPoint, onComplete: (result: ArrayList<Paniere>) -> Unit) {
-        var panieri : ArrayList<Paniere> = arrayListOf(Paniere())
+    fun obtainPanieri(
+        points: Long,
+        userLocationAsGeopoint: GeoPoint,
+        onComplete: (result: ArrayList<Paniere>) -> Unit
+    ) {
+        var panieri: ArrayList<Paniere> = arrayListOf(Paniere())
 
         //Riferimento alla collection "panieri"
         val panieriRef = db.collection("panieri")
-        val userLocationAsLocation : Location = Location("")
+        val userLocationAsLocation: Location = Location("")
         if (userLocationAsGeopoint != null) {
             userLocationAsLocation.latitude = userLocationAsGeopoint.latitude
             userLocationAsLocation.longitude = userLocationAsGeopoint.longitude
@@ -102,7 +114,10 @@ class PaniereRepository {
 
         //Query che prende tutti i panieri perché non abbiamo il cazzo di valore
         //del paniere nel documento
-        panieriRef.get()
+        panieriRef
+            .whereEqualTo("stato", "IN_ATTESA_DI_MATCH")
+            .orderBy("data_consegna_prevista", Query.Direction.DESCENDING)
+            .get()
             .addOnSuccessListener { documents ->
 
                 //Per ogni documento ottenuto
@@ -110,7 +125,9 @@ class PaniereRepository {
 
                     //Se non è presente il campo "abbinamento" allora non è stato abbinato
                     //e se l'utente donatore non è lo stesso che sta ora cercando un paniere
-                    if (document.data?.get("abbinamento") == null && (document.data?.get("donatore").toString() != auth.currentUser?.uid.toString())) {
+                    if (document.data?.get("donatore")
+                            .toString() != auth.currentUser?.uid.toString()
+                    ) {
 
                         //Vari "cast" per rendere ammissibili i tipi delle cose che prendiamo dal db
                         val tempGeoPoint = document.getGeoPoint("location")
@@ -121,48 +138,63 @@ class PaniereRepository {
                         }
 
                         val tempTimestamp = document.getTimestamp("data_inserimento")
-                        var tempDate : Date = Date()
+                        var tempDate: Date = Date()
                         if (tempTimestamp != null) {
                             tempDate = tempTimestamp.toDate()
                         }
 
                         val tempString = document.data?.get("contenuto") as ArrayList<String>
-                        val tempContMutable : MutableSet<Contenuto> = hashSetOf()
+                        val tempContMutable: MutableSet<Contenuto> = hashSetOf()
 
                         //Usare l'iterator()
                         tempString.forEach {
                             tempContMutable.add(Contenuto.valueOf(it))
                         }
 
-                        val tempContFixed : MutableSet<Contenuto> = tempContMutable
+                        val tempContFixed: MutableSet<Contenuto> = tempContMutable
 
                         var tempConsegna = Date()
                         document.getTimestamp("data_consegna_prevista")?.let {
                             tempConsegna = it.toDate()
                         }
 
-                        //Creo un paniere con i dati presi dal DB
 
-                        //Aggiungere la data di consegna prevista
+                        //Creo un paniere con i dati presi dal DB
 
                         val paniereTemp = Paniere(
                             id = document.data?.get("id") as String,
-                            puntoRitiro = PuntoRitiro(nome = document.data?.get("nome_punto_ritiro") as String,
+                            puntoRitiro = PuntoRitiro(
+                                nome = document.data?.get("nome_punto_ritiro") as String,
                                 indirizzo = document.data?.get("indirizzo") as String,
-                                location = tempLocation),
+                                location = tempLocation
+                            ),
                             dataInserimento = tempDate,
                             dataConsegnaPrevista = tempConsegna,
                             contenuto = tempContFixed,
-                            donatore = document.data?.get("donatore") as String
+                            donatore = document.data?.get("donatore") as String,
+                            stato = Stato.valueOf(document.data?.get("stato") as String)
                         )
 
                         Log.d("REPOSITORY", "Paniere creato: " + paniereTemp.contenuto.toString())
 
+
+                        var isAlreadyFollowing = false
+
+                        if((document.data?.get("n_richieste") as Long) > 0){
+
+                            isAlreadyFollowing = (document.data?.get("coda_riceventi") as ArrayList<String>).contains(auth.currentUser?.uid)
+
+                        }
+
+
                         //Se il paniere creato ha un valore inferiore ai punti rimanenti all'utente
                         //e se la distanza punto di ritiro - posizione dell'utente è inferiore
                         //ai due km (costante acceptableDistanceInMeters = 2000 metri, è un esempio)
-                        if (paniereTemp.calcolaValore() < points && tempLocation.distanceTo(userLocationAsLocation) < acceptableDistanceInMeters) {
-
+                        if (paniereTemp.calcolaValore() < points && tempLocation.distanceTo(
+                                userLocationAsLocation
+                            ) < acceptableDistanceInMeters
+                            && !isAlreadyFollowing
+                        ) {
                             //OTTIMIZZAZIONE: posso fare la get qui di tutti i campi che non siano
                             //il valore e la posizione, così magari velocizzo perché li getto solo
                             //se la condizione sul valore e sulla posizione sono specificate
@@ -171,7 +203,10 @@ class PaniereRepository {
                             paniereTemp.immagine = document.data?.get("immagine") as String?
 
                             panieri.add(paniereTemp)
-                            Log.d(ContentValues.TAG, "Paniere aggiunto ad i panieri visualizzabili. Immagine: " + paniereTemp.immagine.toString())
+                            Log.d(
+                                ContentValues.TAG,
+                                "Paniere aggiunto ad i panieri visualizzabili. Immagine: " + paniereTemp.immagine.toString()
+                            )
                         }
                     }
                 }
@@ -181,7 +216,10 @@ class PaniereRepository {
                 onComplete(panieri)
             }
             .addOnFailureListener() { exception ->
-                Log.e(ContentValues.TAG, "Non sono riuscito a fare la query sui Panieri perché sono un perdente")
+                Log.e(
+                    ContentValues.TAG,
+                    "Non sono riuscito a fare la query sui Panieri perché sono un perdente"
+                )
             }
         //onComplete(panieri)
     }
@@ -206,9 +244,9 @@ class PaniereRepository {
     fun updatePaniereFollowers(id: String, punti: Int) {
         Log.d("REPOSITORY", "id del paniere: " + id)
 
-        var isAlreadyFollowing : Boolean = false
-        var paniereID : String = ""
-        var totalValue : Long = 0
+        var isAlreadyFollowing: Boolean = false
+        var paniereID: String = ""
+        var totalValue: Long = 0
         val panieriRef = db.collection("panieri")
 
         checkIfFollowingTooMany(id, punti) {
@@ -221,13 +259,14 @@ class PaniereRepository {
 
                         val codaRic = document.data?.get("coda_riceventi")
 
-                        if(codaRic != null){
+                        if (codaRic != null) {
 
-                             riceventiOnCurrentPaniere = codaRic as ArrayList<String>
+                            riceventiOnCurrentPaniere = codaRic as ArrayList<String>
 
                         }
 
-                        isAlreadyFollowing = riceventiOnCurrentPaniere.contains(auth.currentUser?.uid)
+                        isAlreadyFollowing =
+                            riceventiOnCurrentPaniere.contains(auth.currentUser?.uid)
 
                         val tempString = document.data?.get("contenuto") as ArrayList<String>
                         val tempContMutable: MutableSet<Contenuto> = hashSetOf()
@@ -239,11 +278,14 @@ class PaniereRepository {
                         val tempPaniere = Paniere(contenuto = tempContFixed)
                         totalValue += tempPaniere.calcolaValore() + it
 
-                        Log.d("CHECK", "Valore: " + totalValue.toString() + ". Punti: " + punti.toString())
+                        Log.d(
+                            "CHECK",
+                            "Valore: " + totalValue.toString() + ". Punti: " + punti.toString()
+                        )
 
                         paniereID = document.id
                     }
-                    if(!isAlreadyFollowing && totalValue < punti) {
+                    if (!isAlreadyFollowing && totalValue < punti) {
                         //NOTA: usare transaction
                         panieriRef.document(paniereID)
                             .update("n_richieste", FieldValue.increment(1))
@@ -251,8 +293,10 @@ class PaniereRepository {
                             .update("coda_riceventi", FieldValue.arrayUnion(auth.currentUser?.uid))
 
                     } else {
-                        Log.d("REPOSITORY", "Già stai seguendo questo paniere o non hai " +
-                                "abbastanza punti, marpione.")
+                        Log.d(
+                            "REPOSITORY", "Già stai seguendo questo paniere o non hai " +
+                                    "abbastanza punti, marpione."
+                        )
                     }
                 }
                 .addOnFailureListener() {
@@ -264,13 +308,13 @@ class PaniereRepository {
     }
 
     fun checkIfFollowingTooMany(id: String, punti: Int, onComplete: (totalValue: Long) -> Unit) {
-        var totalValue : Long = 0
+        var totalValue: Long = 0
         val panieriRef = db.collection("panieri")
 
         panieriRef.whereArrayContains("coda_riceventi", id)
             .get()
-            .addOnSuccessListener {documents ->
-                for(document in documents) {
+            .addOnSuccessListener { documents ->
+                for (document in documents) {
                     val tempString = document.data?.get("contenuto") as ArrayList<String>
                     val tempContMutable: MutableSet<Contenuto> = hashSetOf()
                     tempString.forEach {
@@ -289,11 +333,11 @@ class PaniereRepository {
             }
     }
 
-    fun getPaniere(idPaniere: String){
+    fun getPaniere(idPaniere: String) {
         TODO()
     }
 
-    fun getStoricoPanier(idDonatore: String){
+    fun getStoricoPanier(idDonatore: String) {
         TODO()
     }
 
@@ -303,16 +347,20 @@ class PaniereRepository {
     //ma che sono stati assegnati a qualche altro utente. Poi in un secondo momento, se tra questi
     //panieri sono presenti anche quelli che ho vinto, basta controllare il campo apposito
     //e vedere se l'id è presente.
-    fun getListaPanieriPerTipologia(tipologia: String, onComplete: (result: ArrayList<Paniere>) -> Unit){
+    fun getListaPanieriPerTipologia(
+        tipologia: String,
+        onComplete: (result: ArrayList<Paniere>) -> Unit
+    ) {
         val panieri: ArrayList<Paniere> = arrayListOf(Paniere())
         val panieriRef: CollectionReference = db.collection("panieri")
         val uiid = auth.currentUser?.uid ?: "!!!!!!"
 
-        when(tipologia){
+        when (tipologia) {
 
             "donatore" -> {
                 panieriRef
                     .whereEqualTo("donatore", uiid)
+                    //.orderBy("data_inserimento", Query.Direction.DESCENDING)
                     .get()
                     .addOnSuccessListener {
                         for (document: QueryDocumentSnapshot in it) {
@@ -325,7 +373,7 @@ class PaniereRepository {
                             }
 
                             val tempTimestamp = document.getTimestamp("data_inserimento")
-                            var tempDate : Date = Date()
+                            var tempDate: Date = Date()
                             if (tempTimestamp != null) {
                                 tempDate = tempTimestamp.toDate()
                             }
@@ -336,7 +384,7 @@ class PaniereRepository {
                             }
 
                             val tempString = document.data?.get("contenuto") as ArrayList<String>
-                            val tempContenuto : MutableSet<Contenuto> = hashSetOf()
+                            val tempContenuto: MutableSet<Contenuto> = hashSetOf()
 
                             tempString.forEach {
                                 tempContenuto.add(Contenuto.valueOf(it))
@@ -346,13 +394,16 @@ class PaniereRepository {
                             //Creo un paniere con i dati presi dal DB
                             val paniereTemp = Paniere(
                                 document.data?.get("id") as String,
-                                PuntoRitiro(nome = document.data?.get("nome_punto_ritiro") as String,
+                                PuntoRitiro(
+                                    nome = document.data?.get("nome_punto_ritiro") as String,
                                     indirizzo = document.data?.get("indirizzo") as String,
-                                    location = tempLocation),
+                                    location = tempLocation
+                                ),
                                 tempDate,
                                 tempConsegna,
                                 tempContenuto,
-                                donatore = document.data?.get("donatore") as String
+                                donatore = document.data?.get("donatore") as String,
+                                stato = Stato.valueOf(document.data?.get("stato") as String)
                             )
 
                             Log.d(ContentValues.TAG, "Paniere creato")
@@ -365,7 +416,7 @@ class PaniereRepository {
                         onComplete(panieri)
                     }
                     .addOnFailureListener() { exception ->
-                        Log.e(ContentValues.TAG, "Nessun paniere relativo relativo ai donatori !")
+                        Log.e(ContentValues.TAG, exception.localizedMessage)
                     }
             }
 
@@ -373,6 +424,7 @@ class PaniereRepository {
 
                 panieriRef
                     .whereArrayContains("coda_riceventi", uiid)
+                    .orderBy("data_consegna_prevista", Query.Direction.DESCENDING)
                     .get()
                     .addOnSuccessListener {
                         for (document: QueryDocumentSnapshot in it) {
@@ -385,7 +437,7 @@ class PaniereRepository {
                             }
 
                             val tempTimestamp = document.getTimestamp("data_inserimento")
-                            var tempDate : Date = Date()
+                            var tempDate: Date = Date()
                             if (tempTimestamp != null) {
                                 tempDate = tempTimestamp.toDate()
                             }
@@ -396,7 +448,7 @@ class PaniereRepository {
                             }
 
                             val tempString = document.data?.get("contenuto") as ArrayList<String>
-                            val tempContenuto : MutableSet<Contenuto> = hashSetOf()
+                            val tempContenuto: MutableSet<Contenuto> = hashSetOf()
 
                             tempString.forEach {
                                 tempContenuto.add(Contenuto.valueOf(it))
@@ -405,29 +457,34 @@ class PaniereRepository {
                             //Creo un paniere con i dati presi dal DB
                             val paniereTemp = Paniere(
                                 id = document.data?.get("id") as String,
-                                puntoRitiro = PuntoRitiro(nome = document.data?.get("nome_punto_ritiro") as String,
+                                puntoRitiro = PuntoRitiro(
+                                    nome = document.data?.get("nome_punto_ritiro") as String,
                                     indirizzo = document.data?.get("indirizzo") as String,
-                                    location = tempLocation),
+                                    location = tempLocation
+                                ),
                                 dataInserimento = tempDate,
                                 dataConsegnaPrevista = tempConsegna,
                                 contenuto = tempContenuto,
-                                donatore = document.data?.get("donatore") as String
+                                donatore = document.data?.get("donatore") as String,
+                                stato = Stato.valueOf(document.data?.get("stato") as String)
                             )
 
                             Log.d(ContentValues.TAG, "Paniere creato")
 
                             panieri.add(paniereTemp)
-                            Log.d(ContentValues.TAG, "Paniere aggiunto alla lista panieri ricevente")
+                            Log.d(
+                                ContentValues.TAG,
+                                "Paniere aggiunto alla lista panieri ricevente"
+                            )
                         }
                         panieri.removeAt(0)
                         onComplete(panieri)
                     }
                     .addOnFailureListener() { exception ->
                         Log.e(ContentValues.TAG, "Nessun paniere relativo relativo ai riceventi !")
+                        Log.e(ContentValues.TAG, exception.localizedMessage)
                     }
             }
         }
     }
-
-
 }

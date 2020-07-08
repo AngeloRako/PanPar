@@ -8,7 +8,7 @@
 
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/data_consegna_prevista"
+        android:id="@+id/data"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
@@ -40,7 +40,7 @@
         android:hint="Punto di ritiro"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/data_consegna_prevista"
+        app:layout_constraintTop_toBottomOf="@+id/data"
         app:startIconContentDescription="Punto di ritiro"
         app:startIconDrawable="@drawable/ic_baseline_location_on_24">
         >

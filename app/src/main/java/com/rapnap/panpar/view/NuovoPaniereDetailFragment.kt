@@ -346,4 +346,5 @@ class NuovoPaniereDetailFragment : Fragment() {
 
 
 
+
 }
