@@ -360,9 +360,9 @@ class PaniereRepository {
                             panieri.add(paniereTemp)
                             Log.d(ContentValues.TAG, "Paniere aggiunto alla lista panieri donatore")
 
-                            panieri.removeAt(0)
-                            onComplete(panieri)
                         }
+                        panieri.removeAt(0)
+                        onComplete(panieri)
                     }
                     .addOnFailureListener() { exception ->
                         Log.e(ContentValues.TAG, "Nessun paniere relativo relativo ai donatori !")
@@ -418,10 +418,9 @@ class PaniereRepository {
 
                             panieri.add(paniereTemp)
                             Log.d(ContentValues.TAG, "Paniere aggiunto alla lista panieri ricevente")
-                            panieri.removeAt(0)
-
-                            onComplete(panieri)
                         }
+                        panieri.removeAt(0)
+                        onComplete(panieri)
                     }
                     .addOnFailureListener() { exception ->
                         Log.e(ContentValues.TAG, "Nessun paniere relativo relativo ai riceventi !")

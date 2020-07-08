@@ -3,7 +3,6 @@ package com.rapnap.panpar.view
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -120,24 +119,13 @@ class ProfileDonatoreFragment : Fragment() {
         //Configura recycler view
         linearLayoutManager = LinearLayoutManager(this.activity)
         lista_panieri_donatore.layoutManager = linearLayoutManager
-
-
         adapter = PanieriSinteticiAdapter(ArrayList<Paniere>())
-
         lista_panieri_donatore.adapter = adapter
 
         pdvm.obtainPanieri()
         pdvm.panieriDonatore.observe(requireActivity(), Observer<ArrayList<Paniere>> {
 
-            //Svuoto
-            // (view.lista_panieri_donatore.adapter as PanieriSinteticiAdapter).
-
-            it.forEach { paniere ->
-                (lista_panieri_donatore.adapter as PanieriSinteticiAdapter).addNewItem(paniere)
-                adapter.notifyItemInserted(it.size - 1)
-                Log.d("ACTIVITY", "Ho " + adapter.itemCount.toString() + " panieri.")
-            }
-
+            (lista_panieri_donatore.adapter as PanieriSinteticiAdapter).setData(it)
 
         })
     }

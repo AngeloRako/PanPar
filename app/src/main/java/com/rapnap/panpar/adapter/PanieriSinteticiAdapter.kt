@@ -60,12 +60,12 @@ class PanieriSinteticiAdapter (private var panieri: ArrayList<Paniere>): Recycle
 
     }
 
-
-
-    fun addNewItem(newPaniere: Paniere) {
-        //Provare a passare la lista intera
-        panieri.add(newPaniere)
+    fun setData(panieri: ArrayList<Paniere>){
+        this.panieri.clear()
+        this.panieri.addAll(panieri)
+        notifyDataSetChanged()
     }
+
 
 
 }

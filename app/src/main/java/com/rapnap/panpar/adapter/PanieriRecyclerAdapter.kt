@@ -90,11 +90,18 @@ class PanieriRecyclerAdapter(private var panieri: ArrayList<Paniere>, private va
         }
     }
 
+    fun setData(panieri: ArrayList<Paniere>){
+        this.panieri.clear()
+        this.panieri.addAll(panieri)
+        notifyDataSetChanged()
+    }
 
+    /*
     fun addNewItem(newPaniere: Paniere) {
         //Provare a passare la lista intera
         panieri.add(newPaniere)
     }
+     */
 
 
 

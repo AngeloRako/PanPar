@@ -22,7 +22,6 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEve
 
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: PanieriRecyclerAdapter
-    private var panieriList : ArrayList<Paniere> = ArrayList()
     private val listaPanieriVM : ListaPanieriViewModel by viewModels()
 
     //TODO: Determinare posizione dinamicamente (VM?)
@@ -38,11 +37,12 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEve
 
             //Osserva i panieri ottenuti
             listaPanieriVM.getListaPanieri().observe(this, Observer<ArrayList<Paniere>> {
-                //Assegna a panieriList i panieri ottenuti, che verrà poi passato all'adapter
-                panieriList = it
-                Log.d("ACTIVITY", "Ho assegnato ad i panieri i valori che stavano nel DB." +
-                        " La dimensione della lista dei panieri è: " + panieriList.size.toString())
+                //Log.d("ACTIVITY", "Ho assegnato ad i panieri i valori che stavano nel DB." +
+                //        " La dimensione della lista dei panieri è: " + panieriList.size.toString())
 
+                adapter.setData(it)
+
+                /*
                 panieriList.forEach() {
                     activity?.runOnUiThread {   //Possiamo pensare a dove altro metterlo
                         adapter.addNewItem(it)
@@ -50,6 +50,7 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEve
                         Log.d("ACTIVITY", "Ho " + adapter.itemCount.toString() + " panieri.")
                     }
                 }
+                 */
             })
         }
     }
@@ -66,7 +67,7 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEve
 
 
         //Popolare tutta in una botta con il costruttore mettendo tutto nella onComplete qui dentro
-        adapter = PanieriRecyclerAdapter(panieriList, currentLocation.toLocation(), this)
+        adapter = PanieriRecyclerAdapter(ArrayList<Paniere>(), currentLocation.toLocation(), this)
         view.rec_view.adapter = adapter
 
         return view
