@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.shape.CornerFamily
 import com.rapnap.panpar.R
 import com.rapnap.panpar.adapter.PanieriSinteticiAdapter
@@ -33,8 +34,9 @@ class ProfileDonatoreFragment : Fragment() {
     private lateinit var acct: GoogleSignInAccount
     private lateinit var adapter: PanieriSinteticiAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
-
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
+    private val radius = 100F
+    private lateinit var cardView: MaterialCardView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,8 +77,7 @@ class ProfileDonatoreFragment : Fragment() {
 
         //view.lista_panieri_ricevente_view.shapeAppearanceModel = ShapeAppearanceModel(lista_panieri_ricevente_view.shapeAppearanceModel.toBuilder()).set
 
-        val radius = 50F
-        val cardView = view.lista_panieri_donatore_view
+        cardView = view.lista_panieri_donatore_view
         cardView.setShapeAppearanceModel(
             cardView.getShapeAppearanceModel()
                 .toBuilder()
@@ -89,6 +90,7 @@ class ProfileDonatoreFragment : Fragment() {
 
         bottomSheetBehavior = BottomSheetBehavior.from(view.lista_panieri_donatore_view)
         bottomSheetBehavior.peekHeight = resources.configuration.screenHeightDp
+        bottomSheetBehavior.addBottomSheetCallback(BottomSheetListener())
 
         return view
     }
@@ -112,7 +114,7 @@ class ProfileDonatoreFragment : Fragment() {
             Html.fromHtml("Salve Donatore " + "<b>" + getName(acct) + "</b>" + "," + "<br>" + "di seguito il resoconto delle tue azioni:")
 
         //Visualizzo con una WebView l'immagine del profilo dell'utente loggato in Google.
-        //L'immagine è prelevata in termini di URI, che viene castano a String
+        //L'immagine è prelevata in termini di URI, che viene castato a String
         Glide.with(this).load(getPhoto(acct).toString()).into(profilePic)
 
 
@@ -164,6 +166,35 @@ class ProfileDonatoreFragment : Fragment() {
             super.onOptionsItemSelected(item)
         }
     }
+
+    inner class BottomSheetListener: BottomSheetBehavior.BottomSheetCallback() {
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {
+            //Log.d(TAG, "ONSLIDE DICE: ${slideOffset}")
+
+            val newValue = radius*(1-slideOffset)
+
+            cardView.setShapeAppearanceModel(
+                cardView.getShapeAppearanceModel()
+                    .toBuilder()
+                    .setTopLeftCorner(CornerFamily.ROUNDED, newValue)
+                    .setTopRightCorner(CornerFamily.ROUNDED, newValue)
+                    .setBottomRightCorner(CornerFamily.ROUNDED, 0F)
+                    .setBottomLeftCorner(CornerFamily.ROUNDED, 0F)
+                    .build()
+            )
+
+
+
+        }
+
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+
+        }
+
+    }
+
+
 }
 
 
