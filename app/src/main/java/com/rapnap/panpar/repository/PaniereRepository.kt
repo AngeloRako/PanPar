@@ -14,6 +14,7 @@ import com.rapnap.panpar.model.Contenuto
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.model.PuntoRitiro
 import com.rapnap.panpar.model.Stato
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -74,246 +75,236 @@ class PaniereRepository {
         TODO()
     }
 
-    fun obtainPanieri(
+    suspend fun obtainPanieri(
         points: Long,
-        userLocationAsGeopoint: GeoPoint,
-        onComplete: (result: ArrayList<Paniere>) -> Unit
-    ) {
-        var panieri: ArrayList<Paniere> = arrayListOf(Paniere())
+        userLocationAsGeopoint: GeoPoint
+        ): ArrayList<Paniere>? {
+        try {
 
-        //Riferimento alla collection "panieri"
-        val panieriRef = db.collection("panieri")
-        val userLocationAsLocation: Location = Location("")
-        if (userLocationAsGeopoint != null) {
-            userLocationAsLocation.latitude = userLocationAsGeopoint.latitude
-            userLocationAsLocation.longitude = userLocationAsGeopoint.longitude
+            var panieri: ArrayList<Paniere> = arrayListOf(Paniere())
+
+            //Riferimento alla collection "panieri"
+            val panieriRef = db.collection("panieri")
+            val userLocationAsLocation: Location = Location("")
+            if (userLocationAsGeopoint != null) {
+                userLocationAsLocation.latitude = userLocationAsGeopoint.latitude
+                userLocationAsLocation.longitude = userLocationAsGeopoint.longitude
+            }
+
+            //Query che prende tutti i panieri perché non abbiamo il cazzo di valore
+            //del paniere nel documento
+            val documents = panieriRef
+                .whereEqualTo("stato", "IN_ATTESA_DI_MATCH")
+                .orderBy("data_consegna_prevista", Query.Direction.DESCENDING)
+                .get()
+                .await()
+
+            //Per ogni documento ottenuto
+            for (document in documents) {
+
+                //Se non è presente il campo "abbinamento" allora non è stato abbinato
+                //e se l'utente donatore non è lo stesso che sta ora cercando un paniere
+                if (document.data?.get("donatore")
+                        .toString() != auth.currentUser?.uid.toString()
+                ) {
+
+                    //Vari "cast" per rendere ammissibili i tipi delle cose che prendiamo dal db
+                    val tempGeoPoint = document.getGeoPoint("location")
+                    val tempLocation = Location("")
+                    if (tempGeoPoint != null) {
+                        tempLocation.latitude = tempGeoPoint.latitude
+                        tempLocation.longitude = tempGeoPoint.longitude
+                    }
+
+                    val tempTimestamp = document.getTimestamp("data_inserimento")
+                    var tempDate: Date = Date()
+                    if (tempTimestamp != null) {
+                        tempDate = tempTimestamp.toDate()
+                    }
+
+                    val tempString = document.data?.get("contenuto") as ArrayList<String>
+                    val tempContMutable: MutableSet<Contenuto> = hashSetOf()
+
+                    //Usare l'iterator()
+                    tempString.forEach {
+                        tempContMutable.add(Contenuto.valueOf(it))
+                    }
+
+                    val tempContFixed: MutableSet<Contenuto> = tempContMutable
+
+                    var tempConsegna = Date()
+                    document.getTimestamp("data_consegna_prevista")?.let {
+                        tempConsegna = it.toDate()
+                    }
+
+                    val paniereID = document.data?.get("id") as String
+                    //Creo un paniere con i dati presi dal DB
+
+                    val paniereTemp = Paniere(
+                        id = paniereID,
+                        puntoRitiro = PuntoRitiro(
+                            nome = document.data?.get("nome_punto_ritiro") as String,
+                            indirizzo = document.data?.get("indirizzo") as String,
+                            location = tempLocation
+                        ),
+                        dataInserimento = tempDate,
+                        dataConsegnaPrevista = tempConsegna,
+                        contenuto = tempContFixed,
+                        donatore = document.data?.get("donatore") as String,
+                        stato = Stato.valueOf(document.data?.get("stato") as String)
+                    )
+
+                    var totalValue = totalValueOfFollow(auth.currentUser?.uid.toString())
+                    totalValue += paniereTemp.calcolaValore()
+
+                    var isAlreadyFollowing = false
+                    if (document.data?.get("coda_riceventi") != null
+                    ) {
+                        isAlreadyFollowing =
+                            (document.data?.get("coda_riceventi") as ArrayList<String>).contains(
+                                auth.currentUser?.uid
+                            )
+                    }
+
+                    //Se il paniere creato ha un valore inferiore ai punti rimanenti all'utente
+                    //e se la distanza punto di ritiro - posizione dell'utente è inferiore
+                    //ai due km (costante acceptableDistanceInMeters = 2000 metri, è un esempio)
+                    if (totalValue < points
+                        && tempLocation.distanceTo(userLocationAsLocation) < acceptableDistanceInMeters
+                        && !isAlreadyFollowing
+                    ) {
+                        //OTTIMIZZAZIONE: posso fare la get qui di tutti i campi che non siano
+                        //il valore e la posizione, così magari velocizzo perché li getto solo
+                        //se la condizione sul valore e sulla posizione sono specificate
+                        //Qui lo faccio solo per l'immagine per il momento
+
+                        paniereTemp.immagine = document.data?.get("immagine") as String?
+
+                        panieri.add(paniereTemp)
+
+                        Log.d(
+                            ContentValues.TAG,
+                            "Paniere aggiunto ad i panieri visualizzabili:   ${paniereTemp.toString()} ho ben: ${panieri.size} in totale!! ;D"
+                        )
+                    } else {
+                        Log.e(
+                            TAG,
+                            "NON POSSO AGGIUNGERLO: ${totalValue}, Donatore: ${paniereTemp.donatore} |= ${auth.currentUser?.uid} Location: ${tempLocation.distanceTo(
+                                userLocationAsLocation
+                            )}"
+                        )
+                    }
+
+                }
+            }
+            //Rimuovo il primo elemento della lista che è un paniere vuoto
+            //serviva solo ad inizializzare l'ArrayList sennò urlava
+            panieri.removeAt(0)
+            Log.d(TAG, "STO TORNANDO CON: ${panieri.size} PANIERI")
+
+            return panieri
+
+        } catch (e: Exception) {
+            Log.e(
+                ContentValues.TAG,
+                "Non sono riuscito a fare la query sui Panieri perché sono un perdente"
+            )
+            return null
         }
 
-        //Query che prende tutti i panieri perché non abbiamo il cazzo di valore
-        //del paniere nel documento
-        panieriRef
-            .whereEqualTo("stato", "IN_ATTESA_DI_MATCH")
-            .orderBy("data_consegna_prevista", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { documents ->
 
-                //Per ogni documento ottenuto
-                for (document in documents) {
-
-                    //Se non è presente il campo "abbinamento" allora non è stato abbinato
-                    //e se l'utente donatore non è lo stesso che sta ora cercando un paniere
-                    if (document.data?.get("donatore")
-                            .toString() != auth.currentUser?.uid.toString()
-                    ) {
-
-                        //Vari "cast" per rendere ammissibili i tipi delle cose che prendiamo dal db
-                        val tempGeoPoint = document.getGeoPoint("location")
-                        val tempLocation = Location("")
-                        if (tempGeoPoint != null) {
-                            tempLocation.latitude = tempGeoPoint.latitude
-                            tempLocation.longitude = tempGeoPoint.longitude
-                        }
-
-                        val tempTimestamp = document.getTimestamp("data_inserimento")
-                        var tempDate: Date = Date()
-                        if (tempTimestamp != null) {
-                            tempDate = tempTimestamp.toDate()
-                        }
-
-                        val tempString = document.data?.get("contenuto") as ArrayList<String>
-                        val tempContMutable: MutableSet<Contenuto> = hashSetOf()
-
-                        //Usare l'iterator()
-                        tempString.forEach {
-                            tempContMutable.add(Contenuto.valueOf(it))
-                        }
-
-                        val tempContFixed: MutableSet<Contenuto> = tempContMutable
-
-                        var tempConsegna = Date()
-                        document.getTimestamp("data_consegna_prevista")?.let {
-                            tempConsegna = it.toDate()
-                        }
-
-                        val paniereID = document.data?.get("id") as String
-                        //Creo un paniere con i dati presi dal DB
-
-                        val paniereTemp = Paniere(
-                            id =  paniereID,
-                            puntoRitiro = PuntoRitiro(
-                                nome = document.data?.get("nome_punto_ritiro") as String,
-                                indirizzo = document.data?.get("indirizzo") as String,
-                                location = tempLocation
-                            ),
-                            dataInserimento = tempDate,
-                            dataConsegnaPrevista = tempConsegna,
-                            contenuto = tempContFixed,
-                            donatore = document.data?.get("donatore") as String,
-                            stato = Stato.valueOf(document.data?.get("stato") as String)
-                        )
-
-                        checkIfFollowingTooMany(auth.currentUser?.uid.toString(), points.toInt()) {
-                            val totalValue = it + paniereTemp.calcolaValore()
-
-                            var isAlreadyFollowing = false
-                            if (document.data?.get("coda_riceventi") != null
-                            ) {
-                                isAlreadyFollowing =
-                                    (document.data?.get("coda_riceventi") as ArrayList<String>).contains(
-                                        auth.currentUser?.uid
-                                    )
-                            }
-
-                            //Se il paniere creato ha un valore inferiore ai punti rimanenti all'utente
-                            //e se la distanza punto di ritiro - posizione dell'utente è inferiore
-                            //ai due km (costante acceptableDistanceInMeters = 2000 metri, è un esempio)
-                            if (totalValue < points
-                                && tempLocation.distanceTo(userLocationAsLocation) < acceptableDistanceInMeters
-                                && !isAlreadyFollowing
-                            ) {
-                                //OTTIMIZZAZIONE: posso fare la get qui di tutti i campi che non siano
-                                //il valore e la posizione, così magari velocizzo perché li getto solo
-                                //se la condizione sul valore e sulla posizione sono specificate
-                                //Qui lo faccio solo per l'immagine per il momento
-
-                                paniereTemp.immagine = document.data?.get("immagine") as String?
-
-                                panieri.add(paniereTemp)
-
-                                Log.d(
-                                    ContentValues.TAG,
-                                    "Paniere aggiunto ad i panieri visualizzabili:   ${paniereTemp.toString()} ho ben: ${panieri.size} in totale!! ;D"
-                                )
-                            } else {
-                                Log.e(TAG, "NON POSSO AGGIUNGERLO: ${totalValue}, Donatore: ${paniereTemp.donatore} |= ${auth.currentUser?.uid} Location: ${tempLocation.distanceTo(userLocationAsLocation)}")
-                            }
-                        }
-                    }
-                }
-                //Rimuovo il primo elemento della lista che è un paniere vuoto
-                //serviva solo ad inizializzare l'ArrayList sennò urlava
-                panieri.removeAt(0)
-                Log.d(TAG, "STO TORNANDO CON: ${panieri.size} PANIERI")
-
-                onComplete(panieri)
-            }
-            .addOnFailureListener()
-            { exception ->
-                Log.e(
-                    ContentValues.TAG,
-                    "Non sono riuscito a fare la query sui Panieri perché sono un perdente"
-                )
-            }
-//onComplete(panieri)
     }
 
-//    fun obtainBmp(imgRef: String, onComplete: (result: Bitmap?) -> Unit) {
-//        val gsReference = storage.getReferenceFromUrl(imgRef)
-//        val ONE_MEGABYTE: Long = 1024 * 1024
-//        var bmp : Bitmap? = null
-//
-//        gsReference.getBytes(ONE_MEGABYTE).addOnSuccessListener {
-//            bmp = BitmapFactory.decodeByteArray(it, 0, it.size)
-//
-//            Log.d("IMG", "Sono un campione: " + bmp.toString())
-//        }.addOnFailureListener {
-//            bmp = BitmapFactory.decodeFile("drawable/empty_png.png")
-//            Log.d("IMG", "Sono un fallito")
-//        }
-//
-//        onComplete(bmp)
-//    }
-
-    fun updatePaniereFollowers(id: String, punti: Int) {
+    suspend fun updatePaniereFollowers(id: String, punti: Int) {
         Log.d("REPOSITORY", "id del paniere: " + id)
 
         var isAlreadyFollowing: Boolean = false
         var paniereID: String = ""
-        var totalValue: Long = 0
         val panieriRef = db.collection("panieri")
+        try {
 
-        checkIfFollowingTooMany(id, punti) {
-            panieriRef.whereEqualTo("id", id)
+            var totalValue = totalValueOfFollow(id)
+            val documents = panieriRef.whereEqualTo("id", id)
                 .get()
-                .addOnSuccessListener { documents ->
-                    for (document in documents) {
+                .await()
+            for (document in documents) {
 
-                        var riceventiOnCurrentPaniere: ArrayList<String> = arrayListOf("")
+                var riceventiOnCurrentPaniere: ArrayList<String> = arrayListOf("")
 
-                        val codaRic = document.data?.get("coda_riceventi")
+                val codaRic = document.data?.get("coda_riceventi")
 
-                        if (codaRic != null) {
+                if (codaRic != null) {
 
-                            riceventiOnCurrentPaniere = codaRic as ArrayList<String>
+                    riceventiOnCurrentPaniere = codaRic as ArrayList<String>
 
-                        }
-
-                        isAlreadyFollowing =
-                            riceventiOnCurrentPaniere.contains(auth.currentUser?.uid)
-
-                        val tempString = document.data?.get("contenuto") as ArrayList<String>
-                        val tempContMutable: MutableSet<Contenuto> = hashSetOf()
-                        tempString.forEach {
-                            tempContMutable.add(Contenuto.valueOf(it))
-                        }
-                        val tempContFixed: MutableSet<Contenuto> = tempContMutable
-
-                        val tempPaniere = Paniere(contenuto = tempContFixed)
-                        totalValue += tempPaniere.calcolaValore() + it
-
-                        Log.d(
-                            "CHECK",
-                            "Valore: " + totalValue.toString() + ". Punti: " + punti.toString()
-                        )
-
-                        paniereID = document.id
-                    }
-                    if (!isAlreadyFollowing && totalValue < punti) {
-                        //NOTA: usare transaction
-                        panieriRef.document(paniereID)
-                            .update("n_richieste", FieldValue.increment(1))
-                        panieriRef.document(paniereID)
-                            .update("coda_riceventi", FieldValue.arrayUnion(auth.currentUser?.uid))
-
-                    } else {
-                        Log.d(
-                            "REPOSITORY", "Già stai seguendo questo paniere o non hai " +
-                                    "abbastanza punti, marpione."
-                        )
-                    }
-                }
-                .addOnFailureListener() {
-                    Log.d("REPOSITORY", "Sono un fallito")
                 }
 
+                isAlreadyFollowing =
+                    riceventiOnCurrentPaniere.contains(auth.currentUser?.uid)
+
+                val tempString = document.data?.get("contenuto") as ArrayList<String>
+                val tempContMutable: MutableSet<Contenuto> = hashSetOf()
+                tempString.forEach {
+                    tempContMutable.add(Contenuto.valueOf(it))
+                }
+                val tempContFixed: MutableSet<Contenuto> = tempContMutable
+
+                val tempPaniere = Paniere(contenuto = tempContFixed)
+                totalValue += tempPaniere.calcolaValore()
+
+                Log.d(
+                    "CHECK",
+                    "Valore: " + totalValue.toString() + ". Punti: " + punti.toString()
+                )
+
+                paniereID = document.id
+            }
+            if (!isAlreadyFollowing && totalValue < punti) {
+                //NOTA: usare transaction
+                panieriRef.document(paniereID)
+                    .update("n_richieste", FieldValue.increment(1))
+                panieriRef.document(paniereID)
+                    .update("coda_riceventi", FieldValue.arrayUnion(auth.currentUser?.uid))
+
+            } else {
+                Log.d(
+                    "REPOSITORY", "Già stai seguendo questo paniere o non hai " +
+                            "abbastanza punti, marpione."
+                )
+            }
+        } catch (e: Exception) {
+            Log.d("REPOSITORY", "Sono un fallito")
         }
 
     }
 
-    fun checkIfFollowingTooMany(id: String, punti: Int, onComplete: (totalValue: Long) -> Unit) {
-        var totalValue: Long = 0
-        val panieriRef = db.collection("panieri")
 
-        panieriRef.whereArrayContains("coda_riceventi", id)
-            .get()
-            .addOnSuccessListener { documents ->
-                for (document in documents) {
-                    val tempString = document.data?.get("contenuto") as ArrayList<String>
-                    val tempContMutable: MutableSet<Contenuto> = hashSetOf()
-                    tempString.forEach {
-                        tempContMutable.add(Contenuto.valueOf(it))
-                    }
-                    val tempContFixed: MutableSet<Contenuto> = tempContMutable
+    suspend fun totalValueOfFollow(id: String): Long {
 
-                    val tempPaniere = Paniere(contenuto = tempContFixed)
-                    totalValue += tempPaniere.calcolaValore()
+        try {
+            var totalValue: Long = 0
+            val panieriRef = db.collection("panieri")
+
+            val documents = panieriRef.whereArrayContains("coda_riceventi", id)
+                .get()
+                .await()
+
+            for (document in documents) {
+                val tempString = document.data?.get("contenuto") as ArrayList<String>
+                val tempContMutable: MutableSet<Contenuto> = hashSetOf()
+                tempString.forEach {
+                    tempContMutable.add(Contenuto.valueOf(it))
                 }
-                onComplete(totalValue)
+                val tempContFixed: MutableSet<Contenuto> = tempContMutable
+
+                val tempPaniere = Paniere(contenuto = tempContFixed)
+                totalValue += tempPaniere.calcolaValore()
             }
-            .addOnFailureListener() {
-                Log.d("REPOSITORY", "Sono un fallito ed ho richiesto troppi panieri")
-                //onComplete(true)
-            }
+            return totalValue
+        } catch (e: Exception) {
+            Log.d("REPOSITORY", "Errore: ${e}")
+            return -1
+        }
     }
 
     fun getPaniere(idPaniere: String) {
@@ -325,11 +316,11 @@ class PaniereRepository {
     }
 
     //Metodo per ottenere la lista dei panieri relativa ai Donatori, se appunto tipologia = "donatore",
-//mentre relativa invece ai riceventi, se tipologia = "ricevente".
-//Per il momento mostrerò tutti i panieri che ho richiesto e mostrerò quindi anche i panieri richiesti
-//ma che sono stati assegnati a qualche altro utente. Poi in un secondo momento, se tra questi
-//panieri sono presenti anche quelli che ho vinto, basta controllare il campo apposito
-//e vedere se l'id è presente.
+    //mentre relativa invece ai riceventi, se tipologia = "ricevente".
+    //Per il momento mostrerò tutti i panieri che ho richiesto e mostrerò quindi anche i panieri richiesti
+    //ma che sono stati assegnati a qualche altro utente. Poi in un secondo momento, se tra questi
+    //panieri sono presenti anche quelli che ho vinto, basta controllare il campo apposito
+    //e vedere se l'id è presente.
     fun getListaPanieriPerTipologia(
         tipologia: String,
         onComplete: (result: ArrayList<Paniere>) -> Unit

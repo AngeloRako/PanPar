@@ -110,7 +110,8 @@ class ProfileRiceventeFragment : Fragment(R.layout.fragment_profile_ricevente) {
     //Imposta il punteggio del donatore nella Label se questo è cambiato. Viene utilizzato il pattern Observer affinché
     //possa appunto "osservare" i cambiamenti che vengono effettuati su un certo oggetto.
     fun mostraPunteggio() {
-        prvm.obtainPuntiRicevente().observe(this, Observer<Utente> {
+        prvm.obtainPuntiRicevente()
+        prvm.ricevente.observe(this, Observer<Utente> {
             var punteggio = it.punteggio
             puntiLabel.setText("${punteggio} Punti")
         })

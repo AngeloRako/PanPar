@@ -3,19 +3,25 @@ package com.rapnap.panpar.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.repository.PaniereRepository
 import com.rapnap.panpar.repository.UtenteRepository
+import kotlinx.coroutines.launch
 
 class ProfileRiceventeViewModel: ViewModel() {
 
     private val utenteRepository: UtenteRepository = UtenteRepository()
-    private val userObserved = MutableLiveData<Utente>()
     private val paniereRepository: PaniereRepository = PaniereRepository()
+
+    private val _ricevente = MutableLiveData<Utente>()
+    val ricevente: LiveData<Utente>
+        get() = _ricevente
+
     private val _panieriRicevente = MutableLiveData<ArrayList<Paniere>>()
     val panieriRicevente: LiveData<ArrayList<Paniere>>
-        get(): LiveData<ArrayList<Paniere>> = _panieriRicevente
+        get() = _panieriRicevente
 
 
     fun obtainPanieri(){
@@ -31,10 +37,10 @@ class ProfileRiceventeViewModel: ViewModel() {
 
     //Metodo per prelevare l'utente dal repository. Lo snippet di codice presente nelle parentesi
     //graffe più interne, verrà eseguito al completamento della funzione getUser() di utenteRepository
-    fun obtainPuntiRicevente(): MutableLiveData<Utente>{
-        utenteRepository.getUser() {
-            userObserved.setValue(it)
+    fun obtainPuntiRicevente(){
+
+        viewModelScope.launch {
+            _ricevente.setValue(utenteRepository.getUser())
         }
-        return userObserved
     }
 }

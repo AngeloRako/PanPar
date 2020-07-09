@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.snackbar.Snackbar
@@ -17,6 +18,7 @@ import com.rapnap.panpar.extensions.toLocation
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.viewmodel.ListaPanieriViewModel
 import kotlinx.android.synthetic.main.fragment_lista_panieri.view.*
+import kotlinx.coroutines.launch
 
 class ListaPanieriFragment: LocationDependantFragment(), OnItemEventListener<Paniere> {
 
@@ -32,14 +34,17 @@ class ListaPanieriFragment: LocationDependantFragment(), OnItemEventListener<Pan
 
         //Parte chiamando la funzione che comunica con la repository per prendere i panieri
         //in base al punteggio dell'utente
-        listaPanieriVM.getPanieriPrenotabiliFromLocation(location)
-
+        viewLifecycleOwner.lifecycleScope.launch{
+            listaPanieriVM.getPanieriPrenotabiliFromLocation(location)
+        }
     }
 
 
     override fun onLocationUpdated(location: Location) {
 
-        listaPanieriVM.getPanieriPrenotabiliFromLocation(location)
+        viewLifecycleOwner.lifecycleScope.launch{
+            listaPanieriVM.getPanieriPrenotabiliFromLocation(location)
+        }
 
     }
 
@@ -49,7 +54,9 @@ class ListaPanieriFragment: LocationDependantFragment(), OnItemEventListener<Pan
         defaultLocation.latitude = 40.878437
         defaultLocation.longitude = 14.343430
 
-        listaPanieriVM.getPanieriPrenotabiliFromLocation(defaultLocation)
+        viewLifecycleOwner.lifecycleScope.launch{
+            listaPanieriVM.getPanieriPrenotabiliFromLocation(defaultLocation)
+        }
     }
 
     override fun onPermissionDenied(){
@@ -58,7 +65,9 @@ class ListaPanieriFragment: LocationDependantFragment(), OnItemEventListener<Pan
         defaultLocation.latitude = 40.878437
         defaultLocation.longitude = 14.343430
 
-        listaPanieriVM.getPanieriPrenotabiliFromLocation(defaultLocation)
+        viewLifecycleOwner.lifecycleScope.launch{
+            listaPanieriVM.getPanieriPrenotabiliFromLocation(defaultLocation)
+        }
 
     }
 
@@ -69,7 +78,9 @@ class ListaPanieriFragment: LocationDependantFragment(), OnItemEventListener<Pan
         defaultLocation.latitude = 40.878437
         defaultLocation.longitude = 14.343430
 
-        listaPanieriVM.getPanieriPrenotabiliFromLocation(defaultLocation)
+        viewLifecycleOwner.lifecycleScope.launch{
+            listaPanieriVM.getPanieriPrenotabiliFromLocation(defaultLocation)
+        }
         listaPanieriVM.listaPanieri.observe(this, Observer<ArrayList<Paniere>> {
                 //Log.d("ACTIVITY", "Ho assegnato ad i panieri i valori che stavano nel DB." +
                 //        " La dimensione della lista dei panieri è: " + panieriList.size.toString())
@@ -101,7 +112,10 @@ class ListaPanieriFragment: LocationDependantFragment(), OnItemEventListener<Pan
 
 
     override fun onEventHappened(item: Paniere, view: View?) {
-        listaPanieriVM.updatePaniereFollowers(item.id)
+
+        viewLifecycleOwner.lifecycleScope.launch{
+            listaPanieriVM.updatePaniereFollowers(item.id)
+        }
 
         Snackbar.make(
             requireView(),

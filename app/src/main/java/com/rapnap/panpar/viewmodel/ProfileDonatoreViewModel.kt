@@ -4,11 +4,13 @@ import android.net.Uri
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.repository.PaniereRepository
 import com.rapnap.panpar.repository.UtenteRepository
+import kotlinx.coroutines.launch
 
 
 class ProfileDonatoreViewModel: ViewModel() {
@@ -28,16 +30,6 @@ class ProfileDonatoreViewModel: ViewModel() {
         get(): LiveData<ArrayList<Paniere>> = _panieriDonatore
 
 
-    /*  fun donate(paniere: Paniere, onComplete: () -> Unit){
-
-          paniereRepository.createNewPaniere(paniere){
-
-              onComplete()
-
-          }
-
-      }*/
-
     fun obtainPanieri(){
         panieriRepository.getListaPanieriPerTipologia("donatore"){
 
@@ -54,8 +46,8 @@ class ProfileDonatoreViewModel: ViewModel() {
     //Metodo per prelevare l'utente dal repository. Lo snippet di codice presente nelle parentesi
     //graffe più interne, verrà eseguito al completamento della funzione getUser() di utenteRepository
     fun obtainDonatore() {
-        utenteRepository.getUser() {
-            _donatore.setValue(it)
+        viewModelScope.launch {
+            _donatore.setValue(utenteRepository.getUser())
         }
     }
 
