@@ -1,22 +1,31 @@
 package com.rapnap.panpar.view
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
+import android.os.Looper
+import android.provider.Settings
 import android.util.Log
 import android.view.*
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import androidx.navigation.navGraphViewModels
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MapStyleOptions
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.rapnap.panpar.R
 import com.rapnap.panpar.extensions.distanceText
@@ -36,7 +45,8 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
     private lateinit var punti: List<PuntoRitiro>
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
     private lateinit var puntoRitiroVisualizzato: PuntoRitiro
-
+    val PERMISSION_ID: Int = 40
+    lateinit var mFusedLocationClient: FusedLocationProviderClient
 
     private val nuovoPaniereVM: NuovoPaniereViewModel
             by navGraphViewModels(R.id.new_paniere_graph)
@@ -44,7 +54,6 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
     private var currentLocation = LatLng(40.643396, 14.865041)
 
     private val callback = OnMapReadyCallback { googleMap ->
-
         googleMap?.let {
             Log.d(TAG, "[PANPAR - ScegliPuntoFragment] La mappa è pronta! ")
 
@@ -78,9 +87,10 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
             gMap.setOnMarkerClickListener(this)
             gMap.setOnCameraMoveListener(this)
             mapReady = true
+
             updateMap()
 
-            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 10F))
+            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 11F))
 
             if (::puntoRitiroVisualizzato.isInitialized && isWaitingToShow) {
                 show(puntoRitiroVisualizzato)
@@ -89,6 +99,95 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
         }
 
     }
+
+
+
+    //Controlla se l'utente dispone dei permessi necessari ad ottenere la posizione
+    private fun checkPermissions(): Boolean {
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            return true
+        }
+        return false
+    }
+
+    //richiede i permessi
+    private fun requestPermissions() {
+        ActivityCompat.requestPermissions(
+            requireActivity(),
+            arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
+            PERMISSION_ID
+        )
+    }
+
+    //Se ottiene i permessi procede
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        if (requestCode == PERMISSION_ID) {
+            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                // Granted. Start getting the location information
+            }
+        } else {
+            map_view.getMapAsync(callback)
+        }
+    }
+
+    //Controllo se la posizione è attivata sul dispositivo
+    private fun isLocationEnabled(): Boolean {
+        var locationManager: LocationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
+    }
+
+    //Ottengo l'ultima posizione disponibile utilizzando le funzioni precedenti
+    @SuppressLint("MissingPermission")
+    private fun getLastLocation() {
+        if (checkPermissions()) {
+            if (isLocationEnabled()) {
+                mFusedLocationClient.lastLocation.addOnCompleteListener(requireActivity()) { task ->
+                    var location: Location? = task.result
+                    if (location == null) {
+                        requestNewLocationData()
+                    } else {
+                        currentLocation = LatLng(location.latitude, location.longitude)
+                        Log.e(TAG, "DI SEGUITO LA TUA POSIZIONE: ${currentLocation.latitude} e ${currentLocation.longitude}")
+                        map_view.getMapAsync(callback)
+                    }
+                }
+            } else {
+                Toast.makeText(requireActivity(), "Attiva l'accesso alla posizione.", Toast.LENGTH_LONG).show()
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+                //currentLocation = LatLng(40.643396, 14.865041)
+            }
+        } else {
+            requestPermissions()
+            //currentLocation = LatLng(40.643396, 14.865041)
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestNewLocationData() {
+        var mLocationRequest = LocationRequest()
+        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        mLocationRequest.interval = 0
+        mLocationRequest.fastestInterval = 0
+        mLocationRequest.numUpdates = 1
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        mFusedLocationClient!!.requestLocationUpdates(
+            mLocationRequest, mLocationCallback,
+            Looper.myLooper()
+        )
+    }
+
+    private val mLocationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            var mLastLocation: Location = locationResult.lastLocation
+            currentLocation = LatLng(mLastLocation.latitude, mLastLocation.longitude)
+        }
+    }
+
 
     private fun updateMap() {
         if (::punti.isInitialized && mapReady) {
@@ -102,6 +201,7 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
             }
         }
     }
+
 
     override fun onMarkerClick(marker: Marker?): Boolean {
 
@@ -146,6 +246,10 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
     ): View? {
         val view = inflater.inflate(R.layout.fragment_scegli_punto, container, false)
 
+        getLastLocation()
+
+
+
         //Location utente (dovrebbe venire dal ViewModel)
         val loc = currentLocation.toLocation()
 
@@ -188,8 +292,9 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
     /*  Elementi di Menu nella ActionBar    */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setHasOptionsMenu(true)
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -199,6 +304,10 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
 
         map_view.getMapAsync(callback)
 
+        //Listener per il button relativo al posizionamento della mappa sulla currentLocation
+        locationBtn.setOnClickListener {
+            getLastLocation()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
