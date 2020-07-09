@@ -96,6 +96,7 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
                 show(puntoRitiroVisualizzato)
                 isWaitingToShow = false
             }
+
         }
 
     }
@@ -124,9 +125,10 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         if (requestCode == PERMISSION_ID) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                // Granted. Start getting the location information
+                //Permessi ottenuti, re-invoca la funzione
+                getLastLocation()
             }
-        } 
+        }
     }
 
     //Controllo se la posizione è attivata sul dispositivo
@@ -149,7 +151,7 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
                     } else {
                         currentLocation = LatLng(location.latitude, location.longitude)
                         Log.e(TAG, "DI SEGUITO LA TUA POSIZIONE: ${currentLocation.latitude} e ${currentLocation.longitude}")
-                        map_view.getMapAsync(callback)
+                        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 11F))
                     }
                 }
             } else {
@@ -164,6 +166,7 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
         }
     }
 
+    //Funzione che richiede la posizione dell'utente: se questa viene aggiornata avvia mLocationCallback
     @SuppressLint("MissingPermission")
     private fun requestNewLocationData() {
         var mLocationRequest = LocationRequest()
@@ -179,10 +182,15 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
         )
     }
 
+    //Callback relativa al caso in cui la posizione è stata aggiornata
     private val mLocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             var mLastLocation: Location = locationResult.lastLocation
             currentLocation = LatLng(mLastLocation.latitude, mLastLocation.longitude)
+            if (currentLocation != null){
+                Toast.makeText(requireActivity(), "Posizione aggiornata.", Toast.LENGTH_LONG).show()
+                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 11F))
+            }
         }
     }
 
@@ -297,7 +305,6 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
         super.onActivityCreated(savedInstanceState)
         map_view.onCreate(savedInstanceState)
         map_view.onResume()
-
         map_view.getMapAsync(callback)
 
         //Listener per il button relativo al posizionamento della mappa sulla currentLocation
@@ -362,6 +369,7 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
     override fun onResume() {
         super.onResume()
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+        getLastLocation()
     }
 
 }
