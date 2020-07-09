@@ -3,9 +3,12 @@ package com.rapnap.panpar.view
 import android.net.Uri
 import android.os.Bundle
 import android.text.Html
+import android.transition.AutoTransition
+import android.transition.TransitionManager
 import android.view.*
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -36,7 +39,7 @@ class ProfileDonatoreFragment : Fragment() {
     private lateinit var adapter: PanieriSinteticiAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
-    private val radius = 100F
+    private val radius = 50F
     private lateinit var cardView: MaterialCardView
 
 
@@ -191,9 +194,25 @@ class ProfileDonatoreFragment : Fragment() {
 
         override fun onStateChanged(bottomSheet: View, newState: Int) {
 
+            when(newState){
+
+                BottomSheetBehavior.STATE_EXPANDED -> {
+
+                TransitionManager.beginDelayedTransition(lista_panieri_donatore_view, AutoTransition().apply{duration = 150})
+                titolo_lista.visibility = View.GONE
+                    (requireActivity() as AppCompatActivity).supportActionBar?.title = "Le tue donazioni"
+            }
+                BottomSheetBehavior.STATE_DRAGGING -> {
+                    TransitionManager.beginDelayedTransition(lista_panieri_donatore_view, AutoTransition())
+                    titolo_lista.visibility = View.VISIBLE
+                    (requireActivity() as AppCompatActivity).supportActionBar?.title = "Panpar"
+                }
+            }
+
         }
 
     }
+
 
 
 }

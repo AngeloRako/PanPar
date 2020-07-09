@@ -68,6 +68,8 @@ class PanieriSinteticiAdapter(
         holder.view.paniereValue.text = "Valore: ${paniere.calcolaValore()}"
         holder.view.stato.text = paniere.stato.prettyText()
 
+        holder.view.setOnClickListener{}
+
         when (tipologia) {
 
             Tipologia.DONATORE -> {

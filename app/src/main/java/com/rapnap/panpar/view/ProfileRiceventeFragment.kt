@@ -29,7 +29,7 @@ class ProfileRiceventeFragment : Fragment(R.layout.fragment_profile_ricevente) {
     private lateinit var adapter: PanieriSinteticiAdapter
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
-    private val radius = 100F
+    private val radius = 50F
     private lateinit var cardView: MaterialCardView
 
 

@@ -7,6 +7,7 @@
     <fragment
         android:id="@+id/profileRiceventeFragment"
         android:name="com.rapnap.panpar.view.ProfileRiceventeFragment"
+        android:label="Panpar"
         tools:layout="@layout/fragment_profile_ricevente">
         <action
             android:id="@+id/HRtoHD"

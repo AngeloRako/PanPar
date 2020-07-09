@@ -8,6 +8,7 @@
     <fragment
         android:id="@+id/profileDonatoreFragment"
         android:name="com.rapnap.panpar.view.ProfileDonatoreFragment"
+        android:label="Panpar"
         tools:layout="@layout/fragment_profile_donatore">
         <action
             android:id="@+id/HDtoHR"

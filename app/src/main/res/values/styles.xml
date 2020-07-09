@@ -44,4 +44,8 @@
         <item name="cornerSizeBottomLeft">0dp</item>
     </style>
 
+    <style name="Widget.Panpar.Sheet" parent="Widget.MaterialComponents.Toolbar.PrimarySurface">
+        <item name="backgroundTint">?attr/colorSecondary</item>
+    </style>
+
 </resources>
