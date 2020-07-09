@@ -34,9 +34,7 @@
         <activity android:name=".view.NuovoPaniereActivity"
             android:parentActivityName=".view.HomeDonatoreActivity"/>
         <activity
-            android:name=".view.HomeRiceventeActivity"
-            android:label="@string/title_activity_ricevente_home"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:name=".view.HomeRiceventeActivity"/>
         <activity
             android:name=".view.MainActivity"
             android:theme="@style/SplashTheme">

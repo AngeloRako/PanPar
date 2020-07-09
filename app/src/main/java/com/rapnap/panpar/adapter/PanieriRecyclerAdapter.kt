@@ -87,6 +87,8 @@ class PanieriRecyclerAdapter(private var panieri: ArrayList<Paniere>, private va
             //Fornisco anche la view della cella, così posso aggiornare appropriatamente a seconda
             //di cosa succede
             onFollowListener.onEventHappened(paniere, it)
+            panieri.removeAt(position)
+            this.notifyItemRemoved(position)
         }
     }
 

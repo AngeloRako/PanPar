@@ -31,8 +31,7 @@ class NuovoPaniereActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        navController.navigateUp()
-        return super.onSupportNavigateUp()
+        return navController.navigateUp()
     }
 
     override fun finish() {

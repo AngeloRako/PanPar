@@ -3,7 +3,6 @@ package com.rapnap.panpar.repository
 import android.content.ContentValues
 import android.location.Location
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -72,29 +71,6 @@ class PaniereRepository {
 
     fun updatePaniere() {
         TODO()
-    }
-
-    fun getListaPanieri(
-        location: GeoPoint,
-        points: Long,
-        onComplete: (result: MutableLiveData<ArrayList<Paniere>>) -> Unit
-    ) {
-        //Aggiungere il controllo per vicinanza con il GeoPoint passato
-
-        val panieriMutableLiveData = MutableLiveData<ArrayList<Paniere>>()
-
-        val listaPanieri = obtainPanieri(points, location) {
-            panieriMutableLiveData.setValue(it)
-
-            Log.d("REPOSITORY", panieriMutableLiveData.value.toString())
-
-            Log.d(
-                ContentValues.TAG, "Ho assegnato il valore all'oggetto osservato." +
-                        " La dimensione della lista dei panieri è: " + it.size.toString()
-            )
-
-            onComplete(panieriMutableLiveData)
-        }
     }
 
     fun obtainPanieri(
@@ -179,8 +155,11 @@ class PaniereRepository {
 
                         //Se esiste la coda riceventi, controlla se già contiene il ricevente
                         var isAlreadyFollowing = false
-                        if(document.data?.get("coda_riceventi") != null) {
-                            isAlreadyFollowing = (document.data?.get("coda_riceventi") as ArrayList<String>).contains(auth.currentUser?.uid)
+                        if (document.data?.get("coda_riceventi") != null) {
+                            isAlreadyFollowing =
+                                (document.data?.get("coda_riceventi") as ArrayList<String>).contains(
+                                    auth.currentUser?.uid
+                                )
                         }
 
                         //Se il paniere creato ha un valore inferiore ai punti rimanenti all'utente
@@ -482,4 +461,5 @@ class PaniereRepository {
             }
         }
     }
+
 }

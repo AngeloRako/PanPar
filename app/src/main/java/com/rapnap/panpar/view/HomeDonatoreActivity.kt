@@ -29,8 +29,7 @@ class HomeDonatoreActivity : AppCompatActivity() {
     }
 
     override fun onSupportNavigateUp(): Boolean {
-        navController.navigateUp()
-        return super.onSupportNavigateUp()
+        return navController.navigateUp()
     }
 
     private fun negotiateDeviceDarkMode() {

@@ -27,7 +27,7 @@ class PuntiRitiroListFragment : Fragment(), OnItemEventListener<PuntoRitiro> {
     private val nuovoPaniereVM: NuovoPaniereViewModel
             by navGraphViewModels(R.id.new_paniere_graph)
 
-    //TODO: Da ottenere da fuori (Data Injection?)
+    //TODO: Da ottenere da fuori (VM?)
     private var currentLocation = LatLng(40.643396, 14.865041)
     private var maxDistance = 500000000000.0
 

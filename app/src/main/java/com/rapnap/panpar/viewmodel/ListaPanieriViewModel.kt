@@ -1,5 +1,7 @@
 package com.rapnap.panpar.viewmodel
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,11 +16,9 @@ class ListaPanieriViewModel: ViewModel() {
 
     private val utenteRepository: UtenteRepository = UtenteRepository()
     private val paniereRepository : PaniereRepository = PaniereRepository()
-    private lateinit var listaPanieri : MutableLiveData<ArrayList<Paniere>>
-
-    fun getListaPanieri() : LiveData<ArrayList<Paniere>> {
-        return listaPanieri
-    }
+    private val _listaPanieri = MutableLiveData<ArrayList<Paniere>>()
+    val listaPanieri : LiveData<ArrayList<Paniere>>
+        get() = _listaPanieri
 
     private fun getUtente(onComplete: (Utente) -> Unit) {
         utenteRepository.getUser {
@@ -28,8 +28,12 @@ class ListaPanieriViewModel: ViewModel() {
 
     fun getPanieriByScore(onComplete: () -> Unit) {
         //Passare i valori giusti
-        paniereRepository.getListaPanieri(GeoPoint(40.878437, 14.343430), 1000) {
-            listaPanieri = it
+        paniereRepository.obtainPanieri(
+            points = 1000,
+            userLocationAsGeopoint = GeoPoint(40.878437, 14.343430)
+        ){
+            _listaPanieri.value = it
+            Log.d(TAG,"Ho trovato: ${it.count()} panieri!")
             onComplete()
         }
     }
@@ -43,10 +47,6 @@ class ListaPanieriViewModel: ViewModel() {
             paniereRepository.updatePaniereFollowers(id, user.punteggio.toInt())
 
         }
-
     }
-
-
-
 
 }

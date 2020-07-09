@@ -8,12 +8,6 @@
     android:layout_height="match_parent"
     tools:context=".view.ScegliPuntoFragment">
 
-    <Button
-        android:id="@+id/locationBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ariabba" />
-
     <com.google.android.gms.maps.MapView
         android:id="@+id/map_view"
         android:layout_width="match_parent"
@@ -22,6 +16,18 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/locationBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:layout_margin="16dp"
+        android:layout_marginBottom="32dp"
+        android:contentDescription="Nuovo Paniere"
+        app:srcCompat="@drawable/ic_baseline_location_on_24"
+        app:backgroundTint = "@color/primaryColor"/>
+
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/punto_bottom_sheet"

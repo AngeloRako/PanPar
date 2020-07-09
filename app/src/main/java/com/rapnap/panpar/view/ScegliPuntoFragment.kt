@@ -15,7 +15,6 @@ import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.*
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -25,8 +24,12 @@ import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.android.gms.maps.model.Marker
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.snackbar.Snackbar
 import com.rapnap.panpar.R
 import com.rapnap.panpar.extensions.distanceText
 import com.rapnap.panpar.extensions.toLatLng
@@ -53,6 +56,7 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
 
     private var currentLocation = LatLng(40.643396, 14.865041)
 
+    //* Callback mappa */
     private val callback = OnMapReadyCallback { googleMap ->
         googleMap?.let {
             Log.d(TAG, "[PANPAR - ScegliPuntoFragment] La mappa è pronta! ")
@@ -61,23 +65,33 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
 
             val styleApplied: Boolean
 
-            try{
-                when(isUsingNightModeResources()){
+            try {
+                when (isUsingNightModeResources()) {
                     true -> {
-                        styleApplied = gMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.dark_style_json))
+                        styleApplied = gMap.setMapStyle(
+                            MapStyleOptions.loadRawResourceStyle(
+                                requireContext(),
+                                R.raw.dark_style_json
+                            )
+                        )
                     }
-                    false ->{
+                    false -> {
 
-                        styleApplied = gMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.style_json))
+                        styleApplied = gMap.setMapStyle(
+                            MapStyleOptions.loadRawResourceStyle(
+                                requireContext(),
+                                R.raw.style_json
+                            )
+                        )
                     }
                 }
 
-                if(!styleApplied){
+                if (!styleApplied) {
 
                     Log.e(TAG, "[ScegliPuntoFragment] Impossibile applicare stile mappa!")
                 }
 
-            }   catch (e: Resources.NotFoundException) {
+            } catch (e: Resources.NotFoundException) {
                 Log.e(TAG, "[ScegliPuntoFragment] Can't find style. Error: ", e)
             }
 
@@ -91,22 +105,29 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
             updateMap()
 
             gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 11F))
+            Log.e(
+                TAG,
+                "DI SEGUITO LA TUA POSIZIONE: ${currentLocation.latitude} e ${currentLocation.longitude}"
+            )
 
             if (::puntoRitiroVisualizzato.isInitialized && isWaitingToShow) {
                 show(puntoRitiroVisualizzato)
                 isWaitingToShow = false
             }
-
         }
-
     }
-
-
 
     //Controlla se l'utente dispone dei permessi necessari ad ottenere la posizione
     private fun checkPermissions(): Boolean {
-        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+        if (ActivityCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                requireActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
             return true
         }
         return false
@@ -116,13 +137,20 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
     private fun requestPermissions() {
         ActivityCompat.requestPermissions(
             requireActivity(),
-            arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION),
+            arrayOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ),
             PERMISSION_ID
         )
     }
 
     //Se ottiene i permessi procede
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         if (requestCode == PERMISSION_ID) {
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 //Permessi ottenuti, re-invoca la funzione
@@ -133,7 +161,8 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
 
     //Controllo se la posizione è attivata sul dispositivo
     private fun isLocationEnabled(): Boolean {
-        var locationManager: LocationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        var locationManager: LocationManager =
+            activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
             LocationManager.NETWORK_PROVIDER
         )
@@ -149,20 +178,24 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
                     if (location == null) {
                         requestNewLocationData()
                     } else {
-                        currentLocation = LatLng(location.latitude, location.longitude)
-                        Log.e(TAG, "DI SEGUITO LA TUA POSIZIONE: ${currentLocation.latitude} e ${currentLocation.longitude}")
-                        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 11F))
+                        setMapPosition(LatLng(location.latitude, location.longitude))
                     }
                 }
             } else {
-                Toast.makeText(requireActivity(), "Attiva l'accesso alla posizione.", Toast.LENGTH_LONG).show()
-                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                startActivity(intent)
-                //currentLocation = LatLng(40.643396, 14.865041)
+
+                Snackbar.make(
+                    requireView(),
+                    "Attiva la localizzazione per scoprire i punti di ritiro più vicini.",
+                    Snackbar.LENGTH_LONG //
+                ).setAction(
+                    "Vai",
+                    {
+                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                        startActivity(intent)
+                    }).show()
             }
         } else {
             requestPermissions()
-            //currentLocation = LatLng(40.643396, 14.865041)
         }
     }
 
@@ -187,14 +220,13 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
         override fun onLocationResult(locationResult: LocationResult) {
             var mLastLocation: Location = locationResult.lastLocation
             currentLocation = LatLng(mLastLocation.latitude, mLastLocation.longitude)
-            if (currentLocation != null){
-                Toast.makeText(requireActivity(), "Posizione aggiornata.", Toast.LENGTH_LONG).show()
-                gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 11F))
+            if (currentLocation != null) {
+                setMapPosition()
             }
         }
     }
 
-
+    //Aggiorna la mappa dalla lista punti ritiro (se possibile)
     private fun updateMap() {
         if (::punti.isInitialized && mapReady) {
             punti.forEach { punto ->
@@ -206,6 +238,20 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
 
             }
         }
+    }
+
+    private fun setMapPosition(location: LatLng = currentLocation) {
+
+        currentLocation = location
+
+        if (mapReady) {
+            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 11F))
+            Log.e(
+                TAG,
+                "DI SEGUITO LA TUA POSIZIONE: ${currentLocation.latitude} e ${currentLocation.longitude}"
+            )
+        }
+
     }
 
 
@@ -252,7 +298,7 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
     ): View? {
         val view = inflater.inflate(R.layout.fragment_scegli_punto, container, false)
 
-        getLastLocation()
+        //getLastLocation()
 
         //Location utente (dovrebbe venire dal ViewModel)
         val loc = currentLocation.toLocation()
@@ -287,7 +333,10 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
         //Inizialmente nascosto
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
-
+        //Listener per il button relativo al posizionamento della mappa sulla currentLocation
+        view.locationBtn.setOnClickListener {
+            getLastLocation()
+        }
 
         return view
     }
@@ -307,11 +356,6 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
         map_view.onResume()
         map_view.getMapAsync(callback)
 
-        //Listener per il button relativo al posizionamento della mappa sulla currentLocation
-        locationBtn.setOnClickListener {
-            getLastLocation()
-            Toast.makeText(requireActivity(), "Accedo alla posizione..", Toast.LENGTH_LONG).show()
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -355,7 +399,7 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
         //
     }
 
-
+    //Controlla se l'app è in Dark Mode
     fun isUsingNightModeResources(): Boolean {
         return when (resources.configuration.uiMode and
                 Configuration.UI_MODE_NIGHT_MASK) {

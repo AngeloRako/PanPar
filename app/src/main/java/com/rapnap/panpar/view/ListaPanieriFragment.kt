@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.snackbar.Snackbar
 import com.rapnap.panpar.R
 import com.rapnap.panpar.adapter.OnItemEventListener
 import com.rapnap.panpar.adapter.PanieriRecyclerAdapter
@@ -36,21 +37,12 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEve
             Log.d("ACTIVITY", "Ho chiamato getPanieriByScore")
 
             //Osserva i panieri ottenuti
-            listaPanieriVM.getListaPanieri().observe(this, Observer<ArrayList<Paniere>> {
+            listaPanieriVM.listaPanieri.observe(this, Observer<ArrayList<Paniere>> {
                 //Log.d("ACTIVITY", "Ho assegnato ad i panieri i valori che stavano nel DB." +
                 //        " La dimensione della lista dei panieri è: " + panieriList.size.toString())
 
                 adapter.setData(it)
 
-                /*
-                panieriList.forEach() {
-                    activity?.runOnUiThread {   //Possiamo pensare a dove altro metterlo
-                        adapter.addNewItem(it)
-                        adapter.notifyItemInserted((panieriList.size-1))    //Posizione in cui ho inserito, sempre alla fine
-                        Log.d("ACTIVITY", "Ho " + adapter.itemCount.toString() + " panieri.")
-                    }
-                }
-                 */
             })
         }
     }
@@ -76,20 +68,17 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEve
 
     override fun onEventHappened(item: Paniere, view: View?) {
         listaPanieriVM.updatePaniereFollowers(item.id)
+
+        Snackbar.make(
+            requireView(),
+            "Sei ora in coda per l'assegnazione di questo paniere!",
+            Snackbar.LENGTH_LONG //
+        ).setAction(
+            "Ok",
+            {
+                it.visibility = View.GONE
+            }).show()
+
     }
 
-
-        //Questo aggiorna la view quando scrolli, ma se carichiamo tutti i panieri una volta e per tutte
-    //non serve (magari potrebbe essere un miglioramento futuro, tipo caricarne prima 10 poi gli
-    //altri man mano che scrolli)
-
-//    private fun setRecyclerViewScrollListener() {
-//        recycler_view.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-//            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-//                super.onScrollStateChanged(recyclerView, newState)
-//                val totalItemCount = recyclerView.layoutManager!!.itemCount
-//                richiediPaniere()
-//            }
-//        })
-//    }
 }
