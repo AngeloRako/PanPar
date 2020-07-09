@@ -126,9 +126,7 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
             if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                 // Granted. Start getting the location information
             }
-        } else {
-            map_view.getMapAsync(callback)
-        }
+        } 
     }
 
     //Controllo se la posizione è attivata sul dispositivo
@@ -247,8 +245,6 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
         val view = inflater.inflate(R.layout.fragment_scegli_punto, container, false)
 
         getLastLocation()
-
-
 
         //Location utente (dovrebbe venire dal ViewModel)
         val loc = currentLocation.toLocation()
