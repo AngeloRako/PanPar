@@ -1,11 +1,10 @@
 package com.rapnap.panpar.view
 
+import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,7 +18,7 @@ import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.viewmodel.ListaPanieriViewModel
 import kotlinx.android.synthetic.main.fragment_lista_panieri.view.*
 
-class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEventListener<Paniere> {
+class ListaPanieriFragment: LocationDependantFragment(), OnItemEventListener<Paniere> {
 
     private lateinit var linearLayoutManager: LinearLayoutManager
     private lateinit var adapter: PanieriRecyclerAdapter
@@ -28,23 +27,58 @@ class ListaPanieriFragment: Fragment(R.layout.fragment_lista_panieri), OnItemEve
     //TODO: Determinare posizione dinamicamente (VM?)
     private var currentLocation = LatLng(40.643396, 14.865041)
 
-    override fun onStart() {
-        super.onStart()
+    override fun onLocationObtained(location: Location) {
+        //L'utente ha dato i permessi e posso fare la query geocalizzata
+
         //Parte chiamando la funzione che comunica con la repository per prendere i panieri
         //in base al punteggio dell'utente
-        listaPanieriVM.getPanieriByScore() {
+        listaPanieriVM.getPanieriPrenotabiliFromLocation(location)
 
-            Log.d("ACTIVITY", "Ho chiamato getPanieriByScore")
+    }
 
-            //Osserva i panieri ottenuti
-            listaPanieriVM.listaPanieri.observe(this, Observer<ArrayList<Paniere>> {
+
+    override fun onLocationUpdated(location: Location) {
+
+        listaPanieriVM.getPanieriPrenotabiliFromLocation(location)
+
+    }
+
+    override fun onLocationDisabled() {
+
+        val defaultLocation = Location("")
+        defaultLocation.latitude = 40.878437
+        defaultLocation.longitude = 14.343430
+
+        listaPanieriVM.getPanieriPrenotabiliFromLocation(defaultLocation)
+    }
+
+    override fun onPermissionDenied(){
+
+        val defaultLocation = Location("")
+        defaultLocation.latitude = 40.878437
+        defaultLocation.longitude = 14.343430
+
+        listaPanieriVM.getPanieriPrenotabiliFromLocation(defaultLocation)
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        val defaultLocation = Location("")
+        defaultLocation.latitude = 40.878437
+        defaultLocation.longitude = 14.343430
+
+        listaPanieriVM.getPanieriPrenotabiliFromLocation(defaultLocation)
+        listaPanieriVM.listaPanieri.observe(this, Observer<ArrayList<Paniere>> {
                 //Log.d("ACTIVITY", "Ho assegnato ad i panieri i valori che stavano nel DB." +
                 //        " La dimensione della lista dei panieri è: " + panieriList.size.toString())
-
                 adapter.setData(it)
 
-            })
-        }
+        })
+
+        getLastLocation()
+
     }
 
     override fun onCreateView(

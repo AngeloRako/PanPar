@@ -1,6 +1,7 @@
 package com.rapnap.panpar.repository
 
 import android.content.ContentValues
+import android.content.ContentValues.TAG
 import android.location.Location
 import android.util.Log
 import com.google.firebase.Timestamp
@@ -23,7 +24,7 @@ class PaniereRepository {
     private var db = Firebase.firestore
     //private var storage = Firebase.storage
 
-    private val acceptableDistanceInMeters: Int = 100000000
+    private val acceptableDistanceInMeters: Int = 25000
 
     fun createNewPaniere(paniere: Paniere, onComplete: () -> Unit) {
 
@@ -134,11 +135,11 @@ class PaniereRepository {
                             tempConsegna = it.toDate()
                         }
 
-
+                        val paniereID = document.data?.get("id") as String
                         //Creo un paniere con i dati presi dal DB
 
                         val paniereTemp = Paniere(
-                            id = document.data?.get("id") as String,
+                            id =  paniereID,
                             puntoRitiro = PuntoRitiro(
                                 nome = document.data?.get("nome_punto_ritiro") as String,
                                 indirizzo = document.data?.get("indirizzo") as String,
@@ -151,51 +152,59 @@ class PaniereRepository {
                             stato = Stato.valueOf(document.data?.get("stato") as String)
                         )
 
-                        Log.d("REPOSITORY", "Paniere creato: " + paniereTemp.contenuto.toString())
+                        checkIfFollowingTooMany(auth.currentUser?.uid.toString(), points.toInt()) {
+                            val totalValue = it + paniereTemp.calcolaValore()
 
-                        //Se esiste la coda riceventi, controlla se già contiene il ricevente
-                        var isAlreadyFollowing = false
-                        if (document.data?.get("coda_riceventi") != null) {
-                            isAlreadyFollowing =
-                                (document.data?.get("coda_riceventi") as ArrayList<String>).contains(
-                                    auth.currentUser?.uid
+                            var isAlreadyFollowing = false
+                            if (document.data?.get("coda_riceventi") != null
+                            ) {
+                                isAlreadyFollowing =
+                                    (document.data?.get("coda_riceventi") as ArrayList<String>).contains(
+                                        auth.currentUser?.uid
+                                    )
+                            }
+
+                            //Se il paniere creato ha un valore inferiore ai punti rimanenti all'utente
+                            //e se la distanza punto di ritiro - posizione dell'utente è inferiore
+                            //ai due km (costante acceptableDistanceInMeters = 2000 metri, è un esempio)
+                            if (totalValue < points
+                                && tempLocation.distanceTo(userLocationAsLocation) < acceptableDistanceInMeters
+                                && !isAlreadyFollowing
+                            ) {
+                                //OTTIMIZZAZIONE: posso fare la get qui di tutti i campi che non siano
+                                //il valore e la posizione, così magari velocizzo perché li getto solo
+                                //se la condizione sul valore e sulla posizione sono specificate
+                                //Qui lo faccio solo per l'immagine per il momento
+
+                                paniereTemp.immagine = document.data?.get("immagine") as String?
+
+                                panieri.add(paniereTemp)
+
+                                Log.d(
+                                    ContentValues.TAG,
+                                    "Paniere aggiunto ad i panieri visualizzabili:   ${paniereTemp.toString()} ho ben: ${panieri.size} in totale!! ;D"
                                 )
-                        }
-
-                        //Se il paniere creato ha un valore inferiore ai punti rimanenti all'utente
-                        //e se la distanza punto di ritiro - posizione dell'utente è inferiore
-                        //ai due km (costante acceptableDistanceInMeters = 2000 metri, è un esempio)
-                        if (paniereTemp.calcolaValore() < points
-                            && tempLocation.distanceTo(userLocationAsLocation) < acceptableDistanceInMeters
-                            && !isAlreadyFollowing
-                        ) {
-                            //OTTIMIZZAZIONE: posso fare la get qui di tutti i campi che non siano
-                            //il valore e la posizione, così magari velocizzo perché li getto solo
-                            //se la condizione sul valore e sulla posizione sono specificate
-                            //Qui lo faccio solo per l'immagine per il momento
-
-                            paniereTemp.immagine = document.data?.get("immagine") as String?
-
-                            panieri.add(paniereTemp)
-                            Log.d(
-                                ContentValues.TAG,
-                                "Paniere aggiunto ad i panieri visualizzabili. Immagine: " + paniereTemp.immagine.toString()
-                            )
+                            } else {
+                                Log.e(TAG, "NON POSSO AGGIUNGERLO: ${totalValue}, Donatore: ${paniereTemp.donatore} |= ${auth.currentUser?.uid} Location: ${tempLocation.distanceTo(userLocationAsLocation)}")
+                            }
                         }
                     }
                 }
                 //Rimuovo il primo elemento della lista che è un paniere vuoto
                 //serviva solo ad inizializzare l'ArrayList sennò urlava
                 panieri.removeAt(0)
+                Log.d(TAG, "STO TORNANDO CON: ${panieri.size} PANIERI")
+
                 onComplete(panieri)
             }
-            .addOnFailureListener() { exception ->
+            .addOnFailureListener()
+            { exception ->
                 Log.e(
                     ContentValues.TAG,
                     "Non sono riuscito a fare la query sui Panieri perché sono un perdente"
                 )
             }
-        //onComplete(panieri)
+//onComplete(panieri)
     }
 
 //    fun obtainBmp(imgRef: String, onComplete: (result: Bitmap?) -> Unit) {
@@ -316,11 +325,11 @@ class PaniereRepository {
     }
 
     //Metodo per ottenere la lista dei panieri relativa ai Donatori, se appunto tipologia = "donatore",
-    //mentre relativa invece ai riceventi, se tipologia = "ricevente".
-    //Per il momento mostrerò tutti i panieri che ho richiesto e mostrerò quindi anche i panieri richiesti
-    //ma che sono stati assegnati a qualche altro utente. Poi in un secondo momento, se tra questi
-    //panieri sono presenti anche quelli che ho vinto, basta controllare il campo apposito
-    //e vedere se l'id è presente.
+//mentre relativa invece ai riceventi, se tipologia = "ricevente".
+//Per il momento mostrerò tutti i panieri che ho richiesto e mostrerò quindi anche i panieri richiesti
+//ma che sono stati assegnati a qualche altro utente. Poi in un secondo momento, se tra questi
+//panieri sono presenti anche quelli che ho vinto, basta controllare il campo apposito
+//e vedere se l'id è presente.
     fun getListaPanieriPerTipologia(
         tipologia: String,
         onComplete: (result: ArrayList<Paniere>) -> Unit

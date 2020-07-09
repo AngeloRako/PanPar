@@ -1,26 +1,17 @@
 package com.rapnap.panpar.view
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
-import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.*
-import androidx.core.app.ActivityCompat
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import androidx.navigation.navGraphViewModels
-import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -39,7 +30,7 @@ import com.rapnap.panpar.viewmodel.NuovoPaniereViewModel
 import kotlinx.android.synthetic.main.fragment_scegli_punto.*
 import kotlinx.android.synthetic.main.fragment_scegli_punto.view.*
 
-class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
+class ScegliPuntoFragment : LocationDependantFragment(), GoogleMap.OnMarkerClickListener,
     GoogleMap.OnCameraMoveListener, GoogleMap.CancelableCallback {
 
     private lateinit var gMap: GoogleMap
@@ -48,8 +39,6 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
     private lateinit var punti: List<PuntoRitiro>
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
     private lateinit var puntoRitiroVisualizzato: PuntoRitiro
-    val PERMISSION_ID: Int = 40
-    lateinit var mFusedLocationClient: FusedLocationProviderClient
 
     private val nuovoPaniereVM: NuovoPaniereViewModel
             by navGraphViewModels(R.id.new_paniere_graph)
@@ -117,113 +106,33 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
         }
     }
 
-    //Controlla se l'utente dispone dei permessi necessari ad ottenere la posizione
-    private fun checkPermissions(): Boolean {
-        if (ActivityCompat.checkSelfPermission(
-                requireActivity(),
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(
-                requireActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            return true
-        }
-        return false
+    override fun onLocationObtained(location: Location) {
+        setMapPosition(LatLng(location.latitude, location.longitude))
     }
 
-    //richiede i permessi
-    private fun requestPermissions() {
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            arrayOf(
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ),
-            PERMISSION_ID
-        )
-    }
 
-    //Se ottiene i permessi procede
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == PERMISSION_ID) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                //Permessi ottenuti, re-invoca la funzione
-                getLastLocation()
-            }
+    override fun onLocationUpdated(location: Location) {
+        currentLocation = LatLng(location.latitude, location.longitude)
+        if (currentLocation != null) {
+            setMapPosition()
         }
     }
 
-    //Controllo se la posizione è attivata sul dispositivo
-    private fun isLocationEnabled(): Boolean {
-        var locationManager: LocationManager =
-            activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER
-        )
+    override fun onLocationDisabled() {
+        Snackbar.make(
+            requireView(),
+            "Attiva la localizzazione per scoprire i punti di ritiro più vicini.",
+            Snackbar.LENGTH_LONG //
+        ).setAction(
+            "Vai",
+            {
+                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                startActivity(intent)
+            }).show()
     }
 
-    //Ottengo l'ultima posizione disponibile utilizzando le funzioni precedenti
-    @SuppressLint("MissingPermission")
-    private fun getLastLocation() {
-        if (checkPermissions()) {
-            if (isLocationEnabled()) {
-                mFusedLocationClient.lastLocation.addOnCompleteListener(requireActivity()) { task ->
-                    var location: Location? = task.result
-                    if (location == null) {
-                        requestNewLocationData()
-                    } else {
-                        setMapPosition(LatLng(location.latitude, location.longitude))
-                    }
-                }
-            } else {
-
-                Snackbar.make(
-                    requireView(),
-                    "Attiva la localizzazione per scoprire i punti di ritiro più vicini.",
-                    Snackbar.LENGTH_LONG //
-                ).setAction(
-                    "Vai",
-                    {
-                        val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                        startActivity(intent)
-                    }).show()
-            }
-        } else {
-            requestPermissions()
-        }
-    }
-
-    //Funzione che richiede la posizione dell'utente: se questa viene aggiornata avvia mLocationCallback
-    @SuppressLint("MissingPermission")
-    private fun requestNewLocationData() {
-        var mLocationRequest = LocationRequest()
-        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        mLocationRequest.interval = 0
-        mLocationRequest.fastestInterval = 0
-        mLocationRequest.numUpdates = 1
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        mFusedLocationClient!!.requestLocationUpdates(
-            mLocationRequest, mLocationCallback,
-            Looper.myLooper()
-        )
-    }
-
-    //Callback relativa al caso in cui la posizione è stata aggiornata
-    private val mLocationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult) {
-            var mLastLocation: Location = locationResult.lastLocation
-            currentLocation = LatLng(mLastLocation.latitude, mLastLocation.longitude)
-            if (currentLocation != null) {
-                setMapPosition()
-            }
-        }
+    override fun onPermissionDenied() {
+        /**/
     }
 
     //Aggiorna la mappa dalla lista punti ritiro (se possibile)
@@ -246,7 +155,7 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
 
         if (mapReady) {
             gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 11F))
-            Log.e(
+            Log.d(
                 TAG,
                 "DI SEGUITO LA TUA POSIZIONE: ${currentLocation.latitude} e ${currentLocation.longitude}"
             )
@@ -347,7 +256,6 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

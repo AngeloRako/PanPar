@@ -1,6 +1,7 @@
 package com.rapnap.panpar.viewmodel
 
 import android.content.ContentValues.TAG
+import android.location.Location
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -12,12 +13,12 @@ import com.rapnap.panpar.repository.PaniereRepository
 import com.rapnap.panpar.repository.UtenteRepository
 
 
-class ListaPanieriViewModel: ViewModel() {
+class ListaPanieriViewModel : ViewModel() {
 
     private val utenteRepository: UtenteRepository = UtenteRepository()
-    private val paniereRepository : PaniereRepository = PaniereRepository()
+    private val paniereRepository: PaniereRepository = PaniereRepository()
     private val _listaPanieri = MutableLiveData<ArrayList<Paniere>>()
-    val listaPanieri : LiveData<ArrayList<Paniere>>
+    val listaPanieri: LiveData<ArrayList<Paniere>>
         get() = _listaPanieri
 
     private fun getUtente(onComplete: (Utente) -> Unit) {
@@ -26,23 +27,31 @@ class ListaPanieriViewModel: ViewModel() {
         }
     }
 
-    fun getPanieriByScore(onComplete: () -> Unit) {
+    fun getPanieriPrenotabiliFromLocation(location: Location) {
+
+        //val loc = Location("").apply{position(40.878437, 14.343430)}
+
         //Passare i valori giusti
-        paniereRepository.obtainPanieri(
-            points = 1000,
-            userLocationAsGeopoint = GeoPoint(40.878437, 14.343430)
-        ){
-            _listaPanieri.value = it
-            Log.d(TAG,"Ho trovato: ${it.count()} panieri!")
-            onComplete()
+        getUtente { utente ->
+
+            Log.d(TAG, "Ho a disposizione: ${utente.punteggio} punti!")
+
+            paniereRepository.obtainPanieri(
+                points = utente.punteggio,
+                userLocationAsGeopoint = GeoPoint(location.latitude, location.longitude)
+                //userLocationAsGeopoint = GeoPoint(loc.latitude, loc.longitude)
+            ) {
+                _listaPanieri.value = it
+                Log.d(TAG, "Ho trovato: ${it.count()} panieri!")
+            }
         }
     }
 
-    fun updatePaniereFollowers(id: String){
+    fun updatePaniereFollowers(id: String) {
 
         //TODO: prende i punti da authRepository?
 
-        getUtente{ user->
+        getUtente { user ->
 
             paniereRepository.updatePaniereFollowers(id, user.punteggio.toInt())
 
