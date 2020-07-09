@@ -307,6 +307,7 @@ class ScegliPuntoFragment : Fragment(), GoogleMap.OnMarkerClickListener,
         //Listener per il button relativo al posizionamento della mappa sulla currentLocation
         locationBtn.setOnClickListener {
             getLastLocation()
+            Toast.makeText(requireActivity(), "Accedo alla posizione..", Toast.LENGTH_LONG).show()
         }
     }
 
