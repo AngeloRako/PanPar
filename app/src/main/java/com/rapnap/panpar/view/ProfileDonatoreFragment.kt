@@ -46,6 +46,8 @@ class ProfileDonatoreFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        (activity as AppCompatActivity).supportActionBar?.elevation = 0F
+
         //Override del metodo onBackPressed affinché esca dall'applicazione quando tappo due volte indietro.
         activity?.onBackPressedDispatcher?.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -93,7 +95,8 @@ class ProfileDonatoreFragment : Fragment() {
         )
 
         bottomSheetBehavior = BottomSheetBehavior.from(view.lista_panieri_donatore_view)
-        bottomSheetBehavior.peekHeight = resources.configuration.screenHeightDp
+        val height = resources.configuration.screenHeightDp
+        bottomSheetBehavior.peekHeight = (height * 1.4).toInt()
         bottomSheetBehavior.addBottomSheetCallback(BottomSheetListener())
 
         return view
@@ -200,7 +203,7 @@ class ProfileDonatoreFragment : Fragment() {
 
                 TransitionManager.beginDelayedTransition(lista_panieri_donatore_view, AutoTransition().apply{duration = 150})
                 titolo_lista.visibility = View.GONE
-                    (requireActivity() as AppCompatActivity).supportActionBar?.title = "Le tue donazioni"
+                    (requireActivity() as AppCompatActivity).supportActionBar?.title = "Panieri donati"
             }
                 BottomSheetBehavior.STATE_DRAGGING -> {
                     TransitionManager.beginDelayedTransition(lista_panieri_donatore_view, AutoTransition())

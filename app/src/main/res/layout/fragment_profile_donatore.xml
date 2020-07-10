@@ -18,66 +18,59 @@
         app:backgroundTint = "@color/secondaryColor"/>
 
 
-    <com.google.android.material.appbar.MaterialToolbar
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        style="Widget.Panpar.Sheet"
-        >
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".view.ProfileDonatoreFragment"
+            android:background = "@color/primaryColor"
+            >
 
+            <androidx.cardview.widget.CardView
+                android:id="@+id/profilePicView"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginStart="144dp"
+                android:layout_marginTop="41dp"
+                android:layout_marginEnd="139dp"
+                app:cardCornerRadius="50dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.446"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/labelHomeDonatore1">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".view.ProfileDonatoreFragment">
+                <ImageView
+                    android:id="@+id/profilePic"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:srcCompat="@mipmap/ic_panpar" />
+            </androidx.cardview.widget.CardView>
 
-        <androidx.cardview.widget.CardView
-            android:id="@+id/profilePicView"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginStart="144dp"
-            android:layout_marginTop="41dp"
-            android:layout_marginEnd="139dp"
-            app:cardCornerRadius="50dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.446"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/labelHomeDonatore1">
+            <TextView
+                android:id="@+id/labelHomeDonatore1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:text="Benvenuto Donatore, \ndi seguito il resoconto delle tue azioni:"
+                android:textAlignment="center"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/profilePic"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:srcCompat="@mipmap/ic_panpar" />
-        </androidx.cardview.widget.CardView>
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="35dp"
+                android:isIndicator="true"
+                android:scaleX="0.5"
+                android:scaleY="0.5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.508"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/profilePicView" />
 
-        <TextView
-            android:id="@+id/labelHomeDonatore1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="100dp"
-            android:text="Benvenuto Donatore, \ndi seguito il resoconto delle tue azioni:"
-            android:textAlignment="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <RatingBar
-            android:id="@+id/ratingBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="35dp"
-            android:isIndicator="true"
-            android:scaleX="0.5"
-            android:scaleY="0.5"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.508"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profilePicView" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </com.google.android.material.appbar.MaterialToolbar>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/lista_panieri_donatore_view"
@@ -98,7 +91,7 @@
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="25dp"
-                android:text="Le tue donazioni"
+                android:text="Panieri donati"
                 android:textAppearance="?attr/textAppearanceHeadline6"
                 app:layout_constraintBottom_toTopOf="@id/lista_panieri_donatore"
                 app:layout_constraintEnd_toEndOf="parent"
