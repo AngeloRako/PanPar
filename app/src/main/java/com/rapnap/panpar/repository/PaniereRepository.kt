@@ -78,7 +78,7 @@ class PaniereRepository {
     suspend fun obtainPanieri(
         points: Long,
         userLocationAsGeopoint: GeoPoint
-        ): ArrayList<Paniere>? {
+    ): ArrayList<Paniere>? {
         try {
 
             var panieri: ArrayList<Paniere> = arrayListOf(Paniere())
@@ -273,7 +273,7 @@ class PaniereRepository {
                 )
             }
         } catch (e: Exception) {
-            Log.d("REPOSITORY", "Sono un fallito")
+            Log.e("REPOSITORY", "Errore: ${e.localizedMessage}")
         }
 
     }
@@ -324,141 +324,153 @@ class PaniereRepository {
     fun getListaPanieriPerTipologia(
         tipologia: String,
         onComplete: (result: ArrayList<Paniere>) -> Unit
-    ) {
-        val panieri: ArrayList<Paniere> = arrayListOf(Paniere())
+    ): ListenerRegistration? {
+        val panieri = ArrayList<Paniere>()
         val panieriRef: CollectionReference = db.collection("panieri")
         val uiid = auth.currentUser?.uid ?: "!!!!!!"
 
-        when (tipologia) {
+        return when (tipologia) {
 
             "donatore" -> {
                 panieriRef
                     .whereEqualTo("donatore", uiid)
-                    //.orderBy("data_inserimento", Query.Direction.DESCENDING)
-                    .get()
-                    .addOnSuccessListener {
-                        for (document: QueryDocumentSnapshot in it) {
-
-                            val tempGeoPoint = document.getGeoPoint("location")
-                            val tempLocation = Location("")
-                            if (tempGeoPoint != null) {
-                                tempLocation.latitude = tempGeoPoint.latitude
-                                tempLocation.longitude = tempGeoPoint.longitude
-                            }
-
-                            val tempTimestamp = document.getTimestamp("data_inserimento")
-                            var tempDate: Date = Date()
-                            if (tempTimestamp != null) {
-                                tempDate = tempTimestamp.toDate()
-                            }
-
-                            var tempConsegna = Date()
-                            document.getTimestamp("data_consegna_prevista")?.let {
-                                tempConsegna = it.toDate()
-                            }
-
-                            val tempString = document.data?.get("contenuto") as ArrayList<String>
-                            val tempContenuto: MutableSet<Contenuto> = hashSetOf()
-
-                            tempString.forEach {
-                                tempContenuto.add(Contenuto.valueOf(it))
-                            }
-
-
-                            //Creo un paniere con i dati presi dal DB
-                            val paniereTemp = Paniere(
-                                document.data?.get("id") as String,
-                                PuntoRitiro(
-                                    nome = document.data?.get("nome_punto_ritiro") as String,
-                                    indirizzo = document.data?.get("indirizzo") as String,
-                                    location = tempLocation
-                                ),
-                                tempDate,
-                                tempConsegna,
-                                tempContenuto,
-                                donatore = document.data?.get("donatore") as String,
-                                stato = Stato.valueOf(document.data?.get("stato") as String)
-                            )
-
-                            Log.d(ContentValues.TAG, "Paniere creato")
-
-                            panieri.add(paniereTemp)
-                            Log.d(ContentValues.TAG, "Paniere aggiunto alla lista panieri donatore")
-
+                    .orderBy("data_inserimento", Query.Direction.DESCENDING)
+                    .addSnapshotListener { snapshot, e ->
+                        //.get()
+                        if (e != null) {
+                            Log.w(TAG, "Listen failed.", e)
+                            return@addSnapshotListener
                         }
-                        panieri.removeAt(0)
-                        onComplete(panieri)
-                    }
-                    .addOnFailureListener() { exception ->
-                        Log.e(ContentValues.TAG, exception.localizedMessage)
+                        if (!(snapshot != null && snapshot.metadata.hasPendingWrites())) {
+                            panieri.clear()
+                            val it = snapshot?.documents
+                            for (document in it!!) {
+
+                                val tempGeoPoint = document.getGeoPoint("location")
+                                val tempLocation = Location("")
+                                if (tempGeoPoint != null) {
+                                    tempLocation.latitude = tempGeoPoint.latitude
+                                    tempLocation.longitude = tempGeoPoint.longitude
+                                }
+
+                                val tempTimestamp = document.getTimestamp("data_inserimento")
+                                var tempDate: Date = Date()
+                                if (tempTimestamp != null) {
+                                    tempDate = tempTimestamp.toDate()
+                                }
+
+                                var tempConsegna = Date()
+                                document.getTimestamp("data_consegna_prevista")?.let {
+                                    tempConsegna = it.toDate()
+                                }
+
+                                val tempString =
+                                    document.data?.get("contenuto") as ArrayList<String>
+                                val tempContenuto: MutableSet<Contenuto> = hashSetOf()
+
+                                tempString.forEach {
+                                    tempContenuto.add(Contenuto.valueOf(it))
+                                }
+
+
+                                //Creo un paniere con i dati presi dal DB
+                                val paniereTemp = Paniere(
+                                    document.data?.get("id") as String,
+                                    PuntoRitiro(
+                                        nome = document.data?.get("nome_punto_ritiro") as String,
+                                        indirizzo = document.data?.get("indirizzo") as String,
+                                        location = tempLocation
+                                    ),
+                                    tempDate,
+                                    tempConsegna,
+                                    tempContenuto,
+                                    donatore = document.data?.get("donatore") as String,
+                                    stato = Stato.valueOf(document.data?.get("stato") as String)
+                                )
+
+                                Log.d(ContentValues.TAG, "Paniere creato")
+
+                                panieri.add(paniereTemp)
+                                Log.d(
+                                    ContentValues.TAG,
+                                    "Paniere aggiunto alla lista panieri donatore"
+                                )
+
+                            }
+                            onComplete(panieri)
+                        }
                     }
             }
 
             "ricevente" -> {
-
                 panieriRef
                     .whereArrayContains("coda_riceventi", uiid)
                     .orderBy("data_consegna_prevista", Query.Direction.DESCENDING)
-                    .get()
-                    .addOnSuccessListener {
-                        for (document: QueryDocumentSnapshot in it) {
-
-                            val tempGeoPoint = document.getGeoPoint("location")
-                            val tempLocation = Location("")
-                            if (tempGeoPoint != null) {
-                                tempLocation.latitude = tempGeoPoint.latitude
-                                tempLocation.longitude = tempGeoPoint.longitude
-                            }
-
-                            val tempTimestamp = document.getTimestamp("data_inserimento")
-                            var tempDate: Date = Date()
-                            if (tempTimestamp != null) {
-                                tempDate = tempTimestamp.toDate()
-                            }
-
-                            var tempConsegna = Date()
-                            document.getTimestamp("data_consegna_prevista")?.let {
-                                tempConsegna = it.toDate()
-                            }
-
-                            val tempString = document.data?.get("contenuto") as ArrayList<String>
-                            val tempContenuto: MutableSet<Contenuto> = hashSetOf()
-
-                            tempString.forEach {
-                                tempContenuto.add(Contenuto.valueOf(it))
-                            }
-
-                            //Creo un paniere con i dati presi dal DB
-                            val paniereTemp = Paniere(
-                                id = document.data?.get("id") as String,
-                                puntoRitiro = PuntoRitiro(
-                                    nome = document.data?.get("nome_punto_ritiro") as String,
-                                    indirizzo = document.data?.get("indirizzo") as String,
-                                    location = tempLocation
-                                ),
-                                dataInserimento = tempDate,
-                                dataConsegnaPrevista = tempConsegna,
-                                contenuto = tempContenuto,
-                                donatore = document.data?.get("donatore") as String,
-                                stato = Stato.valueOf(document.data?.get("stato") as String)
-                            )
-
-                            Log.d(ContentValues.TAG, "Paniere creato")
-
-                            panieri.add(paniereTemp)
-                            Log.d(
-                                ContentValues.TAG,
-                                "Paniere aggiunto alla lista panieri ricevente"
-                            )
+                    //.get()
+                    .addSnapshotListener { snapshot, e ->
+                        if (e != null) {
+                            Log.w(TAG, "Listen failed.", e)
+                            return@addSnapshotListener
                         }
-                        panieri.removeAt(0)
-                        onComplete(panieri)
-                    }
-                    .addOnFailureListener() { exception ->
-                        Log.e(ContentValues.TAG, "Nessun paniere relativo relativo ai riceventi !")
-                        Log.e(ContentValues.TAG, exception.localizedMessage)
+                        if (!(snapshot != null && snapshot.metadata.hasPendingWrites())) {
+                            panieri.clear()
+                            val it = snapshot?.documents
+                            for (document in it!!) {
+
+                                val tempGeoPoint = document.getGeoPoint("location")
+                                val tempLocation = Location("")
+                                if (tempGeoPoint != null) {
+                                    tempLocation.latitude = tempGeoPoint.latitude
+                                    tempLocation.longitude = tempGeoPoint.longitude
+                                }
+
+                                val tempTimestamp = document.getTimestamp("data_inserimento")
+                                var tempDate: Date = Date()
+                                if (tempTimestamp != null) {
+                                    tempDate = tempTimestamp.toDate()
+                                }
+
+                                var tempConsegna = Date()
+                                document.getTimestamp("data_consegna_prevista")?.let {
+                                    tempConsegna = it.toDate()
+                                }
+
+                                val tempString =
+                                    document.data?.get("contenuto") as ArrayList<String>
+                                val tempContenuto: MutableSet<Contenuto> = hashSetOf()
+
+                                tempString.forEach {
+                                    tempContenuto.add(Contenuto.valueOf(it))
+                                }
+
+                                //Creo un paniere con i dati presi dal DB
+                                val paniereTemp = Paniere(
+                                    id = document.data?.get("id") as String,
+                                    puntoRitiro = PuntoRitiro(
+                                        nome = document.data?.get("nome_punto_ritiro") as String,
+                                        indirizzo = document.data?.get("indirizzo") as String,
+                                        location = tempLocation
+                                    ),
+                                    dataInserimento = tempDate,
+                                    dataConsegnaPrevista = tempConsegna,
+                                    contenuto = tempContenuto,
+                                    donatore = document.data?.get("donatore") as String,
+                                    stato = Stato.valueOf(document.data?.get("stato") as String)
+                                )
+
+                                Log.d(ContentValues.TAG, "Paniere creato")
+
+                                panieri.add(paniereTemp)
+                                Log.d(
+                                    ContentValues.TAG,
+                                    "Paniere aggiunto alla lista panieri ricevente"
+                                )
+                            }
+                            onComplete(panieri)
+                        }
                     }
             }
+            else -> null
         }
     }
 

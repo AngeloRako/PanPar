@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.firebase.firestore.ListenerRegistration
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.repository.PaniereRepository
@@ -14,7 +15,8 @@ import kotlinx.coroutines.launch
 
 
 class ProfileDonatoreViewModel: ViewModel() {
-    //private val paniereRepository: PaniereRepository = PaniereRepository()
+
+    private lateinit var registration: ListenerRegistration
 
     //Istanzio la repository affinché possa accedere ai suoi metodi
     private val utenteRepository: UtenteRepository = UtenteRepository()
@@ -31,11 +33,11 @@ class ProfileDonatoreViewModel: ViewModel() {
 
 
     fun obtainPanieri(){
-        panieriRepository.getListaPanieriPerTipologia("donatore"){
+        registration = panieriRepository.getListaPanieriPerTipologia("donatore"){
 
             _panieriDonatore.value = it
 
-        }
+        }!!
     }
 
     //Metodo che chiama la rispettiva funzione del repository per il cambio di tipologia
@@ -59,6 +61,12 @@ class ProfileDonatoreViewModel: ViewModel() {
     //Metodo per ottenere l'immagine del profilo dell'utente
     fun obtainImageFromGoogle(account: GoogleSignInAccount): Uri? {
         return account.photoUrl
+    }
+
+    override fun onCleared() {
+
+        registration.remove()
+        super.onCleared()
     }
 
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.ListenerRegistration
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.repository.PaniereRepository
@@ -11,6 +12,8 @@ import com.rapnap.panpar.repository.UtenteRepository
 import kotlinx.coroutines.launch
 
 class ProfileRiceventeViewModel: ViewModel() {
+
+    private lateinit var registration: ListenerRegistration
 
     private val utenteRepository: UtenteRepository = UtenteRepository()
     private val paniereRepository: PaniereRepository = PaniereRepository()
@@ -25,9 +28,9 @@ class ProfileRiceventeViewModel: ViewModel() {
 
 
     fun obtainPanieri(){
-        paniereRepository.getListaPanieriPerTipologia("ricevente"){
+        registration = paniereRepository.getListaPanieriPerTipologia("ricevente"){
             _panieriRicevente.setValue(it)
-        }
+        }!!
     }
 
     //Metodo che chiama la rispettiva funzione del repository per il cambio di tipologia
@@ -43,4 +46,11 @@ class ProfileRiceventeViewModel: ViewModel() {
             _ricevente.setValue(utenteRepository.getUser())
         }
     }
+
+    override fun onCleared() {
+
+        registration.remove()
+        super.onCleared()
+    }
+
 }

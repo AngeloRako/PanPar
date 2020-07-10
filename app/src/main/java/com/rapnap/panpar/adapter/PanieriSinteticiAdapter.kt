@@ -1,5 +1,6 @@
 package com.rapnap.panpar.adapter
 
+import android.content.ContentValues.TAG
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -90,17 +91,17 @@ class PanieriSinteticiAdapter(
             }
             Tipologia.RICEVENTE -> {
                 when (paniere.stato) {
-                    Stato.RITIRATO -> {
+                    Stato.IN_ATTESA_DI_MATCH -> {
                         holder.view.data.text =
-                            "Ritirato il ${paniere.dataRicezione?.prettyString()}"
+                            "Disponibile al ritiro dal ${paniere.dataConsegnaPrevista?.prettyString()}"
                     }
-                    Stato.IN_GIACENZA -> {
+                    Stato.IN_GIACENZA, Stato.ASSEGNATO -> {
                         holder.view.data.text =
                             "Da ritirare entro 2 giorni dal ${paniere.dataConsegnaPrevista?.prettyString()}"
                     }
                     else -> {
                         holder.view.data.text =
-                            "Creato il ${paniere.dataInserimento?.prettyString()}"
+                            "Ritirato il ${paniere.dataRicezione?.prettyString()}"
                     }
                 }
             }
@@ -112,6 +113,8 @@ class PanieriSinteticiAdapter(
     }
 
     fun setData(panieri: ArrayList<Paniere>) {
+
+        Log.d(TAG, "MI SONO ARRIVATI: ${panieri.size} panieri!!! LOLXDLOL")
         this.panieri.clear()
         this.panieri.addAll(panieri)
         notifyDataSetChanged()

@@ -2,6 +2,7 @@ package com.rapnap.panpar.view
 
 import android.location.Location
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -82,8 +83,8 @@ class ListaPanieriFragment: LocationDependantFragment(), OnItemEventListener<Pan
             listaPanieriVM.getPanieriPrenotabiliFromLocation(defaultLocation)
         }
         listaPanieriVM.listaPanieri.observe(this, Observer<ArrayList<Paniere>> {
-                //Log.d("ACTIVITY", "Ho assegnato ad i panieri i valori che stavano nel DB." +
-                //        " La dimensione della lista dei panieri è: " + panieriList.size.toString())
+                Log.d("ACTIVITY", "Ho assegnato ad i panieri i valori che stavano nel DB." +
+                        " La dimensione della lista dei panieri è: ${it.size}")
                 adapter.setData(it)
 
         })
@@ -113,9 +114,10 @@ class ListaPanieriFragment: LocationDependantFragment(), OnItemEventListener<Pan
 
     override fun onEventHappened(item: Paniere, view: View?) {
 
-        viewLifecycleOwner.lifecycleScope.launch{
+        //viewLifecycleOwner.lifecycleScope.launch{
+        //????????????
             listaPanieriVM.updatePaniereFollowers(item.id)
-        }
+        //}
 
         Snackbar.make(
             requireView(),
