@@ -95,8 +95,7 @@ class ProfileDonatoreFragment : Fragment() {
         )
 
         bottomSheetBehavior = BottomSheetBehavior.from(view.lista_panieri_donatore_view)
-        val height = resources.configuration.screenHeightDp
-        bottomSheetBehavior.peekHeight = (height * 1.4).toInt()
+        bottomSheetBehavior.peekHeight = resources.configuration.screenHeightDp
         bottomSheetBehavior.addBottomSheetCallback(BottomSheetListener())
 
         return view

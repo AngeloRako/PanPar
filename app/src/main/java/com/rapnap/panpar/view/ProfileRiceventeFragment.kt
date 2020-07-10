@@ -78,8 +78,7 @@ class ProfileRiceventeFragment : Fragment(R.layout.fragment_profile_ricevente) {
         )
 
         bottomSheetBehavior = BottomSheetBehavior.from(view.lista_panieri_ricevente_view)
-        val height = resources.configuration.screenHeightDp
-        bottomSheetBehavior.peekHeight = (height * 1.8).toInt()
+        bottomSheetBehavior.peekHeight = resources.configuration.screenHeightDp
         bottomSheetBehavior.addBottomSheetCallback(BottomSheetListener())
 
 
