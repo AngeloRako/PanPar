@@ -20,7 +20,7 @@
     </style>
 
 
-    <style name="SplashTheme" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="SplashTheme" parent="RiceventeTheme.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 
