@@ -1,10 +1,8 @@
 package com.rapnap.panpar.viewmodel
 
-import android.location.Location
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.rapnap.panpar.model.Tipologia
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.repository.AuthRepository
 

@@ -10,10 +10,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.*
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.rapnap.panpar.model.Contenuto
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.model.PuntoRitiro
-import com.rapnap.panpar.model.Stato
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.*
@@ -47,7 +45,8 @@ class PaniereRepository {
             "contenuto" to paniere.contenuto.toList(),
             "indirizzo" to paniere.puntoRitiro.indirizzo,
             "stato" to paniere.stato.toString(),
-            "n_richieste" to 0
+            "n_richieste" to 0,
+            "valore" to paniere.calcolaValore()
         )
 
         //New document with a generated ID
@@ -123,14 +122,14 @@ class PaniereRepository {
                     }
 
                     val tempString = document.data?.get("contenuto") as ArrayList<String>
-                    val tempContMutable: MutableSet<Contenuto> = hashSetOf()
+                    val tempContMutable: MutableSet<Paniere.Contenuto> = hashSetOf()
 
                     //Usare l'iterator()
                     tempString.forEach {
-                        tempContMutable.add(Contenuto.valueOf(it))
+                        tempContMutable.add(Paniere.Contenuto.valueOf(it))
                     }
 
-                    val tempContFixed: MutableSet<Contenuto> = tempContMutable
+                    val tempContFixed: MutableSet<Paniere.Contenuto> = tempContMutable
 
                     var tempConsegna = Date()
                     document.getTimestamp("data_consegna_prevista")?.let {
@@ -151,7 +150,7 @@ class PaniereRepository {
                         dataConsegnaPrevista = tempConsegna,
                         contenuto = tempContFixed,
                         donatore = document.data?.get("donatore") as String,
-                        stato = Stato.valueOf(document.data?.get("stato") as String)
+                        stato = Paniere.Stato.valueOf(document.data?.get("stato") as String)
                     )
 
                     var totalValue = totalValueOfFollow(auth.currentUser?.uid.toString())
@@ -243,11 +242,11 @@ class PaniereRepository {
                     riceventiOnCurrentPaniere.contains(auth.currentUser?.uid)
 
                 val tempString = document.data?.get("contenuto") as ArrayList<String>
-                val tempContMutable: MutableSet<Contenuto> = hashSetOf()
+                val tempContMutable: MutableSet<Paniere.Contenuto> = hashSetOf()
                 tempString.forEach {
-                    tempContMutable.add(Contenuto.valueOf(it))
+                    tempContMutable.add(Paniere.Contenuto.valueOf(it))
                 }
-                val tempContFixed: MutableSet<Contenuto> = tempContMutable
+                val tempContFixed: MutableSet<Paniere.Contenuto> = tempContMutable
 
                 val tempPaniere = Paniere(contenuto = tempContFixed)
                 totalValue += tempPaniere.calcolaValore()
@@ -291,11 +290,11 @@ class PaniereRepository {
 
             for (document in documents) {
                 val tempString = document.data?.get("contenuto") as ArrayList<String>
-                val tempContMutable: MutableSet<Contenuto> = hashSetOf()
+                val tempContMutable: MutableSet<Paniere.Contenuto> = hashSetOf()
                 tempString.forEach {
-                    tempContMutable.add(Contenuto.valueOf(it))
+                    tempContMutable.add(Paniere.Contenuto.valueOf(it))
                 }
-                val tempContFixed: MutableSet<Contenuto> = tempContMutable
+                val tempContFixed: MutableSet<Paniere.Contenuto> = tempContMutable
 
                 val tempPaniere = Paniere(contenuto = tempContFixed)
                 totalValue += tempPaniere.calcolaValore()
@@ -366,10 +365,10 @@ class PaniereRepository {
 
                                 val tempString =
                                     document.data?.get("contenuto") as ArrayList<String>
-                                val tempContenuto: MutableSet<Contenuto> = hashSetOf()
+                                val tempContenuto: MutableSet<Paniere.Contenuto> = hashSetOf()
 
                                 tempString.forEach {
-                                    tempContenuto.add(Contenuto.valueOf(it))
+                                    tempContenuto.add(Paniere.Contenuto.valueOf(it))
                                 }
 
 
@@ -385,7 +384,7 @@ class PaniereRepository {
                                     tempConsegna,
                                     tempContenuto,
                                     donatore = document.data?.get("donatore") as String,
-                                    stato = Stato.valueOf(document.data?.get("stato") as String)
+                                    stato = Paniere.Stato.valueOf(document.data?.get("stato") as String)
                                 )
 
                                 Log.d(ContentValues.TAG, "Paniere creato")
@@ -437,10 +436,10 @@ class PaniereRepository {
 
                                 val tempString =
                                     document.data?.get("contenuto") as ArrayList<String>
-                                val tempContenuto: MutableSet<Contenuto> = hashSetOf()
+                                val tempContenuto: MutableSet<Paniere.Contenuto> = hashSetOf()
 
                                 tempString.forEach {
-                                    tempContenuto.add(Contenuto.valueOf(it))
+                                    tempContenuto.add(Paniere.Contenuto.valueOf(it))
                                 }
 
                                 //Creo un paniere con i dati presi dal DB
@@ -455,7 +454,7 @@ class PaniereRepository {
                                     dataConsegnaPrevista = tempConsegna,
                                     contenuto = tempContenuto,
                                     donatore = document.data?.get("donatore") as String,
-                                    stato = Stato.valueOf(document.data?.get("stato") as String)
+                                    stato = Paniere.Stato.valueOf(document.data?.get("stato") as String)
                                 )
 
                                 Log.d(ContentValues.TAG, "Paniere creato")

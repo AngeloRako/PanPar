@@ -7,7 +7,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.rapnap.panpar.model.Tipologia
 import com.rapnap.panpar.model.Utente
 import kotlinx.coroutines.tasks.await
 
@@ -42,7 +41,7 @@ class UtenteRepository {
         val document = userRef.get().await()
             if(document.data != null){
                     val type = document.data?.get("type") as String
-                    user.tipo = Tipologia.valueOf(type)
+                    user.tipo = Utente.Tipologia.valueOf(type)
                     val location = document.data?.get("location") as GeoPoint
                     user.location = location.toString()
                     user.punteggio = document.data?.get("punteggio") as Long

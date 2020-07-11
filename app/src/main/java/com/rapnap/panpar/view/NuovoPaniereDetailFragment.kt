@@ -19,7 +19,6 @@ import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.rapnap.panpar.R
-import com.rapnap.panpar.model.Contenuto
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.model.PuntoRitiro
 import com.rapnap.panpar.model.Utility.getClearedUtc
@@ -101,7 +100,7 @@ class NuovoPaniereDetailFragment : Fragment() {
 
         //Configurazione chips per la tipologia contenuto
         view.contenuto_group.isSelectionRequired = true
-        Contenuto.values().forEach { value ->
+        Paniere.Contenuto.values().forEach { value ->
 
             val chip = createChip(value.toString().toLowerCase().capitalize())
             view.contenuto_group.addView(chip)
@@ -161,21 +160,21 @@ class NuovoPaniereDetailFragment : Fragment() {
             }
 
             //Aggiorna UI
-            it.dataConsegnaPrevista?.let{ date->
+            it.dataConsegnaPrevista?.let { date ->
 
                 data_consegna_prevista_text_input.setText(getDate(date))
             }
 
             scegli_punto_di_ritiro.setText(it.puntoRitiro.nome)
 
-            with (it.contenuto.iterator()){
+            with(it.contenuto.iterator()) {
                 forEach { contenuto ->
 
                     with((contenuto_group.children as Sequence<Chip>).iterator()) {
                         forEach { chip ->
                             val condition = (chip.text as String).toUpperCase() == contenuto.name
-                            if(condition){
-                                   chip.isChecked = condition
+                            if (condition) {
+                                chip.isChecked = condition
                             }
                         }
                     }
@@ -272,7 +271,7 @@ class NuovoPaniereDetailFragment : Fragment() {
 
         chip.setOnCheckedChangeListener { buttonView, isChecked ->
 
-            val value = Contenuto.valueOf((buttonView.text as String).toUpperCase())
+            val value = Paniere.Contenuto.valueOf((buttonView.text as String).toUpperCase())
 
             when (isChecked) {
 
@@ -323,7 +322,7 @@ class NuovoPaniereDetailFragment : Fragment() {
 
         complete_paniere_details_btn.isEnabled = result
 
-        if(!(complete_paniere_details_btn.visibility == View.VISIBLE) && result){
+        if (!(complete_paniere_details_btn.visibility == View.VISIBLE) && result) {
             slideUp(complete_paniere_details_btn)
         }
 
@@ -343,8 +342,6 @@ class NuovoPaniereDetailFragment : Fragment() {
         animate.fillAfter = true
         view.startAnimation(animate)
     }
-
-
 
 
 }

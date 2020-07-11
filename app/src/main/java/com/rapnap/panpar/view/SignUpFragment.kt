@@ -1,20 +1,16 @@
 package com.rapnap.panpar.view
 
-import android.location.Location
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import com.rapnap.panpar.R
-import com.rapnap.panpar.model.Tipologia
 import com.rapnap.panpar.model.Utente
-import com.rapnap.panpar.viewmodel.SignInViewModel
 import com.rapnap.panpar.viewmodel.SignUpViewModel
-import kotlinx.android.synthetic.main.fragment_sign_in.*
 import kotlinx.android.synthetic.main.fragment_sign_up.*
 
 
@@ -36,17 +32,17 @@ class SignUpFragment : Fragment() {
         super.onStart()
 
         registerAsDonatoreBtn.setOnClickListener{
-            registerAs(Tipologia.DONATORE)
+            registerAs(Utente.Tipologia.DONATORE)
         }
 
         registerAsRiceventeBtn.setOnClickListener{
-            registerAs(Tipologia.RICEVENTE)
+            registerAs(Utente.Tipologia.RICEVENTE)
         }
 
     }
 
 
-    fun registerAs(tipologia: Tipologia){
+    fun registerAs(tipologia: Utente.Tipologia){
 
         signUpVM.registerAs(tipologia)
 
@@ -55,7 +51,7 @@ class SignUpFragment : Fragment() {
 
             when(it.tipo){
 
-                Tipologia.RICEVENTE -> {
+                Utente.Tipologia.RICEVENTE -> {
 
                     //Carica home Ricevente
                     Navigation.findNavController(this.requireView()).navigate(R.id.signUpToRicevente)
@@ -63,7 +59,7 @@ class SignUpFragment : Fragment() {
 
                 }
 
-                Tipologia.DONATORE -> {
+                Utente.Tipologia.DONATORE -> {
 
                     //Carica home Donatore
                     Navigation.findNavController(this.requireView()).navigate(R.id.signUpToDonatore)

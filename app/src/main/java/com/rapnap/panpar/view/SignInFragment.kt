@@ -2,13 +2,11 @@ package com.rapnap.panpar.view
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
@@ -16,18 +14,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.rapnap.panpar.R
-import com.rapnap.panpar.model.Tipologia
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.viewmodel.SignInViewModel
-import kotlinx.android.synthetic.main.fragment_sign_in.*
 import kotlinx.android.synthetic.main.fragment_sign_in.view.*
-import kotlin.math.sign
 
 class SignInFragment : Fragment() {
 
@@ -111,8 +102,8 @@ class SignInFragment : Fragment() {
 
                         when(it.tipo){
 
-                            Tipologia.DONATORE -> id = R.id.signInToDonatore
-                            Tipologia.RICEVENTE -> id = R.id.signInToRicevente
+                            Utente.Tipologia.DONATORE -> id = R.id.signInToDonatore
+                            Utente.Tipologia.RICEVENTE -> id = R.id.signInToRicevente
                         }
                         Navigation.findNavController(this.requireView()).navigate(id)
                         this.activity?.finish()

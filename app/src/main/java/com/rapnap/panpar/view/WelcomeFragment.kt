@@ -11,7 +11,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.Navigation
 import com.rapnap.panpar.R
-import com.rapnap.panpar.model.Tipologia
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.viewmodel.WelcomeViewModel
 
@@ -56,14 +55,14 @@ class WelcomeFragment : Fragment() {
                     else{
                         when(it.tipo){
 
-                            Tipologia.RICEVENTE -> {
+                            Utente.Tipologia.RICEVENTE -> {
 
                                 //Carica home Ricevente
                                 Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToRicevente)
                                 this.activity?.finish()
                             }
 
-                            Tipologia.DONATORE -> {
+                            Utente.Tipologia.DONATORE -> {
                                 //Carica home Donatore
                                 Navigation.findNavController(this.requireView()).navigate(R.id.welcomeToDonatore)
                                 this.activity?.finish()

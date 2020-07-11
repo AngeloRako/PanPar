@@ -16,30 +16,34 @@ data class Paniere (
     var abbinamento: Abbinamento? = null,
     var dataRicezione: Date? = null,
     var immagine : String? = null,
-    var stato: Stato = Stato.IN_ATTESA_DI_MATCH
-
+    var stato: Stato = Stato.IN_ATTESA_DI_MATCH,
+    var valore: Long = 0
 ) {
 
     fun calcolaValore() : Long {
+
         var valore : Long = 0
         contenuto.forEach {
             when(it) {
                 Contenuto.PASTA -> valore += 50
                 Contenuto.CONFETTURA -> valore += 60
                 Contenuto.BIBITE -> valore += 40
-                Contenuto.SORPRESA -> valore += (kotlin.random.Random.nextInt(70) + 30)
-                Contenuto.ALTRO -> valore += (kotlin.random.Random.nextInt(70) + 30)
+                Contenuto.VESTIARIO -> valore += 100
+                Contenuto.CONSERVATI -> valore += 80
             }
         }
 
+        this.valore = valore
         return valore
     }
 
-}
-enum class Contenuto {
-    PASTA, CONFETTURA, BIBITE, SORPRESA, VESTIARIO, CONSERVATI, ALTRO
-}
+    enum class Contenuto {
+        PASTA, CONFETTURA, BIBITE, VESTIARIO, CONSERVATI
+    }
 
-enum class Stato {
-    IN_ATTESA_DI_MATCH, ASSEGNATO, IN_GIACENZA, RITIRATO
+    enum class Stato {
+        IN_ATTESA_DI_MATCH, ASSEGNATO, IN_GIACENZA, RITIRATO
+    }
+
+
 }

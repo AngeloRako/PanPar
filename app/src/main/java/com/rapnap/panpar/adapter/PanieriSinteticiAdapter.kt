@@ -13,8 +13,7 @@ import com.rapnap.panpar.extensions.inflate
 import com.rapnap.panpar.extensions.prettyString
 import com.rapnap.panpar.extensions.prettyText
 import com.rapnap.panpar.model.Paniere
-import com.rapnap.panpar.model.Stato
-import com.rapnap.panpar.model.Tipologia
+import com.rapnap.panpar.model.Utente
 import kotlinx.android.synthetic.main.paniere_item_row.view.*
 import kotlinx.android.synthetic.main.recyclerview_item_row.view.contenuto_group
 import kotlinx.android.synthetic.main.recyclerview_item_row.view.paniereLocation
@@ -22,7 +21,7 @@ import kotlinx.android.synthetic.main.recyclerview_item_row.view.paniereValue
 
 class PanieriSinteticiAdapter(
     private var panieri: ArrayList<Paniere>,
-    private val tipologia: Tipologia
+    private val tipologia: Utente.Tipologia
 ) : RecyclerView.Adapter<PanieriSinteticiAdapter.PanieriHolder>() {
 
     private lateinit var inflatedView: View
@@ -73,13 +72,13 @@ class PanieriSinteticiAdapter(
 
         when (tipologia) {
 
-            Tipologia.DONATORE -> {
+            Utente.Tipologia.DONATORE -> {
                 when (paniere.stato) {
-                    Stato.RITIRATO -> {
+                    Paniere.Stato.RITIRATO -> {
                         holder.view.data.text =
                             "Ritirato il ${paniere.dataRicezione?.prettyString()}"
                     }
-                    Stato.ASSEGNATO -> {
+                    Paniere.Stato.ASSEGNATO -> {
                         holder.view.data.text =
                             "Da consegnare (entro) il ${paniere.dataConsegnaPrevista?.prettyString()}"
                     }
@@ -89,13 +88,13 @@ class PanieriSinteticiAdapter(
                     }
                 }
             }
-            Tipologia.RICEVENTE -> {
+            Utente.Tipologia.RICEVENTE -> {
                 when (paniere.stato) {
-                    Stato.IN_ATTESA_DI_MATCH -> {
+                    Paniere.Stato.IN_ATTESA_DI_MATCH -> {
                         holder.view.data.text =
                             "Disponibile al ritiro dal ${paniere.dataConsegnaPrevista?.prettyString()}"
                     }
-                    Stato.IN_GIACENZA, Stato.ASSEGNATO -> {
+                    Paniere.Stato.IN_GIACENZA, Paniere.Stato.ASSEGNATO -> {
                         holder.view.data.text =
                             "Da ritirare entro 2 giorni dal ${paniere.dataConsegnaPrevista?.prettyString()}"
                     }

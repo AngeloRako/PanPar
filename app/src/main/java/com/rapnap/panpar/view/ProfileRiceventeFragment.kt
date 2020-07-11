@@ -18,7 +18,6 @@ import com.google.android.material.shape.CornerFamily
 import com.rapnap.panpar.R
 import com.rapnap.panpar.adapter.PanieriSinteticiAdapter
 import com.rapnap.panpar.model.Paniere
-import com.rapnap.panpar.model.Tipologia
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.viewmodel.ProfileRiceventeViewModel
 import kotlinx.android.synthetic.main.fragment_profile_ricevente.*
@@ -102,7 +101,7 @@ class ProfileRiceventeFragment : Fragment(R.layout.fragment_profile_ricevente) {
         //Configuro Adapter
         linearLayoutManager = LinearLayoutManager(this.activity)
         lista_panieri_ricevente.layoutManager = linearLayoutManager
-        adapter = PanieriSinteticiAdapter(ArrayList<Paniere>(), Tipologia.RICEVENTE)
+        adapter = PanieriSinteticiAdapter(ArrayList<Paniere>(), Utente.Tipologia.RICEVENTE)
         lista_panieri_ricevente.adapter = adapter
 
         //Osservo i dati del view model

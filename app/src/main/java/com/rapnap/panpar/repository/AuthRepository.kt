@@ -11,7 +11,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.GeoPoint
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
-import com.rapnap.panpar.model.Tipologia
 import com.rapnap.panpar.model.Utente
 import java.util.*
 
@@ -46,7 +45,7 @@ class AuthRepository {
              }
      }
 
-    fun firebaseCompleteSignUp(tipologia: Tipologia, position: Location? = null): MutableLiveData<Utente> {
+    fun firebaseCompleteSignUp(tipologia: Utente.Tipologia, position: Location? = null): MutableLiveData<Utente> {
 
         val authenticatedUserMutableLiveData = MutableLiveData<Utente>()
 
@@ -125,7 +124,7 @@ class AuthRepository {
 
                         val type = document.data?.get("type") as String
 
-                        user.tipo = Tipologia.valueOf(type)
+                        user.tipo = Utente.Tipologia.valueOf(type)
                         val location = document.data?.get("location") as GeoPoint
                         user.location = location.toString()
                         user.punteggio = document.data?.get("punteggio") as Long
