@@ -3,7 +3,7 @@
     android:opacity="opaque"> <!-- android:opacity="opaque" should be here -->
     <item>
         <!--this is your background, you can use color, gradient etc.-->
-        <color android:color="@color/backgroundColor"/>
+        <color android:color="@color/secondaryColor"/>
         <!--<shape>
               <gradient
                    android:angle="315"
@@ -13,7 +13,7 @@
         </shape> -->
     </item>
     <item>
-        <bitmap android:src="@drawable/extended_logo"
+        <bitmap android:src="@drawable/icon"
             android:gravity="center"/>
     </item>
 </layer-list>

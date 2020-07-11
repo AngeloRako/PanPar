@@ -14,7 +14,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_panpar"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/RiceventeTheme">
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -27,14 +27,16 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name=".view.HomeDonatoreActivity" />
+        <activity android:name=".view.HomeDonatoreActivity"
+            android:theme="@style/DonatoreTheme"/>
         <activity
             android:name=".view.SettingsActivity"
             android:label="@string/title_activity_settings" />
         <activity android:name=".view.NuovoPaniereActivity"
             android:parentActivityName=".view.HomeDonatoreActivity"/>
         <activity
-            android:name=".view.HomeRiceventeActivity"/>
+            android:name=".view.HomeRiceventeActivity"
+            android:theme="@style/RiceventeTheme"/>
         <activity
             android:name=".view.MainActivity"
             android:theme="@style/SplashTheme">

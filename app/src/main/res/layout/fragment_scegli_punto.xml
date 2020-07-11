@@ -26,7 +26,8 @@
         android:layout_marginBottom="32dp"
         android:contentDescription="Nuovo Paniere"
         app:srcCompat="@drawable/ic_baseline_location_on_24"
-        app:backgroundTint = "@color/primaryColor"/>
+        app:backgroundTint = "@color/primaryColor"
+        app:tint = "@color/primaryTextColor"/>
 
 
     <com.google.android.material.card.MaterialCardView

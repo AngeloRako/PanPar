@@ -16,7 +16,7 @@ class HomeRiceventeActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.AppTheme)
+        setTheme(R.style.RiceventeTheme)
         setContentView(R.layout.activity_home_ricevente)
 
         negotiateDeviceDarkMode()

@@ -16,7 +16,7 @@ class HomeDonatoreActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setTheme(R.style.AppTheme)
+        setTheme(R.style.DonatoreTheme)
         setContentView(R.layout.activity_home_donatore)
 
         negotiateDeviceDarkMode()

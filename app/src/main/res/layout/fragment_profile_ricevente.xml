@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".view.ProfileRiceventeFragment">
 
 
@@ -11,9 +11,8 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".view.ProfileDonatoreFragment"
-        android:background = "@color/primaryColor"
-        >
+        android:background="@color/secondaryColor"
+        tools:context=".view.ProfileDonatoreFragment">
 
         <TextView
             android:id="@+id/textView"
@@ -24,7 +23,8 @@
             android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView"
+            app:tint="@color/primaryTextColor" />
 
         <TextView
             android:id="@+id/puntiLabel"
@@ -57,8 +57,9 @@
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"
         android:contentDescription="Cerca paniere"
+        app:backgroundTint="@color/primaryColor"
         app:srcCompat="@drawable/ic_baseline_search_24"
-        app:backgroundTint = "@color/secondaryColor"/>
+        app:tint="@color/primaryTextColor" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/lista_panieri_ricevente_view"
@@ -67,38 +68,38 @@
         android:background="#FFFFFF"
         app:behavior_hideable="false"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
 
-        <TextView
-            android:id="@+id/titolo_lista"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="25dp"
-            android:text="Panieri seguiti"
-            android:textAppearance="?attr/textAppearanceHeadline6"
-            app:layout_constraintBottom_toTopOf="@id/lista_panieri_ricevente"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/lista_panieri_ricevente"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titolo_lista"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            <TextView
+                android:id="@+id/titolo_lista"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginBottom="25dp"
+                android:text="Panieri seguiti"
+                android:textAppearance="?attr/textAppearanceHeadline6"
+                app:layout_constraintBottom_toTopOf="@id/lista_panieri_ricevente"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/lista_panieri_ricevente"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/titolo_lista" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     </com.google.android.material.card.MaterialCardView>
-
-
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
