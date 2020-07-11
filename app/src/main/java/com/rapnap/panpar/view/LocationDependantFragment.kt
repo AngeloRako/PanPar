@@ -10,10 +10,16 @@ import android.os.Bundle
 import android.os.Looper
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.google.android.gms.location.*
+import com.rapnap.panpar.viewmodel.LocationViewModel
 
 abstract class LocationDependantFragment: Fragment() {
 
+    //Uso un view Model per consentire di usare la posizione tra più fragment diversi senza doverla chiedere ogni volta
+    open val locationVM: LocationViewModel by viewModels()
+    open val currentLocation: Location
+        get() =  locationVM.currentLocation.value!!
     val PERMISSION_ID: Int = 24+23+25
     lateinit var mFusedLocationClient: FusedLocationProviderClient
 
@@ -82,6 +88,7 @@ abstract class LocationDependantFragment: Fragment() {
                     if (location == null) {
                         requestNewLocationData()
                     } else {
+                        locationVM.setLocation(location)
                         onLocationObtained(location)
                     }
                 }
@@ -114,15 +121,22 @@ abstract class LocationDependantFragment: Fragment() {
     //Callback relativa al caso in cui la posizione è stata aggiornata
     open val mLocationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
+            locationVM.setLocation(locationResult.lastLocation)
             onLocationUpdated(locationResult.lastLocation)
+
         }
     }
 
     /*  Elementi di Menu nella ActionBar    */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if(!locationVM.isPositionSet()){
+            locationVM.defaultLocation()
+        }
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
     }
+
+
 
     abstract fun onLocationObtained(location: Location)
     abstract fun onLocationUpdated(location: Location)

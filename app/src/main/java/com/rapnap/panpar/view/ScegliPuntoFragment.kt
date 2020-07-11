@@ -24,7 +24,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.rapnap.panpar.R
 import com.rapnap.panpar.extensions.distanceText
 import com.rapnap.panpar.extensions.toLatLng
-import com.rapnap.panpar.extensions.toLocation
 import com.rapnap.panpar.model.PuntoRitiro
 import com.rapnap.panpar.viewmodel.NuovoPaniereViewModel
 import kotlinx.android.synthetic.main.fragment_scegli_punto.*
@@ -43,7 +42,7 @@ class ScegliPuntoFragment : LocationDependantFragment(), GoogleMap.OnMarkerClick
     private val nuovoPaniereVM: NuovoPaniereViewModel
             by navGraphViewModels(R.id.new_paniere_graph)
 
-    private var currentLocation = LatLng(40.643396, 14.865041)
+    //private var currentLocation = LatLng(40.643396, 14.865041)
 
     //* Callback mappa */
     private val callback = OnMapReadyCallback { googleMap ->
@@ -93,7 +92,7 @@ class ScegliPuntoFragment : LocationDependantFragment(), GoogleMap.OnMarkerClick
 
             updateMap()
 
-            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 11F))
+            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation.toLatLng(), 11F))
             Log.e(
                 TAG,
                 "DI SEGUITO LA TUA POSIZIONE: ${currentLocation.latitude} e ${currentLocation.longitude}"
@@ -112,10 +111,7 @@ class ScegliPuntoFragment : LocationDependantFragment(), GoogleMap.OnMarkerClick
 
 
     override fun onLocationUpdated(location: Location) {
-        currentLocation = LatLng(location.latitude, location.longitude)
-        if (currentLocation != null) {
             setMapPosition()
-        }
     }
 
     override fun onLocationDisabled() {
@@ -149,12 +145,10 @@ class ScegliPuntoFragment : LocationDependantFragment(), GoogleMap.OnMarkerClick
         }
     }
 
-    private fun setMapPosition(location: LatLng = currentLocation) {
-
-        currentLocation = location
+    private fun setMapPosition(location: LatLng = currentLocation.toLatLng()) {
 
         if (mapReady) {
-            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 11F))
+            gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation.toLatLng(), 11F))
             Log.d(
                 TAG,
                 "DI SEGUITO LA TUA POSIZIONE: ${currentLocation.latitude} e ${currentLocation.longitude}"
@@ -175,7 +169,7 @@ class ScegliPuntoFragment : LocationDependantFragment(), GoogleMap.OnMarkerClick
         name_text_view.text = puntoRitiro.nome
         address_text_view.text = puntoRitiro.indirizzo
 
-        val loc = currentLocation.toLocation()
+        val loc = currentLocation
 
         distance_text_view.text =
             distanceText(puntoRitiro.location.distanceTo(loc)) + " da qui"
@@ -207,10 +201,9 @@ class ScegliPuntoFragment : LocationDependantFragment(), GoogleMap.OnMarkerClick
     ): View? {
         val view = inflater.inflate(R.layout.fragment_scegli_punto, container, false)
 
-        //getLastLocation()
 
         //Location utente (dovrebbe venire dal ViewModel)
-        val loc = currentLocation.toLocation()
+        val loc = currentLocation
 
         nuovoPaniereVM.getPuntiDiRitiro(loc, 2000000.0) {}
 
