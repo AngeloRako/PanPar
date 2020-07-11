@@ -47,7 +47,7 @@ fun distanceText(distance: Float): String {
 
 fun Paniere.Stato.prettyText(): String = when (this){
 
-    Paniere.Stato.IN_ATTESA_DI_MATCH ->"In attesa dell'esito"
+    Paniere.Stato.IN_ATTESA_DI_MATCH ->"In attesa"
     Paniere.Stato.ASSEGNATO -> "Assegnato"
     Paniere.Stato.IN_GIACENZA -> "In giacenza"
     Paniere.Stato.RITIRATO -> "Ritirato"

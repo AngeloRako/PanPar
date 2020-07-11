@@ -126,7 +126,8 @@ class ProfileDonatoreFragment : Fragment() {
         //Configura recycler view
         linearLayoutManager = LinearLayoutManager(this.activity)
         lista_panieri_donatore.layoutManager = linearLayoutManager
-        adapter = PanieriSinteticiAdapter(ArrayList<Paniere>(), Utente.Tipologia.DONATORE)
+
+        adapter = PanieriSinteticiAdapter(ArrayList<Paniere>(), pdvm.userId(), Utente.Tipologia.DONATORE, requireContext())
         lista_panieri_donatore.adapter = adapter
 
         pdvm.obtainPanieri()

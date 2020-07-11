@@ -1,9 +1,11 @@
 package com.rapnap.panpar.adapter
 
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.google.firebase.ktx.Firebase
@@ -21,7 +23,9 @@ import kotlinx.android.synthetic.main.recyclerview_item_row.view.paniereValue
 
 class PanieriSinteticiAdapter(
     private var panieri: ArrayList<Paniere>,
-    private val tipologia: Utente.Tipologia
+    private val userId: String,
+    private val tipologia: Utente.Tipologia,
+    private val context: Context
 ) : RecyclerView.Adapter<PanieriSinteticiAdapter.PanieriHolder>() {
 
     private lateinit var inflatedView: View
@@ -67,8 +71,9 @@ class PanieriSinteticiAdapter(
 
         holder.view.paniereValue.text = "Valore: ${paniere.calcolaValore()}"
         holder.view.stato.text = paniere.stato.prettyText()
+        holder.view.stato.setTextColor(ContextCompat.getColor(context, R.color.secondaryColor))
 
-        holder.view.setOnClickListener{}
+        holder.view.setOnClickListener {}
 
         when (tipologia) {
 
@@ -90,6 +95,21 @@ class PanieriSinteticiAdapter(
             }
             Utente.Tipologia.RICEVENTE -> {
                 when (paniere.stato) {
+
+                    Paniere.Stato.ASSEGNATO -> {
+                        when (paniere.ricevente == userId) {
+                            true -> {
+                                holder.view.stato.text = "Vinto"
+                                holder.view.stato.setTextColor(ContextCompat.getColor(context,R.color.successColor))
+                            }
+                            false -> {
+                                holder.view.stato.text = "Perso"
+                                holder.view.stato.setTextColor(ContextCompat.getColor(context, R.color.failureColor))
+                            }
+                        }
+                        holder.view.data.text =
+                            "Disponibile al ritiro dal ${paniere.dataConsegnaPrevista?.prettyString()}"
+                    }
                     Paniere.Stato.IN_ATTESA_DI_MATCH -> {
                         holder.view.data.text =
                             "Disponibile al ritiro dal ${paniere.dataConsegnaPrevista?.prettyString()}"

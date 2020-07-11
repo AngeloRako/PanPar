@@ -13,11 +13,11 @@ data class Paniere (
     var richieste: ArrayList<Richiesta>? = null,
     var donatore: String = "",
     var nRichieste: Int = 0,
-    var abbinamento: Abbinamento? = null,
     var dataRicezione: Date? = null,
     var immagine : String? = null,
     var stato: Stato = Stato.IN_ATTESA_DI_MATCH,
-    var valore: Long = 0
+    var valore: Long = 0,
+    var ricevente: String = ""
 ) {
 
     fun calcolaValore() : Long {

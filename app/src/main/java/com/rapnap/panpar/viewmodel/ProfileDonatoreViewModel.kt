@@ -6,7 +6,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.ktx.Firebase
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.repository.PaniereRepository
@@ -68,5 +70,10 @@ class ProfileDonatoreViewModel: ViewModel() {
         registration.remove()
         super.onCleared()
     }
+
+    fun userId(): String{
+        return Firebase.auth.currentUser?.uid!!
+    }
+
 
 }

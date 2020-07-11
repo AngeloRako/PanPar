@@ -153,6 +153,11 @@ class PaniereRepository {
                         stato = Paniere.Stato.valueOf(document.data?.get("stato") as String)
                     )
 
+                    //Imposto il ricevente se è avvenuto un match
+                    if(paniereTemp.stato != Paniere.Stato.IN_ATTESA_DI_MATCH){
+                        paniereTemp.ricevente = document.data?.get("ricevente") as String
+                    }
+
                     var totalValue = totalValueOfFollow(auth.currentUser?.uid.toString())
                     totalValue += paniereTemp.calcolaValore()
 
@@ -387,6 +392,11 @@ class PaniereRepository {
                                     stato = Paniere.Stato.valueOf(document.data?.get("stato") as String)
                                 )
 
+                                //Imposto il ricevente se è avvenuto un match
+                                if(paniereTemp.stato != Paniere.Stato.IN_ATTESA_DI_MATCH){
+                                    paniereTemp.ricevente = document.data?.get("ricevente") as String
+                                }
+
                                 Log.d(ContentValues.TAG, "Paniere creato")
 
                                 panieri.add(paniereTemp)
@@ -456,6 +466,11 @@ class PaniereRepository {
                                     donatore = document.data?.get("donatore") as String,
                                     stato = Paniere.Stato.valueOf(document.data?.get("stato") as String)
                                 )
+
+                                //Imposto il ricevente se è avvenuto un match
+                                if(paniereTemp.stato != Paniere.Stato.IN_ATTESA_DI_MATCH){
+                                    paniereTemp.ricevente = document.data?.get("ricevente") as String
+                                }
 
                                 Log.d(ContentValues.TAG, "Paniere creato")
 
