@@ -4,9 +4,7 @@ import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.text.InputType
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.view.animation.TranslateAnimation
 import androidx.core.view.children
 import androidx.core.view.isVisible
@@ -50,6 +48,8 @@ class NuovoPaniereDetailFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+
     }
 
     override fun onCreateView(
@@ -184,7 +184,6 @@ class NuovoPaniereDetailFragment : Fragment() {
             }
 
         })
-
 
         return view
     }
@@ -341,6 +340,28 @@ class NuovoPaniereDetailFragment : Fragment() {
         animate.duration = 500
         animate.fillAfter = true
         view.startAnimation(animate)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
+        inflater.inflate(R.menu.new_paniere_menu, menu)
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+
+        R.id.abort -> {
+            // L'utente ha annullato la creazione
+            requireActivity().finish()
+            true
+        }
+
+        else -> {
+            // If we got here, the user's action was not recognized.
+            // Invoke the superclass to handle it.
+            super.onOptionsItemSelected(item)
+        }
     }
 
 
