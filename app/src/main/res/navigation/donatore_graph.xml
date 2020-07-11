@@ -17,8 +17,7 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/donatoreToNuovoPaniere"
-            app:destination="@id/nuovoPaniereActivity"
-            app:enterAnim="@anim/fragment_open_enter" />
+            app:destination="@id/nuovoPaniereActivity" />
     </fragment>
 
     <activity
