@@ -17,6 +17,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.shape.CornerFamily
 import com.rapnap.panpar.R
 import com.rapnap.panpar.adapter.PanieriSinteticiAdapter
+import com.rapnap.panpar.model.Abbinamento
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.model.Utente
 import com.rapnap.panpar.viewmodel.ProfileRiceventeViewModel
@@ -109,6 +110,9 @@ class ProfileRiceventeFragment : Fragment(R.layout.fragment_profile_ricevente) {
         prvm.panieriRicevente.observe(this, Observer<ArrayList<Paniere>> {
             (lista_panieri_ricevente.adapter as PanieriSinteticiAdapter).setData(it)
         })
+        prvm.abbinamenti.observe(this, Observer<ArrayList<Abbinamento>> {
+            (lista_panieri_ricevente.adapter as PanieriSinteticiAdapter).abbinamenti = it
+        })
 
     }
 
@@ -186,9 +190,6 @@ class ProfileRiceventeFragment : Fragment(R.layout.fragment_profile_ricevente) {
             }
 
         }
-
     }
-
-
 
 }

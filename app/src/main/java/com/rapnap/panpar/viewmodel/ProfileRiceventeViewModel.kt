@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.ktx.Firebase
+import com.rapnap.panpar.model.Abbinamento
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.model.Utente
+import com.rapnap.panpar.repository.AbbinamentoRepository
 import com.rapnap.panpar.repository.PaniereRepository
 import com.rapnap.panpar.repository.UtenteRepository
 import kotlinx.coroutines.launch
@@ -19,18 +21,25 @@ class ProfileRiceventeViewModel: ViewModel() {
 
     private val utenteRepository: UtenteRepository = UtenteRepository()
     private val paniereRepository: PaniereRepository = PaniereRepository()
+    private val abbinamentoRepository: AbbinamentoRepository = AbbinamentoRepository()
 
     private val _ricevente = MutableLiveData<Utente>()
     val ricevente: LiveData<Utente>
         get() = _ricevente
+
+    private val _abbinamenti = MutableLiveData<ArrayList<Abbinamento>>()
+    val abbinamenti: LiveData<ArrayList<Abbinamento>>
+        get() = _abbinamenti
 
     private val _panieriRicevente = MutableLiveData<ArrayList<Paniere>>()
     val panieriRicevente: LiveData<ArrayList<Paniere>>
         get() = _panieriRicevente
 
     fun obtainPanieri(){
-        registration = paniereRepository.getListaPanieriPerTipologia("ricevente"){
-            _panieriRicevente.setValue(it)
+        registration = paniereRepository.getListaPanieriPerTipologia("ricevente"){ panieri ->
+            getAbbinamenti() {
+                _panieriRicevente.setValue(panieri)
+            }
         }!!
     }
 
@@ -55,6 +64,13 @@ class ProfileRiceventeViewModel: ViewModel() {
 
     fun userId(): String{
         return Firebase.auth.currentUser?.uid!!
+    }
+
+    fun getAbbinamenti(onComplete: (ArrayList<Abbinamento>) -> Unit) {
+        abbinamentoRepository.getAbbinamenti() {
+            _abbinamenti.value = it
+            onComplete(it)
+        }
     }
 
 

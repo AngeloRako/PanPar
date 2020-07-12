@@ -2,6 +2,8 @@ package com.rapnap.panpar.adapter
 
 import android.content.ContentValues.TAG
 import android.content.Context
+import android.transition.AutoTransition
+import android.transition.TransitionManager
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +16,7 @@ import com.rapnap.panpar.R
 import com.rapnap.panpar.extensions.inflate
 import com.rapnap.panpar.extensions.prettyString
 import com.rapnap.panpar.extensions.prettyText
+import com.rapnap.panpar.model.Abbinamento
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.model.Utente
 import kotlinx.android.synthetic.main.paniere_item_row.view.*
@@ -30,6 +33,8 @@ class PanieriSinteticiAdapter(
 
     private lateinit var inflatedView: View
     private val storage = Firebase.storage
+
+    var abbinamenti = ArrayList<Abbinamento>()
 
     //Classe che estende la RecyclerView.ViewHolder, fa usare la ViewHolder all'adapter
     class PanieriHolder(val view: View) : RecyclerView.ViewHolder(view) //{}
@@ -51,6 +56,34 @@ class PanieriSinteticiAdapter(
     override fun onBindViewHolder(holder: PanieriHolder, position: Int) {
         Log.d("ADAPTER", "Mmmm")
         val paniere = panieri[position]
+        var isMine = false
+
+        if (tipologia == Utente.Tipologia.RICEVENTE) {
+            abbinamenti.forEach {
+                if (paniere.id == it.paniere) {
+                    isMine = true
+                    holder.view.codiceSegreto.text = it.codiceSegreto
+                }
+            }
+
+            when(isMine) {
+                true ->
+                    holder.view.setOnClickListener {
+                        if ( holder.view.codiceSegreto.visibility == View.VISIBLE ) {
+                            TransitionManager.beginDelayedTransition(holder.view.linearLayout_bello, AutoTransition())
+                            holder.view.codiceSegreto.visibility = View.GONE
+                        } else {
+                            TransitionManager.beginDelayedTransition(holder.view.linearLayout_bello, AutoTransition())
+                            holder.view.codiceSegreto.visibility = View.VISIBLE
+                        }
+                    }
+                false ->
+                    holder.view.setOnClickListener {}
+            }
+        } else {
+            holder.view.setOnClickListener {}
+        }
+
 
         //Inserisco la posizione del paniere e dati sulla distanza
         holder.view.paniereLocation.text = paniere.puntoRitiro.nome
@@ -72,8 +105,6 @@ class PanieriSinteticiAdapter(
         holder.view.paniereValue.text = "Valore: ${paniere.calcolaValore()}"
         holder.view.stato.text = paniere.stato.prettyText()
         holder.view.stato.setTextColor(ContextCompat.getColor(context, R.color.secondaryColor))
-
-        holder.view.setOnClickListener {}
 
         when (tipologia) {
 
