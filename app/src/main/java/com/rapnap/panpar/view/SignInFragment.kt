@@ -87,7 +87,7 @@ class SignInFragment : Fragment() {
         //Comunica con ViewModel
         signInVM.signInWithGoogle(credential){
 
-            signInVM.getUser().observe(this, Observer<Utente>{
+            signInVM.user.observe(this, Observer<Utente>{
 
                 //Aggiorna UI in base all'utente
                 when(it.isNew){

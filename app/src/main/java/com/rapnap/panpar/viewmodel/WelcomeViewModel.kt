@@ -9,15 +9,13 @@ import com.rapnap.panpar.repository.AuthRepository
 class WelcomeViewModel: ViewModel() {
 
     private val authRepository: AuthRepository = AuthRepository()
-    private lateinit var user: MutableLiveData<Utente>
-
-    fun getUser(): LiveData<Utente> {
-        return user
-    }
+    private val _user = MutableLiveData<Utente>()
+    val user: LiveData<Utente>
+        get() = _user
 
     fun login(onComplete: () -> Unit){
         authRepository.login(){
-            user = it
+            _user.value = it
             onComplete()
         }
 

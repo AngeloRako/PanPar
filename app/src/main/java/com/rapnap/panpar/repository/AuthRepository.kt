@@ -3,7 +3,6 @@ package com.rapnap.panpar.repository
 import android.content.ContentValues.TAG
 import android.location.Location
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.AuthCredential
 import com.google.firebase.auth.FirebaseAuth
@@ -21,8 +20,7 @@ class AuthRepository {
     private var auth: FirebaseAuth = Firebase.auth
     private var db = Firebase.firestore
 
-    fun firebaseSignInWithGoogle(credential: AuthCredential, onComplete: (result: MutableLiveData<Utente>) -> Unit) {
-         val authenticatedUserMutableLiveData = MutableLiveData<Utente>()
+    fun firebaseSignInWithGoogle(credential: AuthCredential, onComplete: (result: Utente) -> Unit) {
 
          auth.signInWithCredential(credential)
              .addOnCompleteListener { task ->
@@ -31,11 +29,10 @@ class AuthRepository {
                      val isNewUser = task.result?.additionalUserInfo?.isNewUser?: true
 
                      obtainUser(isNewUser){
-                         authenticatedUserMutableLiveData.setValue(it)
 
                          Log.d(TAG, "[AuthRep] User obtained: ${it.toString()}")
 
-                         onComplete(authenticatedUserMutableLiveData)
+                         onComplete(it)
                      }
 
                  } else {
@@ -45,9 +42,7 @@ class AuthRepository {
              }
      }
 
-    fun firebaseCompleteSignUp(tipologia: Utente.Tipologia, position: Location? = null): MutableLiveData<Utente> {
-
-        val authenticatedUserMutableLiveData = MutableLiveData<Utente>()
+    fun firebaseCompleteSignUp(tipologia: Utente.Tipologia, position: Location? = null, onComplete: (result: Utente) -> Unit) {
 
         val uiid = auth.currentUser?.uid ?: "!!!!!!"
         //Insert nel db
@@ -57,7 +52,7 @@ class AuthRepository {
             "location" to GeoPoint(77.0, 77.0),
             "type" to tipologia.toString(),
             "rating" to 0.5,
-            "punteggio" to 0
+            "punteggio" to 1000
         )
 
         //New document
@@ -74,27 +69,21 @@ class AuthRepository {
                 user.tipo = tipologia
                 user.isNew = false
 
-                authenticatedUserMutableLiveData.setValue(user)
+                onComplete(user)
 
             }
             .addOnFailureListener { e ->
                 Log.w(TAG, "Error adding document", e)
             }
 
-        return authenticatedUserMutableLiveData
-
     }
 
-    fun login(onComplete: (result: MutableLiveData<Utente>) -> Unit) {
+    fun login(onComplete: (result: Utente) -> Unit) {
 
-        val authenticatedUserMutableLiveData = MutableLiveData<Utente>()
+        obtainUser(false){
 
-        val user = obtainUser(false){
-            authenticatedUserMutableLiveData.setValue(it)
-
-            Log.d(TAG, "[LOGIN] User obtained: ${it.toString()}")
-
-            onComplete(authenticatedUserMutableLiveData)
+            Log.d(TAG, "[LOGIN] User obtained: ${it}")
+            onComplete(it)
         }
     }
 

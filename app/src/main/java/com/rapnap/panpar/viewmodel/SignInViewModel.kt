@@ -11,15 +11,15 @@ import com.rapnap.panpar.repository.AuthRepository
 open class SignInViewModel: ViewModel() {
 
     private val authRepository: AuthRepository = AuthRepository()
-    private lateinit var user: MutableLiveData<Utente>
+    private val _user = MutableLiveData<Utente>()
 
-    fun getUser(): LiveData<Utente> {
-        return user
-    }
+    val user: LiveData<Utente>
+    get() = _user
+
 
     fun signInWithGoogle(googleAuthCredential: AuthCredential, onComplete: ()->Unit) {
         authRepository.firebaseSignInWithGoogle(googleAuthCredential){
-            user = it
+            _user.value = it
             onComplete()
         }
     }

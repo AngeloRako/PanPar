@@ -10,14 +10,15 @@ import com.rapnap.panpar.repository.AuthRepository
 class SignUpViewModel: ViewModel() {
 
     private val authRepository: AuthRepository = AuthRepository()
-    private lateinit var user: MutableLiveData<Utente>
+    private val _user = MutableLiveData<Utente>()
 
-    fun getUser(): LiveData<Utente> {
-        return user
-    }
+    val user: LiveData<Utente>
+        get() = _user
 
     fun registerAs(tipologia: Utente.Tipologia, position: Location? = null){
-        user = authRepository.firebaseCompleteSignUp(tipologia, position)
+        authRepository.firebaseCompleteSignUp(tipologia, position){
+            _user.value = it
+        }
     }
 
 }

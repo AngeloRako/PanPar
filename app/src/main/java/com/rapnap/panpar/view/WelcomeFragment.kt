@@ -44,7 +44,7 @@ class WelcomeFragment : Fragment() {
 
             welcomeVM.login(){
 
-                welcomeVM.getUser().observe(this, Observer<Utente>{
+                welcomeVM.user.observe(this, Observer<Utente>{
 
                     Log.d(ContentValues.TAG, "[WF] IT è: ${it.toString()}")
 

@@ -47,7 +47,7 @@ class SignUpFragment : Fragment() {
         signUpVM.registerAs(tipologia)
 
 
-        signUpVM.getUser().observe(this, Observer<Utente>{
+        signUpVM.user.observe(this, Observer<Utente>{
 
             when(it.tipo){
 

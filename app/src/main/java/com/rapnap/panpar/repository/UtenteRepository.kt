@@ -28,8 +28,8 @@ class UtenteRepository {
 
     //Metodo per ottenere l'utente ed i suoi attributi. La query viene sempre effettuata utilizzando
     //come id quello prelevato Firebase Authentication. Inoltre, per assicurarmi di effettuare
-    //qualsiasi operazione sull'utente prelevato prima che finisca la query, passo come parametro di
-    //ingresso, una onComplete.
+    //qualsiasi operazione sull'utente prelevato prima che finisca la query, utilizzo le coroutines
+
     suspend fun getUser(): Utente?{
 
         val currentUser = auth.currentUser
