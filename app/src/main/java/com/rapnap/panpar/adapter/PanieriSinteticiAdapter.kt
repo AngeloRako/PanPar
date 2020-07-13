@@ -63,18 +63,19 @@ class PanieriSinteticiAdapter(
                 if (paniere.id == it.paniere) {
                     isMine = true
                     holder.view.codiceSegreto.text = it.codiceSegreto
+                    holder.view.id_paniere.text = it.paniere
                 }
             }
 
             when(isMine) {
                 true ->
                     holder.view.setOnClickListener {
-                        if ( holder.view.codiceSegreto.visibility == View.VISIBLE ) {
-                            TransitionManager.beginDelayedTransition(holder.view.linearLayout_bello, AutoTransition())
-                            holder.view.codiceSegreto.visibility = View.GONE
+                        if ( holder.view.codiceView.visibility == View.VISIBLE ) {
+                            TransitionManager.beginDelayedTransition(holder.view.paniere_sintetico_card, AutoTransition())
+                            holder.view.codiceView.visibility = View.GONE
                         } else {
-                            TransitionManager.beginDelayedTransition(holder.view.linearLayout_bello, AutoTransition())
-                            holder.view.codiceSegreto.visibility = View.VISIBLE
+                            TransitionManager.beginDelayedTransition(holder.view.paniere_sintetico_card, AutoTransition())
+                            holder.view.codiceView.visibility = View.VISIBLE
                         }
                     }
                 false ->
