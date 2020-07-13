@@ -10,16 +10,12 @@ import com.rapnap.panpar.extensions.distanceText
 import com.rapnap.panpar.model.PuntoRitiro
 import kotlinx.android.synthetic.main.punto_ritiro_item.view.*
 
-class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val location: Location, private val listener: OnItemEventListener<PuntoRitiro>) :
+class PuntiRitiroListAdapter(private var punti: ArrayList<PuntoRitiro>, private val location: Location, private val listener: OnItemEventListener<PuntoRitiro>) :
 
     RecyclerView.Adapter<PuntiRitiroListAdapter.PuntoRitiroHolder>() {
 
-    // Provide a reference to the views for each data item
-    // Complex data items may need more than one view per item, and
-    // you provide access to all the views for a data item in a view holder.
     class PuntoRitiroHolder(val view: View) : RecyclerView.ViewHolder(view) //{}
 
-    // Create new views (invoked by the layout manager)
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
@@ -33,7 +29,6 @@ class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val l
             )
         }
 
-        // Replace the contents of a view (invoked by the layout manager)
         override fun onBindViewHolder(holder: PuntoRitiroHolder, position: Int) {
 
             val punto = punti.get(position)
@@ -48,10 +43,9 @@ class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val l
 
         }
 
-        // Return the size of your dataset (invoked by the layout manager)
         override fun getItemCount() = punti.size
 
-        fun setPunti(puntiRitiro: List<PuntoRitiro>) {
+        fun setPunti(puntiRitiro: ArrayList<PuntoRitiro>) {
             this.punti = puntiRitiro
             notifyDataSetChanged()
         }

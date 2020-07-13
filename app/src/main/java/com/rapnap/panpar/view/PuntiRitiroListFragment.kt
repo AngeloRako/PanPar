@@ -60,7 +60,7 @@ class PuntiRitiroListFragment : Fragment(), OnItemEventListener<PuntoRitiro> {
         )
         recyclerView.adapter = viewAdapter
 
-        nuovoPaniereVM.puntiRitiro.observe(viewLifecycleOwner, Observer<List<PuntoRitiro>> {
+        nuovoPaniereVM.puntiRitiro.observe(viewLifecycleOwner, Observer<ArrayList<PuntoRitiro>> {
 
             viewAdapter.setPunti(it)
 
