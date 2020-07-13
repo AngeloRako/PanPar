@@ -29,7 +29,7 @@ class PanieriSinteticiAdapter(
     private val userId: String,
     private val tipologia: Utente.Tipologia,
     private val context: Context
-) : RecyclerView.Adapter<PanieriSinteticiAdapter.PanieriHolder>() {
+) : RecyclerView.Adapter<PanieriSinteticiAdapter.PaniereSinteticoHolder>() {
 
     private lateinit var inflatedView: View
     private val storage = Firebase.storage
@@ -37,23 +37,23 @@ class PanieriSinteticiAdapter(
     var abbinamenti = ArrayList<Abbinamento>()
 
     //Classe che estende la RecyclerView.ViewHolder, fa usare la ViewHolder all'adapter
-    class PanieriHolder(val view: View) : RecyclerView.ViewHolder(view) //{}
+    class PaniereSinteticoHolder(val view: View) : RecyclerView.ViewHolder(view) //{}
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): PanieriSinteticiAdapter.PanieriHolder {
+    ): PanieriSinteticiAdapter.PaniereSinteticoHolder {
         Log.d("ADAPTER", "onCreateViewHolder")
         inflatedView = parent.inflate(R.layout.paniere_item_row, false)
 
-        return PanieriHolder(inflatedView)
+        return PaniereSinteticoHolder(inflatedView)
     }
 
     override fun getItemCount(): Int {
         return panieri.size
     }
 
-    override fun onBindViewHolder(holder: PanieriHolder, position: Int) {
+    override fun onBindViewHolder(holder: PaniereSinteticoHolder, position: Int) {
         Log.d("ADAPTER", "Mmmm")
         val paniere = panieri[position]
         var isMine = false
