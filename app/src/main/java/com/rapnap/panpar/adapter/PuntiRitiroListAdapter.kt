@@ -12,12 +12,12 @@ import com.rapnap.panpar.model.PuntoRitiro
 
 class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val location: Location, private val listener: OnItemEventListener<PuntoRitiro>) :
 
-    RecyclerView.Adapter<PuntiRitiroListAdapter.ViewHolder>() {
+    RecyclerView.Adapter<PuntiRitiroListAdapter.PuntoRitiroHolder>() {
 
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder.
-    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view){
+    class PuntoRitiroHolder(val view: View) : RecyclerView.ViewHolder(view){
 
         val nameTextView: TextView = view.findViewById(R.id.name_text_view)
         val addressTextView: TextView = view.findViewById(R.id.address_text_view)
@@ -29,18 +29,18 @@ class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val l
         override fun onCreateViewHolder(
             parent: ViewGroup,
             viewType: Int
-        ): ViewHolder {
+        ): PuntoRitiroHolder {
             // create a new view
             val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.punto_ritiro_item, parent, false)
 
-            return ViewHolder(
+            return PuntoRitiroHolder(
                 view
             )
         }
 
         // Replace the contents of a view (invoked by the layout manager)
-        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        override fun onBindViewHolder(holder: PuntoRitiroHolder, position: Int) {
 
             val punto = punti.get(position)
 
