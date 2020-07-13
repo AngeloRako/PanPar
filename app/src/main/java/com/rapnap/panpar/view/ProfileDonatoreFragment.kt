@@ -127,7 +127,7 @@ class ProfileDonatoreFragment : Fragment() {
         linearLayoutManager = LinearLayoutManager(this.activity)
         lista_panieri_donatore.layoutManager = linearLayoutManager
 
-        adapter = PanieriSinteticiAdapter(ArrayList<Paniere>(), pdvm.userId(), Utente.Tipologia.DONATORE, requireContext())
+        adapter = PanieriSinteticiAdapter(ArrayList<Paniere>(), pdvm.getUserId(), Utente.Tipologia.DONATORE, requireContext())
         lista_panieri_donatore.adapter = adapter
 
         pdvm.obtainPanieri()

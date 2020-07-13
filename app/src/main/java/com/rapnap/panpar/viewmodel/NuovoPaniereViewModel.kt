@@ -18,8 +18,8 @@ class NuovoPaniereViewModel: ViewModel() {
     val nuovoPaniereInCreazione: LiveData<Paniere>
         get() = _nuovoPaniereInCreazione
 
-    private val _puntiRitiro = MutableLiveData<List<PuntoRitiro>>()
-    val puntiRitiro: LiveData<List<PuntoRitiro>>
+    private val _puntiRitiro = MutableLiveData<ArrayList<PuntoRitiro>>()
+    val puntiRitiro: LiveData<ArrayList<PuntoRitiro>>
         get() = _puntiRitiro
 
     // Il paniere scelto dall'utente per la donazione

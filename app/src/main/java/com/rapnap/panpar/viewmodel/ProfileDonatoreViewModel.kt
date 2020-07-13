@@ -71,7 +71,7 @@ class ProfileDonatoreViewModel: ViewModel() {
         super.onCleared()
     }
 
-    fun userId(): String{
+    fun getUserId(): String{
         return Firebase.auth.currentUser?.uid!!
     }
 

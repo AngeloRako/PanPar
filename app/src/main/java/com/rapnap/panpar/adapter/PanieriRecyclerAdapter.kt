@@ -33,6 +33,8 @@ class PanieriRecyclerAdapter(private var panieri: ArrayList<Paniere>, private va
         Log.d("ADAPTER", "Mmmm")
         val paniere = panieri[position]
 
+        holder.view.setOnClickListener{}
+
         //Inserisco la posizione del paniere e dati sulla distanza
         holder.view.paniereLocation.text = paniere.puntoRitiro.nome
         holder.view.paniereIndirizzo.text = paniere.puntoRitiro.indirizzo

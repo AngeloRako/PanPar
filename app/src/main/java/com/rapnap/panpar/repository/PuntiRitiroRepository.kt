@@ -17,7 +17,7 @@ class PuntiRitiroRepository {
     fun getPuntiDiRitiro(
         location: Location,
         maxDistance: Double,
-        onComplete: (List<PuntoRitiro>) -> Unit
+        onComplete: (ArrayList<PuntoRitiro>) -> Unit
     ) {
 
         val punti = ArrayList<PuntoRitiro>()
