@@ -1,6 +1,5 @@
 package com.rapnap.panpar.repository
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.location.Location
 import android.util.Log
@@ -10,8 +9,6 @@ import com.google.firebase.ktx.Firebase
 import com.rapnap.panpar.model.PuntoRitiro
 import org.imperiumlabs.geofirestore.GeoFirestore
 import org.imperiumlabs.geofirestore.extension.getAtLocation
-import org.imperiumlabs.geofirestore.extension.setLocation
-import kotlin.collections.ArrayList
 
 class PuntiRitiroRepository {
 
@@ -65,8 +62,10 @@ class PuntiRitiroRepository {
 
     }
 
+    /*
+    //DEBUG
     //Funzione per aggiungere un nuovo punto di ritiro
-    fun createtLocationPunto(punto: PuntoRitiro, onComplete: ()->Unit) {
+    fun createLocationPunto(punto: PuntoRitiro, onComplete: ()->Unit) {
 
         val puntiRef = db.collection("punti_ritiro")
         val geoFirestore = GeoFirestore(puntiRef)
@@ -106,7 +105,6 @@ class PuntiRitiroRepository {
                 //onFailure()
 
             }
-
-
     }
+     */
 }

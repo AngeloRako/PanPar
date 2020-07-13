@@ -4,11 +4,11 @@ import android.location.Location
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rapnap.panpar.R
 import com.rapnap.panpar.extensions.distanceText
 import com.rapnap.panpar.model.PuntoRitiro
+import kotlinx.android.synthetic.main.punto_ritiro_item.view.*
 
 class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val location: Location, private val listener: OnItemEventListener<PuntoRitiro>) :
 
@@ -17,13 +17,7 @@ class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val l
     // Provide a reference to the views for each data item
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder.
-    class PuntoRitiroHolder(val view: View) : RecyclerView.ViewHolder(view){
-
-        val nameTextView: TextView = view.findViewById(R.id.name_text_view)
-        val addressTextView: TextView = view.findViewById(R.id.address_text_view)
-        val distanceTextView: TextView = view.findViewById(R.id.distance_text_view)
-
-    }
+    class PuntoRitiroHolder(val view: View) : RecyclerView.ViewHolder(view) //{}
 
     // Create new views (invoked by the layout manager)
         override fun onCreateViewHolder(
@@ -44,9 +38,9 @@ class PuntiRitiroListAdapter(private var punti: List<PuntoRitiro>, private val l
 
             val punto = punti.get(position)
 
-            holder.nameTextView.text = punto.nome
-            holder.addressTextView.text = punto.indirizzo
-            holder.distanceTextView.text = distanceText(punto.location.distanceTo(location))
+            holder.view.name_text_view.text = punto.nome
+            holder.view.address_text_view.text = punto.indirizzo
+            holder.view.distance_text_view.text = distanceText(punto.location.distanceTo(location))
 
             holder.itemView.setOnClickListener{
                 listener.onEventHappened(punto)

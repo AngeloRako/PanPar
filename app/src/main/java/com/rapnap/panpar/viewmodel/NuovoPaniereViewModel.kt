@@ -81,7 +81,7 @@ class NuovoPaniereViewModel: ViewModel() {
     }
 
 
-
+    /*
     /*  FOR DEBUG PURPUSE - NON VANNO USATE  */
     fun nuoviPuntiDiRitiro(onAdded: (id: Int)->Unit){
 
@@ -116,7 +116,7 @@ class NuovoPaniereViewModel: ViewModel() {
         var i = 0
         punti.forEach {
 
-            puntiRitiroRep.createtLocationPunto(it) {
+            puntiRitiroRep.createLocationPunto(it) {
                 onAdded(i)
                 i++
             }
@@ -124,5 +124,5 @@ class NuovoPaniereViewModel: ViewModel() {
         }
 
     }
-
+    */
 }
