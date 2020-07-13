@@ -17,26 +17,26 @@ import kotlinx.android.synthetic.main.recyclerview_item_row.view.*
 import java.io.File
 
 
-class PanieriRecyclerAdapter(private var panieri: ArrayList<Paniere>, private var location: Location, private val onFollowListener: OnItemEventListener<Paniere>) : RecyclerView.Adapter<PanieriRecyclerAdapter.PanieriHolder>() {
+class PanieriRecyclerAdapter(private var panieri: ArrayList<Paniere>, private var location: Location, private val onFollowListener: OnItemEventListener<Paniere>) : RecyclerView.Adapter<PanieriRecyclerAdapter.PaniereHolder>() {
 
     private lateinit var inflatedView: View
     private val storage = Firebase.storage
 
     //Classe che estende la RecyclerView.ViewHolder, fa usare la ViewHolder all'adapter
-    class PanieriHolder(val view: View) : RecyclerView.ViewHolder(view) //{}
+    class PaniereHolder(val view: View) : RecyclerView.ViewHolder(view) //{}
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PanieriHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaniereHolder {
         Log.d("ADAPTER", "onCreateViewHolder")
         inflatedView = parent.inflate(R.layout.recyclerview_item_row, false)
 
-        return PanieriHolder(inflatedView)
+        return PaniereHolder(inflatedView)
     }
 
     override fun getItemCount(): Int {
         return panieri.size
     }
 
-    override fun onBindViewHolder(holder: PanieriHolder, position: Int) {
+    override fun onBindViewHolder(holder: PaniereHolder, position: Int) {
         Log.d("ADAPTER", "Mmmm")
         val paniere = panieri[position]
 
