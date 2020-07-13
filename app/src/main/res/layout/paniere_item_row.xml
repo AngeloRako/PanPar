@@ -73,6 +73,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
+                    android:gravity="right"
                     android:text="Stato"
                     android:textAppearance="?attr/textAppearanceBody2"
                     android:textColor="?android:attr/textColorSecondary"

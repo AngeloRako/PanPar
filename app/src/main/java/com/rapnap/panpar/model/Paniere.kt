@@ -10,7 +10,6 @@ data class Paniere (
     var dataInserimento: Date = Date(),
     var dataConsegnaPrevista: Date? = null,
     var contenuto: MutableSet<Contenuto> = HashSet<Contenuto>(),
-    var richieste: ArrayList<Richiesta>? = null,
     var donatore: String = "",
     var nRichieste: Int = 0,
     var dataRicezione: Date? = null,
