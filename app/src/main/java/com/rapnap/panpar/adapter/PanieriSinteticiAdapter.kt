@@ -10,8 +10,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import com.rapnap.panpar.R
 import com.rapnap.panpar.extensions.inflate
 import com.rapnap.panpar.extensions.prettyString
@@ -31,9 +29,6 @@ class PanieriSinteticiAdapter(
     private val context: Context
 ) : RecyclerView.Adapter<PanieriSinteticiAdapter.PaniereSinteticoHolder>() {
 
-    private lateinit var inflatedView: View
-    private val storage = Firebase.storage
-
     var abbinamenti = ArrayList<Abbinamento>()
 
     //Classe che estende la RecyclerView.ViewHolder, fa usare la ViewHolder all'adapter
@@ -44,7 +39,7 @@ class PanieriSinteticiAdapter(
         viewType: Int
     ): PanieriSinteticiAdapter.PaniereSinteticoHolder {
         Log.d("ADAPTER", "onCreateViewHolder")
-        inflatedView = parent.inflate(R.layout.paniere_item_row, false)
+        val inflatedView = parent.inflate(R.layout.paniere_item_row, false)
 
         return PaniereSinteticoHolder(inflatedView)
     }

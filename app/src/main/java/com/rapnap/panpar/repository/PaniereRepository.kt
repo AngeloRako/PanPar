@@ -21,7 +21,6 @@ class PaniereRepository {
     //Accedo alle istanze dei Singleton
     private var auth: FirebaseAuth = Firebase.auth
     private var db = Firebase.firestore
-    //private var storage = Firebase.storage
 
     private val acceptableDistanceInMeters: Int = 25000
 
