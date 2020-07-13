@@ -102,7 +102,7 @@ class ProfileRiceventeFragment : Fragment(R.layout.fragment_profile_ricevente) {
         //Configuro Adapter
         linearLayoutManager = LinearLayoutManager(this.activity)
         lista_panieri_ricevente.layoutManager = linearLayoutManager
-        adapter = PanieriSinteticiAdapter(ArrayList<Paniere>(), prvm.userId(), Utente.Tipologia.RICEVENTE, requireContext())
+        adapter = PanieriSinteticiAdapter(ArrayList<Paniere>(), prvm.getUserId(), Utente.Tipologia.RICEVENTE, requireContext())
         lista_panieri_ricevente.adapter = adapter
 
         //Osservo i dati del view model

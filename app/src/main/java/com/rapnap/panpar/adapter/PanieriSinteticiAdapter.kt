@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.rapnap.panpar.R
@@ -67,10 +68,17 @@ class PanieriSinteticiAdapter(
                     holder.view.setOnClickListener {
                         if ( holder.view.codiceView.visibility == View.VISIBLE ) {
                             TransitionManager.beginDelayedTransition(holder.view.paniere_sintetico_card, AutoTransition())
+                            holder.view.codiceView.children.iterator().forEach {
+                                it.visibility = View.GONE
+                            }
                             holder.view.codiceView.visibility = View.GONE
                         } else {
                             TransitionManager.beginDelayedTransition(holder.view.paniere_sintetico_card, AutoTransition())
+                            holder.view.codiceView.children.iterator().forEach {
+                                it.visibility = View.VISIBLE
+                            }
                             holder.view.codiceView.visibility = View.VISIBLE
+
                         }
                     }
                 false ->

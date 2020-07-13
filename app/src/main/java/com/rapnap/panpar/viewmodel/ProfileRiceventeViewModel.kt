@@ -62,11 +62,11 @@ class ProfileRiceventeViewModel: ViewModel() {
         super.onCleared()
     }
 
-    fun userId(): String{
+    fun getUserId(): String{
         return Firebase.auth.currentUser?.uid!!
     }
 
-    fun getAbbinamenti(onComplete: (ArrayList<Abbinamento>) -> Unit) {
+    private fun getAbbinamenti(onComplete: (ArrayList<Abbinamento>) -> Unit) {
         abbinamentoRepository.getAbbinamenti() {
             _abbinamenti.value = it
             onComplete(it)
