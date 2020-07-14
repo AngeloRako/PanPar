@@ -6,8 +6,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
@@ -17,6 +19,7 @@ import com.rapnap.panpar.adapter.PanieriRecyclerAdapter
 import com.rapnap.panpar.model.Paniere
 import com.rapnap.panpar.viewmodel.ListaPanieriViewModel
 import kotlinx.android.synthetic.main.fragment_lista_panieri.*
+import kotlinx.coroutines.launch
 
 class ListaPanieriFragment : LocationDependantFragment(), OnItemEventListener<Paniere>, SwipeRefreshLayout.OnRefreshListener {
 
@@ -97,17 +100,54 @@ class ListaPanieriFragment : LocationDependantFragment(), OnItemEventListener<Pa
 
     override fun onEventHappened(item: Paniere, view: View?) {
 
-        listaPanieriVM.updatePaniereFollowers(item.id)
+        lifecycleScope.launch{
 
-        Snackbar.make(
-            requireView(),
-            "Sei ora in coda per l'assegnazione di questo paniere!",
-            Snackbar.LENGTH_LONG //
-        ).setAction(
-            "Ok",
-            {
-                it.visibility = View.GONE
-            }).show()
+            val button = view?.findViewById<Button>(R.id.followPaniere)
+
+            button?.isClickable = false
+
+            val result = listaPanieriVM.updatePaniereFollowers(item.id)
+
+            when(result){
+
+                true->{
+
+                    Snackbar.make(
+                        requireView(),
+                        "Sei ora in coda per l'assegnazione di questo paniere!",
+                        Snackbar.LENGTH_LONG //
+                    ).setAction(
+                        "Ok",
+                        {
+                            it.visibility = View.GONE
+                        }).show()
+
+                    button?.isActivated = false
+                    button?.text = "Già richiesto"
+
+                }
+
+                false -> {
+
+                    Snackbar.make(
+                        requireView(),
+                        "Errore durante l'assegnazione. Sicuro di avere abbastanza punti?",
+                        Snackbar.LENGTH_LONG //
+                    ).setAction(
+                        "Ok",
+                        {
+                            it.visibility = View.GONE
+                        }).show()
+
+                    button?.isClickable = true
+                    button?.text = "Richiedi"
+
+                }
+
+            }
+
+
+        }
 
     }
 

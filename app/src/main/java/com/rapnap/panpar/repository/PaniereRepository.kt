@@ -218,7 +218,7 @@ class PaniereRepository {
 
     }
 
-    suspend fun updatePaniereFollowers(id: String, punti: Int) {
+    suspend fun updatePaniereFollowers(id: String, punti: Int): Boolean {
         Log.d("REPOSITORY", "id del paniere: " + id)
 
         var isAlreadyFollowing: Boolean = false
@@ -268,15 +268,18 @@ class PaniereRepository {
                     .update("n_richieste", FieldValue.increment(1))
                 panieriRef.document(paniereID)
                     .update("coda_riceventi", FieldValue.arrayUnion(auth.currentUser?.uid))
+                return true
 
             } else {
                 Log.d(
                     "REPOSITORY", "Già stai seguendo questo paniere o non hai " +
                             "abbastanza punti, marpione."
                 )
+                return false
             }
         } catch (e: Exception) {
             Log.e("REPOSITORY", "Errore: ${e.localizedMessage}")
+            return false
         }
 
     }

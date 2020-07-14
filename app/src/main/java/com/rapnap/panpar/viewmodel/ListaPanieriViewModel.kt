@@ -40,20 +40,17 @@ class ListaPanieriViewModel : ViewModel() {
         }
     }
 
-    fun updatePaniereFollowers(id: String) {
+    suspend fun updatePaniereFollowers(id: String): Boolean {
 
-        viewModelScope.launch {
+        val user = utenteRepository.getUser()
+        try {
+            return paniereRepository.updatePaniereFollowers(id, user?.punteggio!!.toInt())
 
-            val user = utenteRepository.getUser()
-            try {
-                paniereRepository.updatePaniereFollowers(id, user?.punteggio!!.toInt())
+        } catch (e: Exception) {
+            Log.d(TAG, "Errore durante l'aggiornamento dei followers: ${e}")
+            return false
 
-            } catch (e: Exception) {
-                Log.d(TAG, "Errore durante l'aggiornamento dei followers: ${e}")
-
-            }
         }
-
     }
 
 }
